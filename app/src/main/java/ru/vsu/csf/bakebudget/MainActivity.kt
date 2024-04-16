@@ -30,7 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import ru.vsu.csf.bakebudget.screens.HomeScreen
+import ru.vsu.csf.bakebudget.screens.LoginScreen
+import ru.vsu.csf.bakebudget.screens.RegistrationScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +45,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BakeBudgetTheme {
-                HomeScreen()
+                val navController = rememberNavController()
+                NavGraph(navController = navController)
+//                HomeScreen()
+//                LoginScreen()
+//                RegistrationScreen()
+            }
+        }
+    }
+
+    @Composable
+    fun NavGraph(navController: NavHostController) {
+        NavHost(
+            navController = navController,
+            startDestination = "login"
+        ) {
+            composable(route = "login") {
+                LoginScreen(navController)
+            }
+
+            composable(route = "home") {
+                HomeScreen(navController)
+            }
+
+            composable(route = "register") {
+                RegistrationScreen(navController)
             }
         }
     }

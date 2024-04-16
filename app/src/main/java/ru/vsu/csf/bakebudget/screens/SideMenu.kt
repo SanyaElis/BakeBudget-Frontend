@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DismissibleDrawerSheet
+import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
@@ -23,25 +24,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
-import ru.vsu.csf.bakebudget.MenuItemModel
+import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 
 @Composable
-fun SideMenu() {
+fun SideMenu(navController: NavHostController) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
         MenuItemModel(R.drawable.orders, "Заказы"),
@@ -59,9 +57,10 @@ fun SideMenu() {
     }
     val mContext = LocalContext.current
 
-    ModalNavigationDrawer(drawerState = drawerState,
+    DismissibleNavigationDrawer(
+        drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor= SideBack) {
+            DismissibleDrawerSheet(drawerContainerColor = SideBack) {
                 TextButton(onClick = {
                     scope.launch {
                         drawerState.close()
@@ -81,7 +80,7 @@ fun SideMenu() {
                             selectedContainerColor = SecondaryBack,
                             unselectedContainerColor = SideBack
                         ),
-                        label = { Text(text = item.title, color = TextPrimary, fontSize = 20.sp)},
+                        label = { Text(text = item.title, color = TextPrimary, fontSize = 20.sp) },
                         icon = {
                             Icon(
                                 painter = painterResource(item.iconId),
@@ -106,7 +105,7 @@ fun SideMenu() {
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     TextButton(
-                        onClick = {}
+                        onClick = { navController.navigate("login") }
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.button_exit),
@@ -117,21 +116,26 @@ fun SideMenu() {
             }
         },
         content = {
-
-            TextButton(onClick = {
-                scope.launch {
-                    drawerState.open()
+            if (drawerState.currentValue == DrawerValue.Closed) {
+                TextButton(onClick = {
+                    scope.launch {
+                        drawerState.open()
+                    }
+                }) {
+                    Image(
+                        painter = painterResource(id = R.drawable.menu_open),
+                        contentDescription = "menu",
+                        modifier = Modifier.padding(5.dp)
+                    )
                 }
-            }) {
-                Image(
-                    painter = painterResource(id = R.drawable.menu_open),
-                    contentDescription = "menu",
-                    modifier = Modifier.padding(5.dp)
-                )
             }
         })
 }
 
-private fun mToast(context: Context){
-    Toast.makeText(context, "Данный раздел находится на стадии разработки и станет доступным в ближайщее время", Toast.LENGTH_LONG).show()
+private fun mToast(context: Context) {
+    Toast.makeText(
+        context,
+        "Данный раздел находится на стадии разработки и станет доступным в ближайщее время",
+        Toast.LENGTH_LONG
+    ).show()
 }
