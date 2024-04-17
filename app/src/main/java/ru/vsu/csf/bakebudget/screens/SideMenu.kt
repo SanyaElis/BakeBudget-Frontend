@@ -3,12 +3,14 @@ package ru.vsu.csf.bakebudget.screens
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
@@ -19,11 +21,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.R
@@ -39,7 +44,10 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 
 @Composable
-fun SideMenu(navController: NavHostController) {
+fun SideMenu(navController: NavHostController,
+             drawerState: DrawerState,
+             scope : CoroutineScope,
+             selectedItem : MutableState<MenuItemModel>) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
         MenuItemModel(R.drawable.orders, "Заказы"),
@@ -50,86 +58,68 @@ fun SideMenu(navController: NavHostController) {
         MenuItemModel(R.drawable.reports, "Отчеты"),
         MenuItemModel(R.drawable.groups, "Группы"),
     )
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val selectedItem = remember {
-        mutableStateOf(items[0])
-    }
     val mContext = LocalContext.current
 
-    DismissibleNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            DismissibleDrawerSheet(drawerContainerColor = SideBack) {
-                TextButton(onClick = {
-                    scope.launch {
-                        drawerState.close()
-                    }
-                }) {
+    DismissibleDrawerSheet(drawerContainerColor = SideBack) {
+        TextButton(onClick = {
+            scope.launch {
+                drawerState.close()
+            }
+        }) {
+            Icon(
+                painter = painterResource(R.drawable.close_menu),
+                contentDescription = "close",
+                tint = TextPrimary,
+                modifier = Modifier.padding(top = 15.dp, bottom = 30.dp)
+            )
+        }
+        items.forEach { item ->
+            NavigationDrawerItem(
+                shape = RectangleShape,
+                colors = NavigationDrawerItemDefaults.colors(
+                    selectedContainerColor = SecondaryBack,
+                    unselectedContainerColor = SideBack
+                ),
+                label = { Text(text = item.title, color = TextPrimary, fontSize = 20.sp) },
+                icon = {
                     Icon(
-                        painter = painterResource(R.drawable.close_menu),
-                        contentDescription = "close",
-                        tint = TextPrimary,
-                        modifier = Modifier.padding(top = 15.dp, bottom = 30.dp)
+                        painter = painterResource(item.iconId),
+                        contentDescription = item.title,
+                        tint = TextPrimary
                     )
-                }
-                items.forEach { item ->
-                    NavigationDrawerItem(
-                        shape = RectangleShape,
-                        colors = NavigationDrawerItemDefaults.colors(
-                            selectedContainerColor = SecondaryBack,
-                            unselectedContainerColor = SideBack
-                        ),
-                        label = { Text(text = item.title, color = TextPrimary, fontSize = 20.sp) },
-                        icon = {
-                            Icon(
-                                painter = painterResource(item.iconId),
-                                contentDescription = item.title,
-                                tint = TextPrimary
-                            )
-                        },
-                        selected = selectedItem.value == item,
-                        onClick = {
-                            scope.launch {
-                                selectedItem.value = item
+                },
+                selected = selectedItem.value == item,
+                onClick = {
+                    scope.launch {
+                        selectedItem.value = item
+                        when (selectedItem.value) {
+                            items[0] -> navController.navigate("home")
+//                            items[2] -> navController.navigate("ingredients")
+                            else -> {
                                 mToast(mContext)
                             }
                         }
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(bottom = 30.dp),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    TextButton(
-                        onClick = { navController.navigate("login") }
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.button_exit),
-                            contentDescription = "exit"
-                        )
                     }
                 }
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(bottom = 30.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            TextButton(
+                onClick = { navController.navigate("login") }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.button_exit),
+                    contentDescription = "exit"
+                )
             }
-        },
-        content = {
-            if (drawerState.currentValue == DrawerValue.Closed) {
-                TextButton(onClick = {
-                    scope.launch {
-                        drawerState.open()
-                    }
-                }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.menu_open),
-                        contentDescription = "menu",
-                        modifier = Modifier.padding(5.dp)
-                    )
-                }
-            }
-        })
+        }
+    }
 }
 
 private fun mToast(context: Context) {

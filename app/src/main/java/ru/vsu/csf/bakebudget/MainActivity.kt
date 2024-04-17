@@ -36,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.vsu.csf.bakebudget.screens.HomeScreen
+import ru.vsu.csf.bakebudget.screens.IngredientsScreen
 import ru.vsu.csf.bakebudget.screens.LoginScreen
 import ru.vsu.csf.bakebudget.screens.RegistrationScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
@@ -70,6 +71,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "register") {
                 RegistrationScreen(navController)
+            }
+
+            composable(route = "ingredients") {
+                IngredientsScreen(navController)
             }
         }
     }
