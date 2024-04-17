@@ -40,6 +40,7 @@ fun TextForm(label : String) {
             focusedBorderColor = Color.White,
             unfocusedContainerColor = UnfocusedField,
             unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
         ),
         keyboardOptions = KeyboardOptions.Default,
         shape = RoundedCornerShape(8.dp),
