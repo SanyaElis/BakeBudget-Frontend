@@ -42,8 +42,9 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
-import ru.vsu.csf.bakebudget.components.Ingredient
 import ru.vsu.csf.bakebudget.components.IngredientAdd
+import ru.vsu.csf.bakebudget.components.IngredientEven
+import ru.vsu.csf.bakebudget.components.IngredientOdd
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -147,8 +148,12 @@ fun IngredientsScreen(
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
-                            itemsIndexed(ingredients) { _, ingredient ->
-                                Ingredient(ingredient = ingredient)
+                            itemsIndexed(ingredients) { num, ingredient ->
+                                if (num % 2 == 0) {
+                                    IngredientOdd(ingredient = ingredient)
+                                } else {
+                                    IngredientEven(ingredient = ingredient)
+                                }
                             }
                             item {
                                 IngredientAdd(name, weight, cost)
@@ -192,7 +197,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 44.dp),
+                        .padding(top = 12.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(text = "ИНГРЕДИЕНТЫ", fontSize = 24.sp, color = Color.White)
@@ -203,13 +208,13 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     .fillMaxWidth()
                     .defaultMinSize(40.dp)
                     .background(PrimaryBack)
-                    .padding(top = 10.dp, bottom = 5.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Название", color = Color.White)
-                Text(text = "Количество", color = Color.White)
-                Text(text = "Стоимость", color = Color.White)
+                Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
+                Text(text = "КОЛИЧЕСТВО", color = Color.White, fontSize = 12.sp)
+                Text(text = "СТОИМОСТЬ", color = Color.White, fontSize = 12.sp)
             }
         }
     }

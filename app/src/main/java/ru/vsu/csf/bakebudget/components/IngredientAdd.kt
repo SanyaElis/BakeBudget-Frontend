@@ -2,6 +2,7 @@ package ru.vsu.csf.bakebudget.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
+import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
 fun IngredientAdd(
@@ -24,12 +26,19 @@ fun IngredientAdd(
     weight: MutableState<String>,
     cost: MutableState<String>) {
     Card(shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxWidth().requiredHeight(90.dp).background(PrimaryBack).padding(5.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight().background(Color.White), horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier
+            .fillMaxWidth()
+            .requiredHeight(90.dp)
+            .background(SideBack)
+            .padding(5.dp)) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(SideBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-            InputTextField(text = "Название", name)
-            InputTextField(text = "Вес", weight)
-            InputTextField(text = "Цена", cost)
+            InputTextField(text = "Название", name, 30)
+            InputTextField(text = "Вес", weight, 30)
+            InputTextField(text = "Цена", cost, 30)
         }
     }
 }

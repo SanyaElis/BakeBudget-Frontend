@@ -22,10 +22,10 @@ import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
 fun InputTextField(text: String,
-                   value : MutableState<String>) {
+                   value : MutableState<String>, max : Int) {
     TextField(
         value = value.value,
-        onValueChange = { value.value = it },
+        onValueChange = { if (value.value.length <= max) value.value = it },
         shape = RoundedCornerShape(16.dp),
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color.White,
