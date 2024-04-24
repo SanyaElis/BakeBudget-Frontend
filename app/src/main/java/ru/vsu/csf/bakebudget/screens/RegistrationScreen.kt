@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,7 +21,7 @@ import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
-fun RegistrationScreen(navController: NavHostController) {
+fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<Boolean>) {
     Surface(modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight()

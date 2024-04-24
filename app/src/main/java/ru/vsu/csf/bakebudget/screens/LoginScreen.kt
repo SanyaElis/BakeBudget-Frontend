@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,13 +26,13 @@ import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean>) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .background(PrimaryBack)
-            .padding(top = 26.dp, bottom = 10.dp)
+            .padding(top = 13.dp, bottom = 10.dp)
     ) {
         Column(
             modifier = Modifier
@@ -51,7 +52,9 @@ fun LoginScreen(navController: NavHostController) {
             contentAlignment = Alignment.BottomCenter
         ) {
             TextButton(
-                onClick = {navController.navigate("home")}
+                onClick = {
+                    isLogged.value = true
+                    navController.navigate("home")}
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.button_enter),

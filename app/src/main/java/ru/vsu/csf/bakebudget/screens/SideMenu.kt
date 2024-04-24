@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerState
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -47,7 +49,8 @@ import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 fun SideMenu(navController: NavHostController,
              drawerState: DrawerState,
              scope : CoroutineScope,
-             selectedItem : MutableState<MenuItemModel>) {
+             selectedItem : MutableState<MenuItemModel>,
+             isLogged: MutableState<Boolean>) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
         MenuItemModel(R.drawable.orders, "Заказы"),
@@ -60,7 +63,8 @@ fun SideMenu(navController: NavHostController,
     )
     val mContext = LocalContext.current
 
-    DismissibleDrawerSheet(drawerContainerColor = SideBack) {
+    DismissibleDrawerSheet(modifier = Modifier.clip(RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)),
+        drawerContainerColor = SideBack) {
         TextButton(onClick = {
             scope.launch {
                 drawerState.close()
@@ -92,40 +96,48 @@ fun SideMenu(navController: NavHostController,
                 onClick = {
                     scope.launch {
                         selectedItem.value = item
-                        when (selectedItem.value) {
-                            items[0] -> navController.navigate("home")
-//                            items[2] -> navController.navigate("ingredients")
-                            else -> {
-                                mToast(mContext)
+                        if (isLogged.value.not()) {
+                            mToast(mContext, isLogged)
+                        } else {
+                            when (selectedItem.value) {
+                                items[0] -> navController.navigate("home")
+                                items[2] -> navController.navigate("ingredients")
+                                else -> {
+                                    mToast(mContext, isLogged)
+                                }
                             }
                         }
                     }
                 }
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(bottom = 30.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            TextButton(
-                onClick = { navController.navigate("login") }
+        if (isLogged.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(bottom = 110.dp),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.button_exit),
-                    contentDescription = "exit"
-                )
+                TextButton(
+                    onClick = {
+                        isLogged.value = false
+                        navController.navigate("login") }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.button_exit),
+                        contentDescription = "exit"
+                    )
+                }
             }
         }
     }
 }
 
-private fun mToast(context: Context) {
+private fun mToast(context: Context, isLogged: MutableState<Boolean>) {
     Toast.makeText(
         context,
-        "Данный раздел находится на стадии разработки и станет доступным в ближайщее время",
+        if (isLogged.value) "Данный раздел находится на стадии разработки и станет доступным в ближайщее время" else "Сначала необходимо авторизоваться",
         Toast.LENGTH_LONG
     ).show()
 }

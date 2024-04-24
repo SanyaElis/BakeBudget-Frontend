@@ -1,5 +1,6 @@
 package ru.vsu.csf.bakebudget
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +38,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
 import ru.vsu.csf.bakebudget.screens.LoginScreen
@@ -42,12 +46,20 @@ import ru.vsu.csf.bakebudget.screens.RegistrationScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnrememberedMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             BakeBudgetTheme {
                 val navController = rememberNavController()
-                NavGraph(navController = navController)
+                val isLoggedIn = remember { mutableStateOf(false) }
+                //    val ingredients = remember {
+                val ingredients = mutableStateListOf(
+                    IngredientModel("Milk", 100, 30),
+                    IngredientModel("Flower", 1000, 100),
+                    IngredientModel("Butter", 150, 250),
+                )
+                NavGraph(navController = navController, ingredients, isLoggedIn)
 //                HomeScreen()
 //                LoginScreen()
 //                RegistrationScreen()
@@ -56,25 +68,25 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NavGraph(navController: NavHostController) {
+    fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>) {
         NavHost(
             navController = navController,
-            startDestination = "login"
+            startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController)
+                LoginScreen(navController, isLogged)
             }
 
             composable(route = "home") {
-                HomeScreen(navController)
+                HomeScreen(navController, isLogged)
             }
 
             composable(route = "register") {
-                RegistrationScreen(navController)
+                RegistrationScreen(navController, isLogged)
             }
 
             composable(route = "ingredients") {
-                IngredientsScreen(navController)
+                IngredientsScreen(navController, ingredients, isLogged)
             }
         }
     }
