@@ -38,7 +38,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ru.vsu.csf.bakebudget.models.GoodModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.screens.GoodsScreen
 import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
 import ru.vsu.csf.bakebudget.screens.LoginScreen
@@ -59,7 +61,18 @@ class MainActivity : ComponentActivity() {
                     IngredientModel("Flower", 1000, 100),
                     IngredientModel("Butter", 150, 250),
                 )
-                NavGraph(navController = navController, ingredients, isLoggedIn)
+                val goods = mutableStateListOf(
+                    GoodModel(R.drawable.cake, "100"),
+                    GoodModel(R.drawable.cake, "1000"),
+                    GoodModel(R.drawable.cake, "150"),
+                    GoodModel(R.drawable.cake, "152340"),
+                    GoodModel(R.drawable.cake, "152340"),
+                    GoodModel(R.drawable.cake, "1530"),
+                    GoodModel(R.drawable.cake, "15320"),
+                    GoodModel(R.drawable.cake, "12250"),
+                    GoodModel(R.drawable.cake, "1dg")
+                )
+                NavGraph(navController = navController, ingredients, isLoggedIn, goods)
 //                HomeScreen()
 //                LoginScreen()
 //                RegistrationScreen()
@@ -68,7 +81,8 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>) {
+    fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
+    , goods: MutableList<GoodModel>) {
         NavHost(
             navController = navController,
             startDestination = "home"
@@ -87,6 +101,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "ingredients") {
                 IngredientsScreen(navController, ingredients, isLogged)
+            }
+
+            composable(route = "goods") {
+                GoodsScreen(navController, goods, isLogged)
             }
         }
     }
