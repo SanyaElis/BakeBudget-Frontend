@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -23,13 +25,16 @@ import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 @Composable
 fun InputTextField(text: String,
                    value : MutableState<String>, max : Int) {
-    TextField(
+    OutlinedTextField(
         value = value.value,
         onValueChange = { if (value.value.length <= max) value.value = it },
         shape = RoundedCornerShape(16.dp),
-        colors = TextFieldDefaults.colors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
-            unfocusedContainerColor = UnfocusedField
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
         ),
         label = { Text(text) },
         maxLines = 1,

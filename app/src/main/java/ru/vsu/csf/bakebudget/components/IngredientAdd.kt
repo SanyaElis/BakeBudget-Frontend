@@ -25,16 +25,14 @@ fun IngredientAdd(
     name: MutableState<String>,
     weight: MutableState<String>,
     cost: MutableState<String>) {
-    Card(shape = RoundedCornerShape(15.dp),
-        modifier = Modifier
+    Card(modifier = Modifier
             .fillMaxWidth()
             .requiredHeight(90.dp)
-            .background(SideBack)
             .padding(5.dp)) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(SideBack), horizontalArrangement = Arrangement.SpaceEvenly,
+            .background(PrimaryBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
             InputTextField(text = "Название", name, 30)
             InputTextField(text = "Вес", weight, 30)

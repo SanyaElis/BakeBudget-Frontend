@@ -42,11 +42,11 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.Ingredient
 import ru.vsu.csf.bakebudget.components.IngredientAdd
-import ru.vsu.csf.bakebudget.components.IngredientEven
-import ru.vsu.csf.bakebudget.components.IngredientOdd
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
@@ -97,7 +97,7 @@ fun IngredientsScreen(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.1f)
+                        .fillMaxHeight(0.2f)
                         .background(SideBack)
                         .padding(start = 8.dp, end = 8.dp),
                     shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp),
@@ -106,28 +106,31 @@ fun IngredientsScreen(
                         modifier = Modifier.background(PrimaryBack),
                         contentAlignment = Alignment.Center
                     ) {
-                        TextButton(
-                            onClick = {
-                                if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
-                                    mToast(context = mContext)
-                                } else {
-                                    ingredients.add(
-                                        IngredientModel(
-                                            name.value,
-                                            weight.value.toInt(),
-                                            cost.value.toInt()
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            IngredientAdd(name, weight, cost)
+                            TextButton(
+                                onClick = {
+                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
+                                        mToast(context = mContext)
+                                    } else {
+                                        ingredients.add(
+                                            IngredientModel(
+                                                name.value,
+                                                weight.value.toInt(),
+                                                cost.value.toInt()
+                                            )
                                         )
-                                    )
-                                    name.value = "q"
-                                    weight.value = "1"
-                                    cost.value = "1"
+                                        name.value = "q"
+                                        weight.value = "1"
+                                        cost.value = "1"
+                                    }
                                 }
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.button_add),
+                                    contentDescription = "add"
+                                )
                             }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.button_add),
-                                contentDescription = "add"
-                            )
                         }
                     }
                 }
@@ -144,19 +147,16 @@ fun IngredientsScreen(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(0.91f)
+                                .fillMaxHeight(0.8f)
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
                                 if (num % 2 == 0) {
-                                    IngredientOdd(ingredient = ingredient)
+                                    Ingredient(ingredient = ingredient, SideBack)
                                 } else {
-                                    IngredientEven(ingredient = ingredient)
+                                    Ingredient(ingredient = ingredient, Back2)
                                 }
-                            }
-                            item {
-                                IngredientAdd(name, weight, cost)
                             }
                         }
                     }
