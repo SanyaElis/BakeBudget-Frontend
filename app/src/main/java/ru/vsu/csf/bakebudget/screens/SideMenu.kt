@@ -103,6 +103,7 @@ fun SideMenu(navController: NavHostController,
                                 items[0] -> navController.navigate("home")
                                 items[2] -> navController.navigate("ingredients")
                                 items[3] -> navController.navigate("goods")
+                                items[5] -> navController.navigate("costs")
                                 else -> {
                                     mToast(mContext, isLogged)
                                 }

@@ -38,9 +38,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import ru.vsu.csf.bakebudget.models.CostModel
 import ru.vsu.csf.bakebudget.models.GoodModel
 import ru.vsu.csf.bakebudget.models.IngredientInRecipeModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.screens.CostsScreen
 import ru.vsu.csf.bakebudget.screens.GoodAddScreen
 import ru.vsu.csf.bakebudget.screens.GoodsScreen
 import ru.vsu.csf.bakebudget.screens.HomeScreen
@@ -63,10 +65,12 @@ class MainActivity : ComponentActivity() {
                     IngredientModel("Flower", 1000, 100),
                     IngredientModel("Butter", 150, 250),
                 )
+                val costs = mutableStateListOf(
+                    CostModel("Вода", 100),
+                    CostModel("Электроэнергия", 150)
+                )
                 val ingredientsInRecipe = mutableStateListOf(
                     IngredientInRecipeModel("Milk", 100),
-                    IngredientInRecipeModel("Sugar", 200),
-                    IngredientInRecipeModel("Salt", 300),
                 )
                 val goods = mutableStateListOf(
                     GoodModel(R.drawable.cake, "100", ingredientsInRecipe),
@@ -79,7 +83,7 @@ class MainActivity : ComponentActivity() {
                     GoodModel(R.drawable.cake, "12250", ingredientsInRecipe),
                     GoodModel(R.drawable.cake, "1dg", ingredientsInRecipe)
                 )
-                NavGraph(navController = navController, ingredients, isLoggedIn, goods, ingredientsInRecipe)
+                NavGraph(navController = navController, ingredients, isLoggedIn, goods, ingredientsInRecipe, costs)
 //                HomeScreen()
 //                LoginScreen()
 //                RegistrationScreen()
@@ -89,7 +93,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
-    , goods: MutableList<GoodModel>, ingredientsInRecipe : MutableList<IngredientInRecipeModel>) {
+    , goods: MutableList<GoodModel>, ingredientsInRecipe : MutableList<IngredientInRecipeModel>, costs: MutableList<CostModel>) {
         NavHost(
             navController = navController,
             startDestination = "home"
@@ -116,6 +120,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "goodAdd") {
                 GoodAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, goods)
+            }
+
+            composable(route = "costs") {
+                CostsScreen(navController, costs, isLogged)
             }
         }
     }

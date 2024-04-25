@@ -40,8 +40,11 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.Cost
+import ru.vsu.csf.bakebudget.components.CostAdd
 import ru.vsu.csf.bakebudget.components.Ingredient
 import ru.vsu.csf.bakebudget.components.IngredientAdd
+import ru.vsu.csf.bakebudget.models.CostModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
@@ -50,13 +53,12 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun IngredientsScreen(
-    navController: NavHostController,
-    ingredients: MutableList<IngredientModel>,
-    isLogged: MutableState<Boolean>
+fun CostsScreen(navController: NavHostController,
+                costs: MutableList<CostModel>,
+                isLogged: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
-    val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
+    val item = listOf(MenuItemModel(R.drawable.ingredients, "Издержки"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val selectedItem = remember {
@@ -65,10 +67,7 @@ fun IngredientsScreen(
     val name = remember {
         mutableStateOf("")
     }
-    val weight = remember {
-        mutableStateOf("")
-    }
-    val cost = remember {
+    val value = remember {
         mutableStateOf("")
     }
 
@@ -98,22 +97,20 @@ fun IngredientsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            IngredientAdd(name, weight, cost)
+                            CostAdd(name, value)
                             TextButton(
                                 onClick = {
-                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
+                                    if (name.value.isEmpty() || value.value.isEmpty() || value.value.toIntOrNull() == null ) {
                                         mToast(context = mContext)
                                     } else {
-                                        ingredients.add(
-                                            IngredientModel(
+                                        costs.add(
+                                            CostModel(
                                                 name.value,
-                                                weight.value.toInt(),
-                                                cost.value.toInt()
+                                                value.value.toInt()
                                             )
                                         )
                                         name.value = "q"
-                                        weight.value = "1"
-                                        cost.value = "1"
+                                        value.value = "1"
                                     }
                                 }
                             ) {
@@ -142,11 +139,11 @@ fun IngredientsScreen(
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
-                            itemsIndexed(ingredients) { num, ingredient ->
+                            itemsIndexed(costs) { num, cost ->
                                 if (num % 2 == 0) {
-                                    Ingredient(ingredient = ingredient, SideBack, ingredients)
+                                    Cost(cost, SideBack, costs)
                                 } else {
-                                    Ingredient(ingredient = ingredient, Back2, ingredients)
+                                    Cost(cost, Back2, costs)
                                 }
                             }
                         }
@@ -199,13 +196,12 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     .fillMaxWidth()
                     .defaultMinSize(40.dp)
                     .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 16.dp),
+                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 48.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "КОЛИЧЕСТВО", color = Color.White, fontSize = 12.sp)
-                Text(text = "СТОИМОСТЬ", color = Color.White, fontSize = 12.sp)
+                Text(text = "ЗНАЧЕНИЕ", color = Color.White, fontSize = 12.sp)
             }
         }
     }
