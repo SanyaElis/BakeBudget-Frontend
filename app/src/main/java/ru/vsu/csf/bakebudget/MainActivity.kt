@@ -39,7 +39,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.vsu.csf.bakebudget.models.GoodModel
+import ru.vsu.csf.bakebudget.models.IngredientInRecipeModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.screens.GoodAddScreen
 import ru.vsu.csf.bakebudget.screens.GoodsScreen
 import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
@@ -61,18 +63,23 @@ class MainActivity : ComponentActivity() {
                     IngredientModel("Flower", 1000, 100),
                     IngredientModel("Butter", 150, 250),
                 )
-                val goods = mutableStateListOf(
-                    GoodModel(R.drawable.cake, "100"),
-                    GoodModel(R.drawable.cake, "1000"),
-                    GoodModel(R.drawable.cake, "150"),
-                    GoodModel(R.drawable.cake, "152340"),
-                    GoodModel(R.drawable.cake, "152340"),
-                    GoodModel(R.drawable.cake, "1530"),
-                    GoodModel(R.drawable.cake, "15320"),
-                    GoodModel(R.drawable.cake, "12250"),
-                    GoodModel(R.drawable.cake, "1dg")
+                val ingredientsInRecipe = mutableStateListOf(
+                    IngredientInRecipeModel("Milk", 100),
+                    IngredientInRecipeModel("Sugar", 200),
+                    IngredientInRecipeModel("Salt", 300),
                 )
-                NavGraph(navController = navController, ingredients, isLoggedIn, goods)
+                val goods = mutableStateListOf(
+                    GoodModel(R.drawable.cake, "100", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "1000", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "150", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "1530", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "15320", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "12250", ingredientsInRecipe),
+                    GoodModel(R.drawable.cake, "1dg", ingredientsInRecipe)
+                )
+                NavGraph(navController = navController, ingredients, isLoggedIn, goods, ingredientsInRecipe)
 //                HomeScreen()
 //                LoginScreen()
 //                RegistrationScreen()
@@ -82,7 +89,7 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
-    , goods: MutableList<GoodModel>) {
+    , goods: MutableList<GoodModel>, ingredientsInRecipe : MutableList<IngredientInRecipeModel>) {
         NavHost(
             navController = navController,
             startDestination = "home"
@@ -105,6 +112,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "goods") {
                 GoodsScreen(navController, goods, isLogged)
+            }
+
+            composable(route = "goodAdd") {
+                GoodAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, goods)
             }
         }
     }

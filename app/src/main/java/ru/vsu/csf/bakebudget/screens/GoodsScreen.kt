@@ -97,7 +97,7 @@ fun GoodsScreen(
                     ) {
                         TextButton(
                             onClick = {
-
+                                navController.navigate("goodAdd")
                             }
                         ) {
                             Image(

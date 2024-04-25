@@ -26,21 +26,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.models.IngredientInRecipeModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 
 @Composable
-fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableList<IngredientModel>) {
+fun IngredientInRecipe(ingredient: IngredientInRecipeModel, color: Color, ingredients: MutableList<IngredientInRecipeModel>) {
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
-            AlertDialog(
+            AlertDialog1(
                 onDismissRequest = {
                     openAlertDialog.value = false },
                 onConfirmation = {
                     openAlertDialog.value = false
+                    println("Confirmation registered") // Add logic here to handle confirmation.
                 },
                 dialogTitle = ingredient.name,
                 dialogText = "Можете редактировать или удалить ингредиент",
+                icon = Icons.Default.Info,
                 ingredient,
                 ingredients
             )
@@ -57,17 +60,13 @@ fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableLi
             .background(color)
             .padding(start = 21.dp, end = 5.dp),
             verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.fillMaxWidth(0.33f),
+            Box(modifier = Modifier.fillMaxWidth(0.5f),
                 contentAlignment = Alignment.CenterStart) {
                 Text(text = ingredient.name, maxLines = 3)
             }
-            Box(modifier = Modifier.fillMaxWidth(0.5f),
+            Box(modifier = Modifier.fillMaxWidth(0.8f),
                 contentAlignment = Alignment.Center) {
                 Text(text = ingredient.weight.toString(), maxLines = 3)
-            }
-            Box(modifier = Modifier.fillMaxWidth(0.75f),
-                contentAlignment = Alignment.CenterEnd) {
-                Text(text = ingredient.cost.toString(), maxLines = 3)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }
@@ -82,22 +81,20 @@ fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableLi
 }
 
 @Composable
-fun AlertDialog(
+fun AlertDialog1(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String,
-    ingredient: IngredientModel,
-    ingredients: MutableList<IngredientModel>
+    icon: ImageVector,
+    ingredient: IngredientInRecipeModel,
+    ingredients: MutableList<IngredientInRecipeModel>
 ) {
     val name = remember {
         mutableStateOf(ingredient.name)
     }
     val weight = remember {
         mutableStateOf(ingredient.weight.toString())
-    }
-    val cost = remember {
-        mutableStateOf(ingredient.cost.toString())
     }
     AlertDialog(
         properties = DialogProperties(
@@ -112,7 +109,6 @@ fun AlertDialog(
                 Text(text = dialogText)
                 InputTextField(text = "Название", name, 30)
                 InputTextField(text = "Вес", weight, 30)
-                InputTextField(text = "Цена", cost, 30)
             }
         },
         onDismissRequest = {
@@ -122,11 +118,12 @@ fun AlertDialog(
             TextButton(
                 onClick = {
                     ingredients.remove(ingredient)
-                    ingredients.add(IngredientModel(
-                        name.value,
-                        weight.value.toInt(),
-                        cost.value.toInt()
-                    ))
+                    ingredients.add(
+                        IngredientInRecipeModel(
+                            name.value,
+                            weight.value.toInt()
+                        )
+                    )
                     onConfirmation()
                 }
             ) {
