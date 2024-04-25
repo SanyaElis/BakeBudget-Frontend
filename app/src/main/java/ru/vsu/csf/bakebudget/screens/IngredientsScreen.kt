@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -27,7 +26,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -153,9 +151,9 @@ fun IngredientsScreen(
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
                                 if (num % 2 == 0) {
-                                    Ingredient(ingredient = ingredient, SideBack)
+                                    Ingredient(ingredient = ingredient, SideBack, ingredients)
                                 } else {
-                                    Ingredient(ingredient = ingredient, Back2)
+                                    Ingredient(ingredient = ingredient, Back2, ingredients)
                                 }
                             }
                         }
