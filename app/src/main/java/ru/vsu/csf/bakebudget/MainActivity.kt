@@ -1,9 +1,11 @@
 package ru.vsu.csf.bakebudget
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
@@ -20,6 +22,7 @@ import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.screens.OutgoingsScreen
 import ru.vsu.csf.bakebudget.screens.GoodAddScreen
 import ru.vsu.csf.bakebudget.screens.GoodsScreen
+import ru.vsu.csf.bakebudget.screens.GroupsScreen
 import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
 import ru.vsu.csf.bakebudget.screens.LoginScreen
@@ -28,6 +31,7 @@ import ru.vsu.csf.bakebudget.screens.ReportsScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnrememberedMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +71,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
     , goods: MutableList<GoodModel>, ingredientsInRecipe : MutableList<IngredientInRecipeModel>, costs: MutableList<OutgoingModel>) {
@@ -104,6 +109,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "reports") {
                 ReportsScreen(navController, isLogged)
+            }
+
+            composable(route = "groups") {
+                GroupsScreen(navController, isLogged, true)
             }
         }
     }

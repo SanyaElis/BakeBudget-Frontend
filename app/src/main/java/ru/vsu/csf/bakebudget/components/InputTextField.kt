@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
-fun InputTextField(text: String,
-                   value : MutableState<String>, max : Int) {
+fun InputTextField(
+    text: String,
+    value: MutableState<String>, max: Int
+) {
     OutlinedTextField(
         value = value.value,
         onValueChange = { if (value.value.length <= max) value.value = it },
@@ -45,9 +47,11 @@ fun InputTextField(text: String,
 }
 
 @Composable
-fun InputTextField(text: String,
-                   value : MutableState<String>, max : Int,
-                   width: Int) {
+fun InputTextField(
+    text: String,
+    value: MutableState<String>, max: Int,
+    width: Int
+) {
     OutlinedTextField(
         value = value.value,
         onValueChange = { if (value.value.length <= max) value.value = it },
