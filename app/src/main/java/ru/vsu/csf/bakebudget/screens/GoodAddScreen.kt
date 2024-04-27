@@ -50,6 +50,7 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.EstimatedWeight
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
 import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.GoodModel
@@ -75,6 +76,9 @@ fun GoodAddScreen(
     val scope = rememberCoroutineScope()
     val selectedItem = remember {
         mutableStateOf(item[0])
+    }
+    val estimatedWeight = remember {
+        mutableStateOf("")
     }
     val selectedItemIndex = remember { mutableIntStateOf(0) }
 
@@ -133,7 +137,7 @@ fun GoodAddScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    goods.add(GoodModel(R.drawable.cake, "Изделие", ingredients))
+                                    goods.add(GoodModel(R.drawable.cake, "Изделие", ingredients, estimatedWeight.value.toInt()))
                                     navController.navigate("goods")
                                 }
                             ) {
@@ -154,6 +158,7 @@ fun GoodAddScreen(
                         .padding(bottom = 10.dp)
                 ) {
                     Column {
+                        var last = 0
                         Header(scope = scope, drawerState = drawerState)
                         LazyColumn(
                             modifier = Modifier
@@ -164,6 +169,10 @@ fun GoodAddScreen(
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
                                 IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients)
+                                last = num
+                            }
+                            item {
+                                EstimatedWeight(color = if (last % 2 != 0) SideBack else Back2, estimatedWeight = estimatedWeight)
                             }
                         }
                     }

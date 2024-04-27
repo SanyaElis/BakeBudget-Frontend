@@ -73,15 +73,15 @@ class MainActivity : ComponentActivity() {
                     IngredientInRecipeModel("Milk", 100),
                 )
                 val goods = mutableStateListOf(
-                    GoodModel(R.drawable.cake, "100", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "1000", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "150", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "1530", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "15320", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "12250", ingredientsInRecipe),
-                    GoodModel(R.drawable.cake, "1dg", ingredientsInRecipe)
+                    GoodModel(R.drawable.cake, "100", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "1000", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "150", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "1530", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "15320", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "12250", ingredientsInRecipe, 1000),
+                    GoodModel(R.drawable.cake, "1dg", ingredientsInRecipe, 1000)
                 )
                 NavGraph(navController = navController, ingredients, isLoggedIn, goods, ingredientsInRecipe, costs)
 //                HomeScreen()
