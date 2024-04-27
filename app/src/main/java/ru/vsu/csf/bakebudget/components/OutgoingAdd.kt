@@ -29,7 +29,7 @@ fun OutgoingAdd(name: MutableState<String>,
             .background(PrimaryBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
             InputTextField(text = "Название", name, 30)
-            InputTextField(text = "Значение", value, 30)
+            InputTextField(text = "Стоимость", value, 30)
         }
     }
 }

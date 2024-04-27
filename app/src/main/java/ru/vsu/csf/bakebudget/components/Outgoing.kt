@@ -57,7 +57,7 @@ fun Outgoing(cost: OutgoingModel, color: Color, costs: MutableList<OutgoingModel
                 Text(text = cost.name, maxLines = 3)
             }
             Box(modifier = Modifier.fillMaxWidth(0.8f),
-                contentAlignment = Alignment.Center) {
+                contentAlignment = Alignment.CenterEnd) {
                 Text(text = (cost.value.toString() + " руб."), maxLines = 3)
             }
             TextButton(

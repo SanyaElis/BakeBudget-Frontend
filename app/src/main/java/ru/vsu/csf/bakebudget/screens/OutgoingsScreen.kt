@@ -182,10 +182,10 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 50.dp),
+                        .padding(top = 12.dp, end = 60.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ИНГРЕДИЕНТЫ", fontSize = 24.sp, color = Color.White)
+                    Text(text = "ИЗДЕРЖКИ", fontSize = 24.sp, color = Color.White)
                 }
             }
             Row(
@@ -193,12 +193,12 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     .fillMaxWidth()
                     .defaultMinSize(40.dp)
                     .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 48.dp),
+                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "ЗНАЧЕНИЕ", color = Color.White, fontSize = 12.sp)
+                Text(text = "СТОИМОСТЬ", color = Color.White, fontSize = 12.sp)
             }
         }
     }
