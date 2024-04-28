@@ -24,7 +24,7 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 
 @Composable
-fun Outgoing(cost: OutgoingModel, color: Color, costs: MutableList<OutgoingModel>) {
+fun Outgoing(cost: OutgoingModel, color: Color, outgoings: MutableList<OutgoingModel>) {
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
@@ -37,7 +37,7 @@ fun Outgoing(cost: OutgoingModel, color: Color, costs: MutableList<OutgoingModel
                 dialogTitle = cost.name,
                 dialogText = "Можете редактировать или удалить издержку",
                 cost,
-                costs
+                outgoings
             )
         }
     }
@@ -79,7 +79,7 @@ fun AlertDialog3(
     dialogTitle: String,
     dialogText: String,
     cost: OutgoingModel,
-    costs: MutableList<OutgoingModel>
+    outgoings: MutableList<OutgoingModel>
 ) {
     val name = remember {
         mutableStateOf(cost.name)
@@ -108,8 +108,8 @@ fun AlertDialog3(
         confirmButton = {
             TextButton(
                 onClick = {
-                    costs.remove(cost)
-                    costs.add(
+                    outgoings.remove(cost)
+                    outgoings.add(
                         OutgoingModel(
                             name.value,
                             value.value.toInt(),
@@ -124,7 +124,7 @@ fun AlertDialog3(
         dismissButton = {
             TextButton(
                 onClick = {
-                    costs.remove(cost)
+                    outgoings.remove(cost)
                     onDismissRequest()
                 }
             ) {

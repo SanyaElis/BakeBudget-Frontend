@@ -16,12 +16,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ru.vsu.csf.bakebudget.models.OutgoingModel
-import ru.vsu.csf.bakebudget.models.GoodModel
-import ru.vsu.csf.bakebudget.models.IngredientInRecipeModel
+import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.screens.OutgoingsScreen
-import ru.vsu.csf.bakebudget.screens.GoodAddScreen
-import ru.vsu.csf.bakebudget.screens.GoodsScreen
+import ru.vsu.csf.bakebudget.screens.ProductAddScreen
+import ru.vsu.csf.bakebudget.screens.ProductsScreen
 import ru.vsu.csf.bakebudget.screens.GroupsScreen
 import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
@@ -45,25 +45,25 @@ class MainActivity : ComponentActivity() {
                     IngredientModel("Flower", 1000, 100),
                     IngredientModel("Butter", 150, 250),
                 )
-                val costs = mutableStateListOf(
+                val outgoings = mutableStateListOf(
                     OutgoingModel("Вода", 100),
                     OutgoingModel("Электроэнергия", 150)
                 )
                 val ingredientsInRecipe = mutableStateListOf(
-                    IngredientInRecipeModel("Milk", 100),
+                    IngredientInProductModel("Milk", 100),
                 )
-                val goods = mutableStateListOf(
-                    GoodModel(R.drawable.cake, "100", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "1000", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "150", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "1530", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "15320", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "12250", ingredientsInRecipe, 1000),
-                    GoodModel(R.drawable.cake, "1dg", ingredientsInRecipe, 1000)
+                val products = mutableStateListOf(
+                    ProductModel(R.drawable.cake, "100", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "1000", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "150", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "1530", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "15320", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "12250", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "1dg", ingredientsInRecipe, 1000)
                 )
-                NavGraph(navController = navController, ingredients, isLoggedIn, goods, ingredientsInRecipe, costs)
+                NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings)
 //                HomeScreen()
 //                LoginScreen()
 //                RegistrationScreen()
@@ -74,7 +74,7 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
-    , goods: MutableList<GoodModel>, ingredientsInRecipe : MutableList<IngredientInRecipeModel>, costs: MutableList<OutgoingModel>) {
+                 , products: MutableList<ProductModel>, ingredientsInRecipe : MutableList<IngredientInProductModel>, outgoings: MutableList<OutgoingModel>) {
         NavHost(
             navController = navController,
             startDestination = "home"
@@ -95,16 +95,16 @@ class MainActivity : ComponentActivity() {
                 IngredientsScreen(navController, ingredients, isLogged)
             }
 
-            composable(route = "goods") {
-                GoodsScreen(navController, goods, isLogged)
+            composable(route = "products") {
+                ProductsScreen(navController, products, isLogged)
             }
 
-            composable(route = "goodAdd") {
-                GoodAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, goods)
+            composable(route = "productAdd") {
+                ProductAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, products)
             }
 
-            composable(route = "costs") {
-                OutgoingsScreen(navController, costs, isLogged)
+            composable(route = "outgoings") {
+                OutgoingsScreen(navController, outgoings, isLogged)
             }
 
             composable(route = "reports") {

@@ -51,7 +51,7 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun OutgoingsScreen(navController: NavHostController,
-                    costs: MutableList<OutgoingModel>,
+                    outgoings: MutableList<OutgoingModel>,
                     isLogged: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
@@ -100,7 +100,7 @@ fun OutgoingsScreen(navController: NavHostController,
                                     if (name.value.isEmpty() || value.value.isEmpty() || value.value.toIntOrNull() == null ) {
                                         mToast(context = mContext)
                                     } else {
-                                        costs.add(
+                                        outgoings.add(
                                             OutgoingModel(
                                                 name.value,
                                                 value.value.toInt()
@@ -136,11 +136,11 @@ fun OutgoingsScreen(navController: NavHostController,
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
-                            itemsIndexed(costs) { num, cost ->
+                            itemsIndexed(outgoings) { num, cost ->
                                 if (num % 2 == 0) {
-                                    Outgoing(cost, SideBack, costs)
+                                    Outgoing(cost, SideBack, outgoings)
                                 } else {
-                                    Outgoing(cost, Back2, costs)
+                                    Outgoing(cost, Back2, outgoings)
                                 }
                             }
                         }
