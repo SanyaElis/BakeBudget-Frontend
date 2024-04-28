@@ -92,6 +92,7 @@ fun SideMenu(navController: NavHostController,
                                 items[0] -> navController.navigate("home")
                                 items[2] -> navController.navigate("ingredients")
                                 items[3] -> navController.navigate("products")
+                                items[4] -> navController.navigate("calculation")
                                 items[5] -> navController.navigate("outgoings")
                                 items[6] -> navController.navigate("reports")
                                 items[7] -> navController.navigate("groups")

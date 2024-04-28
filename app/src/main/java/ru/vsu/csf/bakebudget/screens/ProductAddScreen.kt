@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -169,7 +170,7 @@ fun ProductAddScreen(
                                 last = num
                             }
                             item {
-                                EstimatedWeight(color = if (last % 2 != 0) SideBack else Back2, estimatedWeight = estimatedWeight)
+                                EstimatedWeight(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight)
                             }
                         }
                     }
@@ -249,6 +250,7 @@ fun AlertDialog2(
         mutableStateOf("")
     }
     androidx.compose.material3.AlertDialog(
+        containerColor = SideBack,
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         ),
@@ -304,6 +306,10 @@ fun DropdownMenuBox(ingredientsAll: MutableList<IngredientModel>, selectedItemIn
         modifier = Modifier.padding(5.dp),
     ) {
         TextField(
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                unfocusedContainerColor = SideBack,
+                focusedContainerColor = Back2
+            ),
             value = list[selectedItemIndex.intValue],
             onValueChange = {},
             readOnly = true,
@@ -312,6 +318,7 @@ fun DropdownMenuBox(ingredientsAll: MutableList<IngredientModel>, selectedItemIn
         )
 
         ExposedDropdownMenu(
+            modifier = Modifier.background(SideBack),
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {

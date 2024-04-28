@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
 fun Outgoing(cost: OutgoingModel, color: Color, outgoings: MutableList<OutgoingModel>) {
@@ -88,6 +89,7 @@ fun AlertDialog3(
         mutableStateOf(cost.value.toString())
     }
     androidx.compose.material3.AlertDialog(
+        containerColor = SideBack,
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         ),

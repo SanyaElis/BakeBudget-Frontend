@@ -19,6 +19,7 @@ import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.screens.CalculationScreen
 import ru.vsu.csf.bakebudget.screens.OutgoingsScreen
 import ru.vsu.csf.bakebudget.screens.ProductAddScreen
 import ru.vsu.csf.bakebudget.screens.ProductsScreen
@@ -41,27 +42,27 @@ class MainActivity : ComponentActivity() {
                 val isLoggedIn = remember { mutableStateOf(false) }
                 //    val ingredients = remember {
                 val ingredients = mutableStateListOf(
-                    IngredientModel("Milk", 100, 30),
-                    IngredientModel("Flower", 1000, 100),
-                    IngredientModel("Butter", 150, 250),
+                    IngredientModel("Молоко", 100, 30),
+                    IngredientModel("Мука", 1000, 100),
+                    IngredientModel("Масло", 150, 250),
                 )
                 val outgoings = mutableStateListOf(
                     OutgoingModel("Вода", 100),
                     OutgoingModel("Электроэнергия", 150)
                 )
                 val ingredientsInRecipe = mutableStateListOf(
-                    IngredientInProductModel("Milk", 100),
+                    IngredientInProductModel("Молоко", 100),
                 )
                 val products = mutableStateListOf(
-                    ProductModel(R.drawable.cake, "100", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "1000", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "150", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "152340", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "1530", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "15320", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "12250", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "1dg", ingredientsInRecipe, 1000)
+                    ProductModel(R.drawable.cake, "Тортик 1", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 2", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 3", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 4", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 5", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 6", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 7", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 8", ingredientsInRecipe, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 9", ingredientsInRecipe, 1000)
                 )
                 NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings)
 //                HomeScreen()
@@ -113,6 +114,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "groups") {
                 GroupsScreen(navController, isLogged, true)
+            }
+
+            composable(route = "calculation") {
+                CalculationScreen(navController, isLogged, products)
             }
         }
     }

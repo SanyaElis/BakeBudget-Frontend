@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
 fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableList<IngredientModel>) {
@@ -100,6 +101,7 @@ fun AlertDialog(
         mutableStateOf(ingredient.cost.toString())
     }
     AlertDialog(
+        containerColor = SideBack,
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         ),

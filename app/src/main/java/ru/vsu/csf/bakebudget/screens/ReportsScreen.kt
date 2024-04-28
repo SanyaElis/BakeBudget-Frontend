@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -77,7 +78,7 @@ fun ReportsScreen(
     }
 
     val selectedIndex = remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
 
     val reportState = remember { mutableStateOf(false) }
@@ -133,14 +134,14 @@ fun ReportsScreen(
                         DatePeriodField(dateEnd, openDatePicker2)
                         Column(
                             modifier = Modifier
+                                .fillMaxHeight(0.8f)
                                 .background(SideBack)
                                 .padding(start = 8.dp)
                         ) {
                             Box(modifier = Modifier.padding(start = 8.dp)) {
                                 Text(
                                     text = "Выберите период",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontSize = 24.sp
                                 )
                             }
                             Row(modifier = Modifier.background(SideBack)) {
@@ -188,8 +189,7 @@ fun ReportsScreen(
                             Box(modifier = Modifier.padding(start = 8.dp)) {
                                 Text(
                                     text = "Выберите тип отчета",
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontSize = 24.sp
                                 )
                             }
                             SwitchForm(
