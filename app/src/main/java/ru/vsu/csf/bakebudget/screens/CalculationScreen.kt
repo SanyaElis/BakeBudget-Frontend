@@ -303,7 +303,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 48.dp),
+                        .padding(top = 8.dp, end = 48.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(text = "РАСЧЕТ СТОИМОСТИ", fontSize = 24.sp, color = Color.White)

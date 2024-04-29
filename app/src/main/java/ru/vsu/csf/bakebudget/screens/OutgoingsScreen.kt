@@ -55,7 +55,7 @@ fun OutgoingsScreen(navController: NavHostController,
                     isLogged: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
-    val item = listOf(MenuItemModel(R.drawable.ingredients, "Издержки"))
+    val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val selectedItem = remember {
@@ -182,7 +182,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 60.dp),
+                        .padding(top = 8.dp, end = 60.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(text = "ИЗДЕРЖКИ", fontSize = 24.sp, color = Color.White)
@@ -193,7 +193,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     .fillMaxWidth()
                     .defaultMinSize(40.dp)
                     .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 16.dp),
+                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

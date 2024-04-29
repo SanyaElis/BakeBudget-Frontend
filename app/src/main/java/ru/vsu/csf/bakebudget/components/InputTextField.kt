@@ -66,7 +66,7 @@ fun InputTextField(
         label = { Text(text) },
         maxLines = 1,
         modifier = Modifier
-            .padding(5.dp)
+            .padding(3.dp)
             .requiredWidth(width.dp)
     )
 }

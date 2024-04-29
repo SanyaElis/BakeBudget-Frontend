@@ -21,7 +21,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,13 +48,14 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
-import ru.vsu.csf.bakebudget.components.EstimatedWeight
+import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
 import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -67,7 +67,8 @@ fun ProductAddScreen(
     ingredients: MutableList<IngredientInProductModel>,
     ingredientsAll: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
-    products: MutableList<ProductModel>
+    products: MutableList<ProductModel>,
+    outgoings: MutableList<OutgoingModel>
 ) {
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -76,6 +77,9 @@ fun ProductAddScreen(
         mutableStateOf(item[0])
     }
     val estimatedWeight = remember {
+        mutableStateOf("")
+    }
+    val name = remember {
         mutableStateOf("")
     }
     val selectedItemIndex = remember { mutableIntStateOf(0) }
@@ -135,7 +139,7 @@ fun ProductAddScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    products.add(ProductModel(R.drawable.cake, "Изделие", ingredients, estimatedWeight.value.toInt()))
+                                    products.add(ProductModel(R.drawable.cake, name.value, ingredients, outgoings, estimatedWeight.value.toInt()))
                                     navController.navigate("products")
                                 }
                             ) {
@@ -170,7 +174,7 @@ fun ProductAddScreen(
                                 last = num
                             }
                             item {
-                                EstimatedWeight(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight)
+                                EstimatedWeightName(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight, name = name)
                             }
                         }
                     }
@@ -211,7 +215,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 50.dp),
+                        .padding(top = 8.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(text = "ИЗДЕЛИЕ", fontSize = 24.sp, color = Color.White)
@@ -222,7 +226,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     .fillMaxWidth()
                     .defaultMinSize(40.dp)
                     .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 16.dp),
+                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

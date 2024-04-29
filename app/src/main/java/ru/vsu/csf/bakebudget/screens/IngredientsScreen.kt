@@ -188,7 +188,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 50.dp),
+                        .padding(top = 8.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(text = "ИНГРЕДИЕНТЫ", fontSize = 24.sp, color = Color.White)
@@ -199,7 +199,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     .fillMaxWidth()
                     .defaultMinSize(40.dp)
                     .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 10.dp, bottom = 9.dp, end = 16.dp),
+                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

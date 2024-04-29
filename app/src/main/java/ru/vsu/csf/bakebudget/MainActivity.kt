@@ -12,9 +12,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
@@ -27,6 +29,7 @@ import ru.vsu.csf.bakebudget.screens.GroupsScreen
 import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
 import ru.vsu.csf.bakebudget.screens.LoginScreen
+import ru.vsu.csf.bakebudget.screens.ProductView
 import ru.vsu.csf.bakebudget.screens.RegistrationScreen
 import ru.vsu.csf.bakebudget.screens.ReportsScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
@@ -40,7 +43,6 @@ class MainActivity : ComponentActivity() {
             BakeBudgetTheme {
                 val navController = rememberNavController()
                 val isLoggedIn = remember { mutableStateOf(false) }
-                //    val ingredients = remember {
                 val ingredients = mutableStateListOf(
                     IngredientModel("Молоко", 100, 30),
                     IngredientModel("Мука", 1000, 100),
@@ -53,16 +55,19 @@ class MainActivity : ComponentActivity() {
                 val ingredientsInRecipe = mutableStateListOf(
                     IngredientInProductModel("Молоко", 100),
                 )
+                val ingredientsInRecipe1 = mutableStateListOf(
+                    IngredientInProductModel("Молоко", 100),
+                )
+                val ingredientsInRecipe2 = mutableStateListOf(
+                    IngredientInProductModel("Молоко", 100),
+                )
+                val ingredientsInRecipe3 = mutableStateListOf(
+                    IngredientInProductModel("Молоко", 100),
+                )
                 val products = mutableStateListOf(
-                    ProductModel(R.drawable.cake, "Тортик 1", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 2", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 3", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 4", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 5", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 6", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 7", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 8", ingredientsInRecipe, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 9", ingredientsInRecipe, 1000)
+                    ProductModel(R.drawable.cake, "Тортик 1", ingredientsInRecipe1, outgoings, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 2", ingredientsInRecipe2, outgoings,1000),
+                    ProductModel(R.drawable.cake, "Тортик 3", ingredientsInRecipe3, outgoings,1000)
                 )
                 NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings)
 //                HomeScreen()
@@ -97,11 +102,17 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "products") {
-                ProductsScreen(navController, products, isLogged)
+                ProductsScreen(navController, products, ingredients, isLogged)
             }
 
             composable(route = "productAdd") {
-                ProductAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, products)
+                ProductAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, products, outgoings)
+            }
+
+            composable(route = "products/{id}", arguments = listOf(navArgument(name = "id") {
+                type = NavType.IntType
+            })) { backstackEntry ->
+                ProductView(navController = navController, ingredientsAll = ingredients, isLogged = isLogged, product = products[backstackEntry.arguments?.getInt("id")!!])
             }
 
             composable(route = "outgoings") {

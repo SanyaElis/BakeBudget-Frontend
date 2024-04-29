@@ -255,7 +255,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(PrimaryBack)
-                        .padding(top = 12.dp, end = 60.dp),
+                        .padding(top = 8.dp, end = 60.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Text(text = "ОТЧЕТЫ", fontSize = 24.sp, color = Color.White)

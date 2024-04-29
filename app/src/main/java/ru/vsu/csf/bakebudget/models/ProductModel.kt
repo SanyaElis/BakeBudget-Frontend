@@ -2,7 +2,8 @@ package ru.vsu.csf.bakebudget.models
 
 data class ProductModel(
     val iconId : Int,
-    val name : String,
+    var name : String,
     val ingredients: MutableList<IngredientInProductModel>,
-    val estWeight: Int
+    val outgoings: MutableList<OutgoingModel>,
+    var estWeight: Int
 )
