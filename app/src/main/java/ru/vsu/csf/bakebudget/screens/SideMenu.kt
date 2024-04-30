@@ -51,7 +51,8 @@ fun SideMenu(navController: NavHostController,
         MenuItemModel(R.drawable.reports, "Отчеты"),
         MenuItemModel(R.drawable.groups, "Группы"),
     )
-    val eventParameters = "{\"button_clicked\":\"ingredients\"}"
+    val eventParameters1 = "{\"button_clicked\":\"ingredients\"}"
+    val eventParameters3 = "{\"button_clicked\":\"products\"}"
     val mContext = LocalContext.current
 
     DismissibleDrawerSheet(modifier = Modifier.clip(RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)),
@@ -93,10 +94,13 @@ fun SideMenu(navController: NavHostController,
                             when (selectedItem.value) {
                                 items[0] -> navController.navigate("home")
                                 items[2] -> {
-                                    AppMetrica.reportEvent("Ingredients slide menu click", eventParameters)
+                                    AppMetrica.reportEvent("Ingredients slide menu click", eventParameters1)
                                     navController.navigate("ingredients")
                                 }
-                                items[3] -> navController.navigate("products")
+                                items[3] -> {
+                                    AppMetrica.reportEvent("Products slide menu click", eventParameters3)
+                                    navController.navigate("products")
+                                }
                                 items[4] -> navController.navigate("calculation")
                                 items[5] -> navController.navigate("outgoings")
                                 items[6] -> navController.navigate("reports")

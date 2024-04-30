@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
@@ -59,6 +60,9 @@ fun IngredientsScreen(
     val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val eventParameters2 = "{\"button_clicked\":\"ingredients_add\"}"
+
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
@@ -101,6 +105,7 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
+                                    AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                     if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
                                         mToast(context = mContext)
                                     } else {
