@@ -17,6 +17,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import io.appmetrica.analytics.AppMetrica
+import io.appmetrica.analytics.AppMetricaConfig
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
@@ -35,10 +37,13 @@ import ru.vsu.csf.bakebudget.screens.ReportsScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
+    private val API_KEY = "a6d5ee67-5fc9-4adf-bab5-17730828b9b5"
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnrememberedMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val config = AppMetricaConfig.newConfigBuilder(API_KEY).build()
+        AppMetrica.activate(this, config)
         setContent {
             BakeBudgetTheme {
                 val navController = rememberNavController()

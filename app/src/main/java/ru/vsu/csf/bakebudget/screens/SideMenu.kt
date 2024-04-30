@@ -26,10 +26,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
@@ -50,6 +51,7 @@ fun SideMenu(navController: NavHostController,
         MenuItemModel(R.drawable.reports, "Отчеты"),
         MenuItemModel(R.drawable.groups, "Группы"),
     )
+    val eventParameters = "{\"button_clicked\":\"ingredients\"}"
     val mContext = LocalContext.current
 
     DismissibleDrawerSheet(modifier = Modifier.clip(RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)),
@@ -90,7 +92,10 @@ fun SideMenu(navController: NavHostController,
                         } else {
                             when (selectedItem.value) {
                                 items[0] -> navController.navigate("home")
-                                items[2] -> navController.navigate("ingredients")
+                                items[2] -> {
+                                    AppMetrica.reportEvent("Ingredients slide menu click", eventParameters)
+                                    navController.navigate("ingredients")
+                                }
                                 items[3] -> navController.navigate("products")
                                 items[4] -> navController.navigate("calculation")
                                 items[5] -> navController.navigate("outgoings")

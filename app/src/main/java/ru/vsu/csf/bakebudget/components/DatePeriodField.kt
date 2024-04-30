@@ -1,7 +1,10 @@
 package ru.vsu.csf.bakebudget.components
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.view.ContextThemeWrapper
 import android.widget.CalendarView
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +38,7 @@ import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DatePeriodField(date: MutableState<LocalDate>, openDatePicker: MutableState<Boolean>) {
     when {
@@ -46,6 +50,8 @@ fun DatePeriodField(date: MutableState<LocalDate>, openDatePicker: MutableState<
     }
 }
 
+@SuppressLint("WeekBasedYear")
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePicker(onDateSelected: (LocalDate) -> Unit, onDismissRequest: () -> Unit, date: MutableState<LocalDate>) {
@@ -125,6 +131,7 @@ fun DatePicker(onDateSelected: (LocalDate) -> Unit, onDismissRequest: () -> Unit
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CustomCalendarView(onDateSelected: (LocalDate) -> Unit) {
     AndroidView(

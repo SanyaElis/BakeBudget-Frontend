@@ -170,33 +170,22 @@ fun CalculationScreen(
                                 Spacer(modifier = Modifier.padding(12.dp))
                                 Box(modifier = Modifier.padding(start = 8.dp)) {
                                     Text(
-                                        text = "Введите вес изделия:",
+                                        text = "Вес изделия (граммы):",
                                         fontSize = 24.sp
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
                                     InputTextField(
-                                        text = "Вес изделия",
+                                        text = "Вес",
                                         value = weight,
                                         max = 10,
-                                        180
+                                        true
                                     )
-                                    Box(
-                                        modifier = Modifier
-                                            .height(70.dp)
-                                            .padding(start = 8.dp, top = 10.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "грамм",
-                                            fontSize = 20.sp
-                                        )
-                                    }
                                 }
                                 Spacer(modifier = Modifier.padding(12.dp))
                                 Box(modifier = Modifier.padding(start = 8.dp)) {
                                     Text(
-                                        text = "Введите дополнительные расходы:",
+                                        text = "Доп. расходы (рубли):",
                                         fontSize = 24.sp
                                     )
                                 }
@@ -205,24 +194,13 @@ fun CalculationScreen(
                                         text = "Расходы",
                                         value = extraCost,
                                         max = 10,
-                                        180
+                                        true
                                     )
-                                    Box(
-                                        modifier = Modifier
-                                            .height(70.dp)
-                                            .padding(start = 8.dp, top = 10.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "рублей",
-                                            fontSize = 20.sp
-                                        )
-                                    }
                                 }
                                 Spacer(modifier = Modifier.padding(12.dp))
                                 Box(modifier = Modifier.padding(start = 8.dp)) {
                                     Text(
-                                        text = "Введите коэффициент наценки:",
+                                        text = "Коэффициент наценки (%):",
                                         fontSize = 24.sp
                                     )
                                 }
@@ -231,19 +209,8 @@ fun CalculationScreen(
                                         text = "Коэффициент",
                                         value = markup,
                                         max = 10,
-                                        180
+                                        true
                                     )
-                                    Box(
-                                        modifier = Modifier
-                                            .height(70.dp)
-                                            .padding(start = 8.dp, top = 10.dp),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = "%",
-                                            fontSize = 20.sp
-                                        )
-                                    }
                                 }
                             }
                             item {
