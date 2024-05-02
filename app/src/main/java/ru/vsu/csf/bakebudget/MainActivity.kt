@@ -57,6 +57,18 @@ class MainActivity : ComponentActivity() {
                     OutgoingModel("Вода", 100),
                     OutgoingModel("Электроэнергия", 150)
                 )
+                val outgoings1 = mutableStateListOf(
+                    OutgoingModel("Вода", 100),
+                    OutgoingModel("Электроэнергия", 150)
+                )
+                val outgoings2 = mutableStateListOf(
+                    OutgoingModel("Вода", 100),
+                    OutgoingModel("Электроэнергия", 150)
+                )
+                val outgoings3 = mutableStateListOf(
+                    OutgoingModel("Вода", 100),
+                    OutgoingModel("Электроэнергия", 150)
+                )
                 val ingredientsInRecipe = mutableStateListOf(
                     IngredientInProductModel("Молоко", 100),
                 )
@@ -70,9 +82,9 @@ class MainActivity : ComponentActivity() {
                     IngredientInProductModel("Молоко", 100),
                 )
                 val products = mutableStateListOf(
-                    ProductModel(R.drawable.cake, "Тортик 1", ingredientsInRecipe1, outgoings, 1000),
-                    ProductModel(R.drawable.cake, "Тортик 2", ingredientsInRecipe2, outgoings,1000),
-                    ProductModel(R.drawable.cake, "Тортик 3", ingredientsInRecipe3, outgoings,1000)
+                    ProductModel(R.drawable.cake, "Тортик 1", ingredientsInRecipe1, outgoings1, 1000),
+                    ProductModel(R.drawable.cake, "Тортик 2", ingredientsInRecipe2, outgoings2,1000),
+                    ProductModel(R.drawable.cake, "Тортик 3", ingredientsInRecipe3, outgoings3,1000)
                 )
                 NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings)
 //                HomeScreen()
@@ -121,7 +133,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "outgoings") {
-                OutgoingsScreen(navController, outgoings, isLogged)
+                OutgoingsScreen(navController, outgoings, products, isLogged)
             }
 
             composable(route = "reports") {

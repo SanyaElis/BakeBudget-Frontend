@@ -26,6 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,10 +41,12 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.Outgoing
 import ru.vsu.csf.bakebudget.components.OutgoingAdd
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -52,12 +55,15 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 @Composable
 fun OutgoingsScreen(navController: NavHostController,
                     outgoings: MutableList<OutgoingModel>,
+                    productsAll: MutableList<ProductModel>,
                     isLogged: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val selectedItemIndex = remember { mutableIntStateOf(0) }
+
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
@@ -100,14 +106,14 @@ fun OutgoingsScreen(navController: NavHostController,
                                     if (name.value.isEmpty() || value.value.isEmpty() || value.value.toIntOrNull() == null ) {
                                         mToast(context = mContext)
                                     } else {
-                                        outgoings.add(
+                                        productsAll[selectedItemIndex.intValue].outgoings.add(
                                             OutgoingModel(
                                                 name.value,
                                                 value.value.toInt()
                                             )
                                         )
-                                        name.value = "q"
-                                        value.value = "1"
+                                        name.value = "Что-то"
+                                        value.value = "100"
                                     }
                                 }
                             ) {
@@ -136,11 +142,19 @@ fun OutgoingsScreen(navController: NavHostController,
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
-                            itemsIndexed(outgoings) { num, cost ->
+                            item {
+                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                    DropdownMenuProducts(
+                                        productsAll,
+                                        selectedItemIndex = selectedItemIndex
+                                    )
+                                }
+                            }
+                            itemsIndexed(productsAll[selectedItemIndex.intValue].outgoings) { num, outgoing ->
                                 if (num % 2 == 0) {
-                                    Outgoing(cost, SideBack, outgoings)
+                                    Outgoing(outgoing, SideBack, outgoings)
                                 } else {
-                                    Outgoing(cost, Back2, outgoings)
+                                    Outgoing(outgoing, Back2, outgoings)
                                 }
                             }
                         }
