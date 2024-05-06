@@ -5,12 +5,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -39,12 +43,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.Order
+import ru.vsu.csf.bakebudget.components.OrderStateRow
 import ru.vsu.csf.bakebudget.components.Product
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
+@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun OrdersScreen(
@@ -58,6 +64,11 @@ fun OrdersScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+
+    val state1 = remember { mutableStateOf(true) }
+    val state2 = remember { mutableStateOf(true) }
+    val state3 = remember { mutableStateOf(true) }
+    val state4 = remember { mutableStateOf(true) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -84,16 +95,7 @@ fun OrdersScreen(
                         modifier = Modifier.background(PrimaryBack),
                         contentAlignment = Alignment.Center
                     ) {
-                        TextButton(
-                            onClick = {
-                                navController.navigate("productAdd")
-                            }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.button_add),
-                                contentDescription = "add"
-                            )
-                        }
+
                     }
                 }
             }) {
@@ -104,17 +106,42 @@ fun OrdersScreen(
                         .background(SideBack)
                         .padding(bottom = 10.dp)
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                            .background(SideBack)
+                    ) {
                         Header(scope = scope, drawerState = drawerState)
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.91f)
-                                .background(SideBack)
-                                .padding(top = 20.dp),
-                        ) {
-                            itemsIndexed(orders) { _, order ->
-                                Order(order = order)
+                        LazyVerticalGrid(modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.91f)
+                            .background(SideBack)
+                            .padding(top = 10.dp),
+                            columns = GridCells.Fixed(2)) {
+                            item(span = { GridItemSpan(2) }) { OrderStateRow("НЕ НАЧАТЫ", state1) }
+                            if (state1.value) {
+                                itemsIndexed(orders) { _, order ->
+                                    Order(order = order)
+                                }
+                            }
+                            item(span = { GridItemSpan(2) }) { OrderStateRow("В ПРОЦЕССЕ", state2) }
+                            if (state2.value) {
+                                itemsIndexed(orders) { _, order ->
+                                    Order(order = order)
+                                }
+                            }
+                            item(span = { GridItemSpan(2) }) { OrderStateRow("ЗАВЕРШЕНЫ", state3) }
+                            if (state3.value) {
+                                itemsIndexed(orders) { _, order ->
+                                    Order(order = order)
+                                }
+                            }
+                            item(span = { GridItemSpan(2) }) { OrderStateRow("ОТМЕНЕНЫ", state4) }
+                            if (state4.value) {
+                                itemsIndexed(orders) { _, order ->
+                                    Order(order = order)
+                                }
                             }
                         }
                     }
