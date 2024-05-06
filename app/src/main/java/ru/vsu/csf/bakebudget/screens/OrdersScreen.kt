@@ -29,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,10 +66,24 @@ fun OrdersScreen(
         mutableStateOf(item[0])
     }
 
+    val orders0 = remember {
+        mutableStateListOf<OrderModel>()
+    }
+    val orders1 = remember {
+        mutableStateListOf<OrderModel>()
+    }
+    val orders2 = remember {
+        mutableStateListOf<OrderModel>()
+    }
+    val orders3 = remember {
+        mutableStateListOf<OrderModel>()
+    }
+
     val state1 = remember { mutableStateOf(true) }
     val state2 = remember { mutableStateOf(true) }
     val state3 = remember { mutableStateOf(true) }
     val state4 = remember { mutableStateOf(true) }
+    sortByState(orders, orders0, orders1, orders2, orders3)
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -113,34 +128,36 @@ fun OrdersScreen(
                             .background(SideBack)
                     ) {
                         Header(scope = scope, drawerState = drawerState)
-                        LazyVerticalGrid(modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.91f)
-                            .background(SideBack)
-                            .padding(top = 10.dp),
-                            columns = GridCells.Fixed(2)) {
+                        LazyVerticalGrid(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.91f)
+                                .background(SideBack)
+                                .padding(top = 10.dp),
+                            columns = GridCells.Fixed(2)
+                        ) {
                             item(span = { GridItemSpan(2) }) { OrderStateRow("НЕ НАЧАТЫ", state1) }
                             if (state1.value) {
-                                itemsIndexed(orders) { _, order ->
-                                    Order(order = order)
+                                itemsIndexed(orders0) { _, order ->
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("В ПРОЦЕССЕ", state2) }
                             if (state2.value) {
-                                itemsIndexed(orders) { _, order ->
-                                    Order(order = order)
+                                itemsIndexed(orders1) { _, order ->
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ЗАВЕРШЕНЫ", state3) }
                             if (state3.value) {
-                                itemsIndexed(orders) { _, order ->
-                                    Order(order = order)
+                                itemsIndexed(orders2) { _, order ->
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ОТМЕНЕНЫ", state4) }
                             if (state4.value) {
-                                itemsIndexed(orders) { _, order ->
-                                    Order(order = order)
+                                itemsIndexed(orders3) { _, order ->
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
                                 }
                             }
                         }
@@ -188,6 +205,27 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     Text(text = "ЗАКАЗЫ", fontSize = 24.sp, color = Color.White)
                 }
             }
+        }
+    }
+}
+
+public fun sortByState(orders: MutableList<OrderModel>, orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>) {
+    orders0.clear()
+    orders1.clear()
+    orders2.clear()
+    orders3.clear()
+    for (order in orders) {
+        if (order.status == 0) {
+            orders0.add(order)
+        }
+        if (order.status == 1) {
+            orders1.add(order)
+        }
+        if (order.status == 2) {
+            orders2.add(order)
+        }
+        if (order.status == 3) {
+            orders3.add(order)
         }
     }
 }
