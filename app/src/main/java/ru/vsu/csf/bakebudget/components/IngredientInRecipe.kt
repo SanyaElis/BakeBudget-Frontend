@@ -141,4 +141,5 @@ fun AlertDialog1(
             }
         }
     )
+    //TODO: disable opportunity to edit names of ingredients - should make choice of ingredients instead
 }

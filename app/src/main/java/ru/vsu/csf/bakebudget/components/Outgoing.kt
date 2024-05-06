@@ -100,8 +100,8 @@ fun AlertDialog3(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(text = "Название", name, 30)
-                InputTextField(text = "Значение", value, 30)
+                InputTextField(text = "Название", name, 30, true)
+                InputTextField(text = "Значение", value, 30, true)
             }
         },
         onDismissRequest = {
