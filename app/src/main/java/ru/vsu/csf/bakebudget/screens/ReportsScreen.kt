@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
@@ -63,6 +64,8 @@ fun ReportsScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+
+    val eventParameters1 = "{\"button_clicked\":\"report created\"}"
 
     val openDatePicker1 = remember { mutableStateOf(false) }
     val openDatePicker2 = remember { mutableStateOf(false) }
@@ -110,6 +113,7 @@ fun ReportsScreen(
                     ) {
                         TextButton(
                             onClick = {
+                                AppMetrica.reportEvent("Report created", eventParameters1)
                                 reportState.value = true
                             }
                         ) {

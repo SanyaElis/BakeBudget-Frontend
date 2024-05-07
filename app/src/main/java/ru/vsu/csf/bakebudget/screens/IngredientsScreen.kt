@@ -61,6 +61,7 @@ fun IngredientsScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val eventParameters1 = "{\"button_click(failed)\":\"ingredients_add failed\"}"
     val eventParameters2 = "{\"button_clicked\":\"ingredients_add\"}"
 
     val selectedItem = remember {
@@ -105,10 +106,11 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
-                                    AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                     if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
+                                        AppMetrica.reportEvent("Ingredient add failed", eventParameters1)
                                         mToast(context = mContext)
                                     } else {
+                                        AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                         ingredients.add(
                                             IngredientModel(
                                                 name.value,

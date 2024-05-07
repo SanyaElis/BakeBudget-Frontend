@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
@@ -50,6 +51,7 @@ import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.components.SwitchForm
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -62,7 +64,8 @@ import java.util.Random
 fun CalculationScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    productsAll: MutableList<ProductModel>
+    productsAll: MutableList<ProductModel>,
+    orders: MutableList<OrderModel>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.calculation, "Расчет стоимости"))
@@ -88,6 +91,8 @@ fun CalculationScreen(
     val resultPrice = remember {
         mutableIntStateOf(0)
     }
+
+    val eventParameters1 = "{\"button_clicked\":\"order_created\"}"
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -128,6 +133,8 @@ fun CalculationScreen(
                             }
                             TextButton(
                                 onClick = {
+                                    AppMetrica.reportEvent("Order created", eventParameters1)
+                                    orders.add(OrderModel(0, productsAll[selectedItemIndex.intValue], resultPrice.intValue, weight.value.toInt()))
                                     mToast(mContext)
                                 }
                             ) {
