@@ -36,11 +36,13 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 
 @Composable
-fun SideMenu(navController: NavHostController,
-             drawerState: DrawerState,
-             scope : CoroutineScope,
-             selectedItem : MutableState<MenuItemModel>,
-             isLogged: MutableState<Boolean>) {
+fun SideMenu(
+    navController: NavHostController,
+    drawerState: DrawerState,
+    scope: CoroutineScope,
+    selectedItem: MutableState<MenuItemModel>,
+    isLogged: MutableState<Boolean>
+) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
         MenuItemModel(R.drawable.orders, "Заказы"),
@@ -52,11 +54,18 @@ fun SideMenu(navController: NavHostController,
         MenuItemModel(R.drawable.groups, "Группы"),
     )
     val eventParameters1 = "{\"button_clicked\":\"ingredients\"}"
-    val eventParameters3 = "{\"button_clicked\":\"products\"}"
+    val eventParameters2 = "{\"button_clicked\":\"products\"}"
+    val eventParameters3 = "{\"button_clicked\":\"orders\"}"
+    val eventParameters4 = "{\"button_clicked\":\"groups\"}"
+    val eventParameters5 = "{\"button_clicked\":\"outgoings\"}"
+    val eventParameters6 = "{\"button_clicked\":\"calculation\"}"
+    val eventParameters7 = "{\"button_clicked\":\"reports\"}"
     val mContext = LocalContext.current
 
-    DismissibleDrawerSheet(modifier = Modifier.clip(RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)),
-        drawerContainerColor = SideBack) {
+    DismissibleDrawerSheet(
+        modifier = Modifier.clip(RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)),
+        drawerContainerColor = SideBack
+    ) {
         TextButton(onClick = {
             scope.launch {
                 drawerState.close()
@@ -93,19 +102,62 @@ fun SideMenu(navController: NavHostController,
                         } else {
                             when (selectedItem.value) {
                                 items[0] -> navController.navigate("home")
-                                items[1] -> navController.navigate("orders")
+                                items[1] -> {
+                                    AppMetrica.reportEvent(
+                                        "Orders slide menu click",
+                                        eventParameters3
+                                    )
+                                    navController.navigate("orders")
+                                }
+
                                 items[2] -> {
-                                    AppMetrica.reportEvent("Ingredients slide menu click", eventParameters1)
+                                    AppMetrica.reportEvent(
+                                        "Ingredients slide menu click",
+                                        eventParameters1
+                                    )
                                     navController.navigate("ingredients")
                                 }
+
                                 items[3] -> {
-                                    AppMetrica.reportEvent("Products slide menu click", eventParameters3)
+                                    AppMetrica.reportEvent(
+                                        "Products slide menu click",
+                                        eventParameters2
+                                    )
                                     navController.navigate("products")
                                 }
-                                items[4] -> navController.navigate("calculation")
-                                items[5] -> navController.navigate("outgoings")
-                                items[6] -> navController.navigate("reports")
-                                items[7] -> navController.navigate("groups")
+
+                                items[4] -> {
+                                    AppMetrica.reportEvent(
+                                        "Calculation slide menu click",
+                                        eventParameters6
+                                    )
+                                    navController.navigate("calculation")
+                                }
+
+                                items[5] -> {
+                                    AppMetrica.reportEvent(
+                                        "Outgoings slide menu click",
+                                        eventParameters5
+                                    )
+                                    navController.navigate("outgoings")
+                                }
+
+                                items[6] -> {
+                                    AppMetrica.reportEvent(
+                                        "Reports slide menu click",
+                                        eventParameters7
+                                    )
+                                    navController.navigate("reports")
+                                }
+
+                                items[7] -> {
+                                    AppMetrica.reportEvent(
+                                        "Groups slide menu click",
+                                        eventParameters4
+                                    )
+                                    navController.navigate("groups")
+                                }
+
                                 else -> {
                                     mToast(mContext, isLogged)
                                 }
@@ -126,7 +178,8 @@ fun SideMenu(navController: NavHostController,
                 TextButton(
                     onClick = {
                         isLogged.value = false
-                        navController.navigate("login") }
+                        navController.navigate("login")
+                    }
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.button_exit),
@@ -136,6 +189,7 @@ fun SideMenu(navController: NavHostController,
             }
         }
     }
+    //TODO: metrics
 }
 
 private fun mToast(context: Context, isLogged: MutableState<Boolean>) {

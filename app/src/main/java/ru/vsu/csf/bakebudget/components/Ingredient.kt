@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import io.appmetrica.analytics.AppMetrica
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -124,6 +125,8 @@ fun AlertDialog(
         confirmButton = {
             TextButton(
                 onClick = {
+                    val eventParameters1 = "{\"button_clicked\":\"ingredient_edit\"}"
+                    AppMetrica.reportEvent("Ingredient edited", eventParameters1)
                     ingredients.remove(ingredient)
                     ingredients.add(IngredientModel(
                         name.value,
@@ -139,6 +142,8 @@ fun AlertDialog(
         dismissButton = {
             TextButton(
                 onClick = {
+                    val eventParameters1 = "{\"button_clicked\":\"ingredient_delete\"}"
+                    AppMetrica.reportEvent("Ingredient deleted", eventParameters1)
                     ingredients.remove(ingredient)
                     onDismissRequest()
                 }

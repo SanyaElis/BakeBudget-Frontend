@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
@@ -58,6 +59,7 @@ fun ProductsScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+    val eventParameters1 = "{\"button_clicked\":\"product_add\"}"
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -86,6 +88,7 @@ fun ProductsScreen(
                     ) {
                         TextButton(
                             onClick = {
+                                AppMetrica.reportEvent("Product add button clicked", eventParameters1)
                                 navController.navigate("productAdd")
                             }
                         ) {

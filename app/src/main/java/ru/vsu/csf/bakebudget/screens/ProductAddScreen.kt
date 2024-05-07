@@ -266,7 +266,7 @@ fun AlertDialog2(
             Column {
                 Text(text = dialogText)
                 DropdownMenuBox(ingredientsAll = ingredientsAll, selectedItemIndex = selectedItemIndex)
-                InputTextField(text = "Вес", weight, 30)
+                InputTextField(text = "Вес", weight, 30, true)
             }
         },
         onDismissRequest = {
