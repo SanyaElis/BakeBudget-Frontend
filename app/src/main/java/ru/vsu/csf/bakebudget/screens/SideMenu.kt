@@ -93,6 +93,7 @@ fun SideMenu(navController: NavHostController,
                         } else {
                             when (selectedItem.value) {
                                 items[0] -> navController.navigate("home")
+                                items[1] -> navController.navigate("orders")
                                 items[2] -> {
                                     AppMetrica.reportEvent("Ingredients slide menu click", eventParameters1)
                                     navController.navigate("ingredients")

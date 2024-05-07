@@ -138,4 +138,6 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                 }
             }
         })
+
+    //TODO: add information about app
 }

@@ -30,9 +30,9 @@ fun IngredientEdit(
             .fillMaxHeight()
             .background(PrimaryBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-            InputTextField(text = "Название", name, 30)
-            InputTextField(text = "Вес", weight, 30)
-            InputTextField(text = "Цена", cost, 30)
+            InputTextField(text = "Название", name, 30, true)
+            InputTextField(text = "Вес", weight, 30, true)
+            InputTextField(text = "Цена", cost, 30, true)
         }
     }
 }

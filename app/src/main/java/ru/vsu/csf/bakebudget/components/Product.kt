@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.ProductModel
@@ -39,6 +40,7 @@ fun Product(
             contentScale = ContentScale.Fit,
             painter = painterResource(id = product.iconId), contentDescription = product.name
         )
-        Text(text = product.name, modifier = Modifier.padding(start = 8.dp))
+        Text(text = product.name, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp)
+        //TODO: change text color
     }
 }

@@ -196,11 +196,11 @@ fun ReportsScreen(
                                 selectedIndex = selectedIndex,
                                 items = items,
                                 onSelectionChange = {
-                                    selectedIndex.value = it
-                                }
+                                    selectedIndex.intValue = it
+                                },
                             )
                             if (reportState.value) {
-                                if (selectedIndex.value == 0) {
+                                if (selectedIndex.intValue == 0) {
                                     Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(top = 20.dp), contentAlignment = Alignment.Center) {
                                         Image(
                                             painter = painterResource(id = R.drawable.dummy_report),

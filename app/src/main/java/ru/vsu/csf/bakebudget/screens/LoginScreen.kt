@@ -77,5 +77,7 @@ fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean
                 )
             }
         }
+
+        //TODO: password visibility
     }
 }
