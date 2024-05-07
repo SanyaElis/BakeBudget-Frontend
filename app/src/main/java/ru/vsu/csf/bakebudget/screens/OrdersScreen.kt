@@ -97,23 +97,7 @@ fun OrdersScreen(
             )
         },
         content = {
-            Scaffold(bottomBar = {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.1f)
-                        .background(SideBack)
-                        .padding(start = 8.dp, end = 8.dp),
-                    shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp),
-                ) {
-                    Box(
-                        modifier = Modifier.background(PrimaryBack),
-                        contentAlignment = Alignment.Center
-                    ) {
-
-                    }
-                }
-            }) {
+            Scaffold() {
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -131,7 +115,7 @@ fun OrdersScreen(
                         LazyVerticalGrid(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(0.91f)
+                                .fillMaxHeight()
                                 .background(SideBack)
                                 .padding(top = 10.dp),
                             columns = GridCells.Fixed(2)
