@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
@@ -43,7 +44,7 @@ fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextForm(label = "Email")
-            TextForm(label = "Пароль")
+            PasswordTextForm(label = "Пароль")
         }
         Box(
             modifier = Modifier

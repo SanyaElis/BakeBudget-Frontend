@@ -292,7 +292,6 @@ fun AlertDialog2(
             }
         }
     )
-    //TODO: disable opportunity to edit names of ingredients - should make choice of ingredients instead
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
