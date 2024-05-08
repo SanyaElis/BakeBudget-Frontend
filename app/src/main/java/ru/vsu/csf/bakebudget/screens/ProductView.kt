@@ -161,7 +161,7 @@ fun ProductView(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(product.ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex)
                                 last = num
                             }
                             item {
