@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -42,6 +47,8 @@ import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.BarGraph
+import ru.vsu.csf.bakebudget.components.BarType
 import ru.vsu.csf.bakebudget.components.DatePeriodField
 import ru.vsu.csf.bakebudget.components.SwitchForm
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -205,18 +212,84 @@ fun ReportsScreen(
                             )
                             if (reportState.value) {
                                 if (selectedIndex.intValue == 0) {
-                                    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(top = 20.dp), contentAlignment = Alignment.Center) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.dummy_report),
-                                            contentDescription = "some report"
+                                    val dataList = mutableListOf(20, 16, 4)
+                                    val floatValue = mutableListOf<Float>()
+                                    val xList = mutableListOf("Принято", "Завершено", "Отменено")
+
+                                    dataList.forEachIndexed { index, value ->
+
+                                        floatValue.add(
+                                            index = index,
+                                            element = value.toFloat() / dataList.max().toFloat()
                                         )
+
+                                    }
+                                    Column {
+                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                            Text(buildAnnotatedString {
+                                                append("Завершено заказов: ")
+                                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                    append(dataList[1].toString())
+                                                }
+                                            })
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .fillMaxHeight(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            BarGraph(
+                                                graphBarData = floatValue,
+                                                xAxisScaleData = xList,
+                                                barData_ = dataList,
+                                                height = 300.dp,
+                                                roundType = BarType.TOP_CURVED,
+                                                barWidth = 30.dp,
+                                                barColor = PrimaryBack,
+                                                barArrangement = Arrangement.SpaceEvenly
+                                            )
+                                        }
                                     }
                                 } else {
-                                    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(top = 20.dp), contentAlignment = Alignment.Center) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.dummy_report2),
-                                            contentDescription = "some report"
+                                    val dataList = mutableListOf(23500, 56400)
+                                    val floatValue = mutableListOf<Float>()
+                                    val xList = mutableListOf("Расходы", "Доход")
+
+                                    dataList.forEachIndexed { index, value ->
+
+                                        floatValue.add(
+                                            index = index,
+                                            element = value.toFloat() / dataList.max().toFloat()
                                         )
+                                    }
+                                    Column {
+                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                            Text(buildAnnotatedString {
+                                                append("Прибыль составила ")
+                                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                    append((dataList[1] - dataList[0]).toString())
+                                                }
+                                                append(" р.")
+                                            })
+                                        }
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .fillMaxHeight(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            BarGraph(
+                                                graphBarData = floatValue,
+                                                xAxisScaleData = xList,
+                                                barData_ = dataList,
+                                                height = 300.dp,
+                                                roundType = BarType.TOP_CURVED,
+                                                barWidth = 40.dp,
+                                                barColor = PrimaryBack,
+                                                barArrangement = Arrangement.SpaceEvenly
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -225,7 +298,6 @@ fun ReportsScreen(
                 }
             }
         })
-        //TODO: add graphics for reports
 }
 
 @Composable
