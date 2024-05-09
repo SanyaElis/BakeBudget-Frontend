@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,25 +27,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
+import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.screens.DropdownMenuBox
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
-fun IngredientInRecipe(ingredient: IngredientInProductModel, color: Color, ingredients: MutableList<IngredientInProductModel>) {
+fun IngredientInRecipe(
+    ingredient: IngredientInProductModel,
+    color: Color,
+    ingredients: MutableList<IngredientInProductModel>,
+    ingredientsAll: MutableList<IngredientModel>,
+    selectedItemIndex: MutableIntState,
+) {
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
             AlertDialog1(
                 onDismissRequest = {
-                    openAlertDialog.value = false },
+                    openAlertDialog.value = false
+                },
                 onConfirmation = {
                     openAlertDialog.value = false
-                    println("Confirmation registered") // Add logic here to handle confirmation.
                 },
                 dialogTitle = ingredient.name,
                 dialogText = "Можете редактировать или удалить ингредиент",
                 icon = Icons.Default.Info,
                 ingredient,
-                ingredients
+                ingredients,
+                ingredientsAll,
+                selectedItemIndex
             )
         }
     }
@@ -52,24 +63,31 @@ fun IngredientInRecipe(ingredient: IngredientInProductModel, color: Color, ingre
         modifier = Modifier
             .fillMaxWidth()
             .background(color)
-            .padding(5.dp)) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = 50.dp)
-            .background(color)
-            .padding(start = 21.dp, end = 5.dp),
-            verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.fillMaxWidth(0.5f),
-                contentAlignment = Alignment.CenterStart) {
+            .padding(5.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 50.dp)
+                .background(color)
+                .padding(start = 21.dp, end = 5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth(0.5f),
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text(text = ingredient.name, maxLines = 3)
             }
-            Box(modifier = Modifier.fillMaxWidth(0.8f),
-                contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(text = ingredient.weight.toString(), maxLines = 3)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }
-            ){
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.options),
                     contentDescription = "options"
@@ -87,11 +105,10 @@ fun AlertDialog1(
     dialogText: String,
     icon: ImageVector,
     ingredient: IngredientInProductModel,
-    ingredients: MutableList<IngredientInProductModel>
+    ingredients: MutableList<IngredientInProductModel>,
+    ingredientsAll: MutableList<IngredientModel>,
+    selectedItemIndex: MutableIntState
 ) {
-    val name = remember {
-        mutableStateOf(ingredient.name)
-    }
     val weight = remember {
         mutableStateOf(ingredient.weight.toString())
     }
@@ -107,7 +124,10 @@ fun AlertDialog1(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(text = "Название", name, 30)
+                DropdownMenuBox(
+                    ingredientsAll = ingredientsAll,
+                    selectedItemIndex = selectedItemIndex
+                )
                 InputTextField(text = "Вес", weight, 30)
             }
         },
@@ -120,7 +140,7 @@ fun AlertDialog1(
                     ingredients.remove(ingredient)
                     ingredients.add(
                         IngredientInProductModel(
-                            name.value,
+                            ingredientsAll[selectedItemIndex.intValue].name,
                             weight.value.toInt()
                         )
                     )

@@ -170,7 +170,7 @@ fun ProductAddScreen(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients, ingredientsAll, selectedItemIndex)
                                 last = num
                             }
                             item {

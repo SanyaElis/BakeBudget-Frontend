@@ -189,7 +189,6 @@ fun SideMenu(
             }
         }
     }
-    //TODO: metrics
 }
 
 private fun mToast(context: Context, isLogged: MutableState<Boolean>) {
