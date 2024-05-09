@@ -225,6 +225,7 @@ fun ReportsScreen(
                 }
             }
         })
+        //TODO: add graphics for reports
 }
 
 @Composable

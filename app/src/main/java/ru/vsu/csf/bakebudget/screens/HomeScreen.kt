@@ -3,16 +3,24 @@ package ru.vsu.csf.bakebudget.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DismissibleDrawerSheet
 import androidx.compose.material3.DismissibleNavigationDrawer
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -30,14 +38,21 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.components.AlertDialog
+import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
@@ -52,6 +67,19 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
     val scope = rememberCoroutineScope()
     val selectedItem = remember {
         mutableStateOf(item[0])
+    }
+
+    val openAlertDialog = remember { mutableStateOf(false) }
+    when {
+        openAlertDialog.value -> {
+            AlertDialogHome(
+                onDismissRequest = {
+                    openAlertDialog.value = false },
+                onConfirmation = {
+                    openAlertDialog.value = false
+                }
+            )
+        }
     }
 
     ModalNavigationDrawer(
@@ -79,17 +107,27 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                         .fillMaxHeight()
                         .background(PrimaryBack)
                 ) {
-                    Box() {
-                        TextButton(onClick = {
-                            scope.launch {
-                                drawerState.open()
+                    Row(modifier = Modifier
+                        .fillMaxWidth(),
+                        ) {
+                        Box {
+                            TextButton(onClick = {
+                                scope.launch {
+                                    drawerState.open()
+                                }
+                            }) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.menu_open),
+                                    contentDescription = "menu",
+                                    modifier = Modifier.padding(5.dp)
+                                )
                             }
-                        }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.menu_open),
-                                contentDescription = "menu",
-                                modifier = Modifier.padding(5.dp)
-                            )
+                        }
+                        Spacer(Modifier.weight(1f))
+                        Box(modifier = Modifier.padding(5.dp)) {
+                            IconButton(onClick = { openAlertDialog.value = true }) {
+                                Icon(imageVector = Icons.Default.Info, contentDescription = "Info", tint = Color.White)
+                            }
                         }
                     }
                     Box(
@@ -139,5 +177,60 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
             }
         })
 
-    //TODO: add information about app
+}
+
+@Composable
+fun AlertDialogHome(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+) {
+    val scroll = rememberScrollState(0)
+    androidx.compose.material3.AlertDialog(
+        containerColor = SideBack,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier.fillMaxWidth(0.9f).fillMaxHeight(0.9f),
+        title = {
+            Text(text = "Добро пожаловать в BAKEBUDGET", textAlign = TextAlign.Center)
+        },
+        text = {
+            Column {
+                Text(text = "Наше приложение для домашних кондитеров - это твой лучший друг в мире кондитерства! Мы создали удобный инструмент, который поможет тебе легко управлять своим кондитерским бизнесом. Вот что ты сможешь делать в нашим приложении:\n" +
+                        "\n" +
+                        "1. Ингредиенты как на ладони:\n" +
+                        "   - Легко добавляй, удаляй и редактируй разнообразные ингредиенты для твоих кондитерских шедевров.\n" +
+                        "\n" +
+                        "2. Будь в курсе издержек:\n" +
+                        "   - Добавляй издержки, связанные с производством кондитерских изделий. Это помогает в расчетах при определении стоимости продукции!\n" +
+                        "\n" +
+                        "3. Заказы на подходе:\n" +
+                        "   - Принимай заказы на твои волшебные кулинарные шедевры.\n" +
+                        "\n" +
+                        "4. Отчёты для успеха:\n" +
+                        "   - Получай отчёты о доходах и заказах. Смотри, как процветает твой кондитерский бизнес и принимай грамотные решения для его развития.\n" +
+                        "\n" +
+                        "5. Рассчитывай себестоимость:\n" +
+                        "   - Делай расчеты себестоимости и конечной стоимости своих изделий!\n" +
+                        "\n" +
+                        "6. Создавай свои команды:\n" +
+                        "   - Приглашай помощников в группу, чтобы следить за бизнесом, если вы не одни!\n" +
+                        "\n" +
+                        "С нашим приложением, заботливо созданным для тебя, ты сможешь создавать, управлять и развивать свой кондитерский бизнес с лёгкостью и улыбкой!",
+                    modifier = Modifier.verticalScroll(scroll))
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text("ОК")
+            }
+        }
+    )
 }

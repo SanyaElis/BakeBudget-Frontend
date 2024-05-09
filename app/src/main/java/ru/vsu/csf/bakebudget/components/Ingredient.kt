@@ -49,7 +49,6 @@ fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableLi
         }
     }
     Card(
-        //TODO: change text color
         modifier = Modifier
             .fillMaxWidth()
             .background(color)

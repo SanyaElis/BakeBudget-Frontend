@@ -110,7 +110,7 @@ fun GroupsScreen(
                                 )
                             } else {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_confirm),
+                                    painter = painterResource(id = R.drawable.confirm_button),
                                     contentDescription = "confirm"
                                 )
                             }

@@ -41,6 +41,5 @@ fun Product(
             painter = painterResource(id = product.iconId), contentDescription = product.name
         )
         Text(text = product.name, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp)
-        //TODO: change text color
     }
 }

@@ -33,6 +33,7 @@ import ru.vsu.csf.bakebudget.screens.HomeScreen
 import ru.vsu.csf.bakebudget.screens.IngredientsScreen
 import ru.vsu.csf.bakebudget.screens.LoginScreen
 import ru.vsu.csf.bakebudget.screens.OrdersScreen
+import ru.vsu.csf.bakebudget.screens.PasswordResetScreen
 import ru.vsu.csf.bakebudget.screens.ProductView
 import ru.vsu.csf.bakebudget.screens.RegistrationScreen
 import ru.vsu.csf.bakebudget.screens.ReportsScreen
@@ -124,6 +125,10 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "ingredients") {
                 IngredientsScreen(navController, ingredients, isLogged)
+            }
+
+            composable(route = "passwordReset") {
+                PasswordResetScreen(navController, isLogged)
             }
 
             composable(route = "products") {
