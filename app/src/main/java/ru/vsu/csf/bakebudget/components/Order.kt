@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.screens.sortByState
@@ -41,6 +44,10 @@ fun Order(order: OrderModel,
           orders3: MutableList<OrderModel>) {
     val openAlertDialog = remember { mutableStateOf(false) }
     val selectedValue = remember { mutableIntStateOf(order.status) }
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
     when {
         openAlertDialog.value -> {
             AlertDialogOrder(
@@ -67,13 +74,25 @@ fun Order(order: OrderModel,
             .background(SideBack)
             .padding(8.dp)
     ) {
-        Image(
-            modifier = Modifier
-                .clip(RoundedCornerShape(14.dp))
-                .clickable(onClick = { openAlertDialog.value = true }),
-            contentScale = ContentScale.Fit,
-            painter = painterResource(id = order.product.iconId), contentDescription = order.product.name
-        )
+        if (order.product.uri != null) {
+            AsyncImage(
+                modifier = Modifier
+                    .height((screenWidth-32.dp)/2)
+                    .clip(RoundedCornerShape(14.dp))
+                    .clickable(onClick = { openAlertDialog.value = true }),
+                model = order.product.uri,
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Image(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .clickable(onClick = { openAlertDialog.value = true }),
+                contentScale = ContentScale.Fit,
+                painter = painterResource(id = order.product.iconId), contentDescription = order.product.name
+            )
+        }
         Column {
             Text(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp), text = order.product.name, color = TextPrimary, fontSize = 16.sp)
             Text(modifier = Modifier.padding(start = 8.dp), text = order.finalPrice.toString() + " р.", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = TextPrimary)

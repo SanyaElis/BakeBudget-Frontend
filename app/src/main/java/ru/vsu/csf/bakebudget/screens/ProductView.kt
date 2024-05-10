@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
+import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -69,6 +71,10 @@ fun ProductView(
         mutableStateOf(product.name)
     }
     val selectedItemIndex = remember { mutableIntStateOf(0) }
+
+    val selectedImageUri = remember {
+        mutableStateOf<Uri?>(null)
+    }
 
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
@@ -131,6 +137,9 @@ fun ProductView(
                                     if (name.value.isNotEmpty()) {
                                         product.name = name.value
                                     }
+                                    if (selectedImageUri.value != null) {
+                                        product.uri = selectedImageUri.value
+                                    }
                                     navController.navigate("products")
                                 }
                             ) {
@@ -166,6 +175,9 @@ fun ProductView(
                             }
                             item {
                                 EstimatedWeightName(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight, name = name)
+                            }
+                            item {
+                                ImagePicker(selectedImageUri, product.uri)
                             }
                         }
                     }
