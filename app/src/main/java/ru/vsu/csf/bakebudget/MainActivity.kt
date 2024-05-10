@@ -87,16 +87,18 @@ class MainActivity : ComponentActivity() {
                 )
                 val products = remember {
                     mutableStateListOf(
-                        ProductModel(R.drawable.cake, "Тортик 1", ingredientsInRecipe1, outgoings1, 1000),
-                        ProductModel(R.drawable.cake, "Тортик 2", ingredientsInRecipe2, outgoings2,1000),
-                        ProductModel(R.drawable.cake, "Тортик 3", ingredientsInRecipe3, outgoings3,1000)
+                        ProductModel(null, R.drawable.cake, "Тортик 1", ingredientsInRecipe1, outgoings1, 1000),
+                        ProductModel(null, R.drawable.cake, "Тортик 2", ingredientsInRecipe2, outgoings2,1000),
+                        ProductModel(null, R.drawable.cake, "Тортик 3", ingredientsInRecipe3, outgoings3,1000)
                     )
                 }
-                val orders = mutableStateListOf(
-                    OrderModel(0, products[0], 1000, 2000),
-                    OrderModel(0, products[1], 100, 200),
-                    OrderModel(0, products[2], 3000, 1000)
-                )
+                val orders = remember {
+                    mutableStateListOf(
+                        OrderModel(0, products[0], 1000, 2000),
+                        OrderModel(0, products[1], 100, 200),
+                        OrderModel(0, products[2], 3000, 1000)
+                    )
+                }
                 NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings, orders)
             }
         }
