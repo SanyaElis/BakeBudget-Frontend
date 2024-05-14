@@ -13,6 +13,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,10 +24,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
-fun TextForm(label : String) {
-    val textValue = remember {
-        mutableStateOf("")
-    }
+fun TextForm(label : String, textValue: MutableState<String>) {
 
     OutlinedTextField(modifier = Modifier
         .fillMaxWidth(0.75f)

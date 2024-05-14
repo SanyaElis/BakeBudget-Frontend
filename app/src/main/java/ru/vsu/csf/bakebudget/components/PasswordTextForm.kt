@@ -29,10 +29,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
-fun PasswordTextForm(label : String) {
-    val textValue = remember {
-        mutableStateOf("")
-    }
+fun PasswordTextForm(label : String, textValue: MutableState<String>) {
     var passwordVisible = rememberSaveable { mutableStateOf(false) }
 
     OutlinedTextField(modifier = Modifier

@@ -13,6 +13,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +28,12 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
 fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState<Boolean>) {
+    val userEmail = remember {
+        mutableStateOf("")
+    }
+    val userPassword = remember {
+        mutableStateOf("")
+    }
     val mContext = LocalContext.current
     Surface(
         modifier = Modifier
@@ -42,8 +50,8 @@ fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState
                 .padding(top = 250.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextForm(label = "Email")
-            PasswordTextForm(label = "Новый пароль")
+            TextForm(label = "Email", userEmail)
+            PasswordTextForm(label = "Новый пароль", userPassword)
         }
         Box(
             modifier = Modifier

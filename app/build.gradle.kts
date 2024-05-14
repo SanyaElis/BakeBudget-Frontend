@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.analytics)
     implementation(libs.google.accompanist.systemuicontroller)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.coil.compose)
     implementation (libs.androidx.navigation.compose)
