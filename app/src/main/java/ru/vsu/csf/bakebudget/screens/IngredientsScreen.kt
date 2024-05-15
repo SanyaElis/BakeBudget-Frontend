@@ -54,7 +54,9 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.withContext
 import ru.vsu.csf.bakebudget.DataIncorrectToast
+import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -89,7 +91,7 @@ fun IngredientsScreen(
     }
 
     if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
-        getDataUsingRetrofit(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+        findAll(mContext, retrofitAPI, jwtToken, ingredientsResponse)
 //        for (ingredient in ingredientsResponse) {
 //            ingredients.add(
 //                IngredientModel(
@@ -173,6 +175,13 @@ fun IngredientsScreen(
                                         AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                         ingredients.add(
                                             IngredientModel(
+                                                name.value,
+                                                weight.value.toInt(),
+                                                cost.value.toInt()
+                                            )
+                                        )
+                                        create(
+                                            mContext, retrofitAPI, jwtToken, IngredientRequestModel(
                                                 name.value,
                                                 weight.value.toInt(),
                                                 cost.value.toInt()
@@ -276,7 +285,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
 }
 
 @OptIn(DelicateCoroutinesApi::class)
-private fun getDataUsingRetrofit(
+private fun findAll(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
@@ -284,7 +293,7 @@ private fun getDataUsingRetrofit(
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.findAllIngredients("Bearer ".plus(jwtToken.value))
-        onResult(res, ingredientsResponse)
+        onResultFindAll(res, ingredientsResponse)
     }
 //    var model: List<IngredientResponseModel>? = null
 //    call!!.enqueue(object : Callback<List<IngredientResponseModel>?> {
@@ -313,15 +322,58 @@ private fun getDataUsingRetrofit(
 //    })
 }
 
-fun onResult(
+fun onResultFindAll(
     result: Response<List<IngredientResponseModel>?>?,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     if (result!!.body() != null) {
-        if (result.body()!!.isNotEmpty()){
+        if (result.body()!!.isNotEmpty()) {
             for (ing in result.body()!!) {
                 ingredientsResponse.add(ing)
             }
         }
     }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun create(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    ingredientRequestModel: IngredientRequestModel
+) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        val response = retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
+//
+//        withContext(Dispatchers.Main) {
+//            if (response!!.isSuccessful) {
+//                onResultCreate(response, ctx)
+//
+//            } else {
+//
+//                Toast.makeText(
+//                    ctx,
+//                    "Response Code : " + response.code(),
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//
+//            }
+//        }
+//    }
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
+        onResultCreate(res, ctx)
+    }
+}
+
+fun onResultCreate(
+    result: Response<IngredientResponseModel?>?,
+    ctx: Context
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
 }

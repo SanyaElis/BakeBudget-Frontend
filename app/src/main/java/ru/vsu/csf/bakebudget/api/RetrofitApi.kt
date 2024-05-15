@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
@@ -24,4 +25,7 @@ interface RetrofitAPI {
 
     @GET("ingredients/findAll")
     suspend fun findAllIngredients(@Header("Authorization") authorization: String): Response<List<IngredientResponseModel>?>?
+
+    @POST("ingredients/create")
+    suspend fun createIngredient(@Body ingredientModel: IngredientRequestModel?, @Header("Authorization") authorization: String): Response<IngredientResponseModel?>?
 }
