@@ -2,6 +2,7 @@ package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.provider.ContactsContract.Data
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,6 +45,7 @@ import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.DatePeriodField
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
@@ -122,8 +124,12 @@ fun CalculationScreen(
                         Column {
                             TextButton(
                                 onClick = {
-                                    costPrice.intValue = (1000..5000).random()
-                                    resultPrice.intValue = costPrice.intValue*(100+markup.value.toInt())/100 + extraCost.value.toInt()
+                                    if (weight.value.toIntOrNull() == null || markup.value.toIntOrNull() == null || extraCost.value.toIntOrNull() == null) {
+                                        DataIncorrectToast(mContext)
+                                    } else {
+                                        costPrice.intValue = (1000..5000).random()
+                                        resultPrice.intValue = costPrice.intValue*(100+markup.value.toInt())/100 + extraCost.value.toInt()
+                                    }
                                 }
                             ) {
                                 Image(
@@ -133,9 +139,20 @@ fun CalculationScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    AppMetrica.reportEvent("Order created", eventParameters1)
-                                    orders.add(OrderModel(0, productsAll[selectedItemIndex.intValue], resultPrice.intValue, weight.value.toInt()))
-                                    mToast(mContext)
+                                    if (weight.value.toIntOrNull() == null) {
+                                        DataIncorrectToast(mContext)
+                                    } else {
+                                        AppMetrica.reportEvent("Order created", eventParameters1)
+                                        orders.add(
+                                            OrderModel(
+                                                0,
+                                                productsAll[selectedItemIndex.intValue],
+                                                resultPrice.intValue,
+                                                weight.value.toInt()
+                                            )
+                                        )
+                                        mToast(mContext)
+                                    }
                                 }
                             ) {
                                 Image(

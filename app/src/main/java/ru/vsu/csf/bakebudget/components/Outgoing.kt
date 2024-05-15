@@ -1,5 +1,6 @@
 package ru.vsu.csf.bakebudget.components
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,15 +18,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
-fun Outgoing(cost: OutgoingModel, color: Color, outgoings: MutableList<OutgoingModel>) {
+fun Outgoing(outgoing: OutgoingModel, color: Color, outgoings: MutableList<OutgoingModel>) {
+    val mContext = LocalContext.current
+
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
@@ -35,10 +40,11 @@ fun Outgoing(cost: OutgoingModel, color: Color, outgoings: MutableList<OutgoingM
                 onConfirmation = {
                     openAlertDialog.value = false
                 },
-                dialogTitle = cost.name,
+                dialogTitle = outgoing.name,
                 dialogText = "Можете редактировать или удалить издержку",
-                cost,
-                outgoings
+                outgoing,
+                outgoings,
+                mContext
             )
         }
     }
@@ -55,11 +61,11 @@ fun Outgoing(cost: OutgoingModel, color: Color, outgoings: MutableList<OutgoingM
             verticalAlignment = Alignment.CenterVertically) {
             Box(modifier = Modifier.fillMaxWidth(0.5f),
                 contentAlignment = Alignment.CenterStart) {
-                Text(text = cost.name, maxLines = 3)
+                Text(text = outgoing.name, maxLines = 3)
             }
             Box(modifier = Modifier.fillMaxWidth(0.8f),
                 contentAlignment = Alignment.CenterEnd) {
-                Text(text = (cost.value.toString() + " руб."), maxLines = 3)
+                Text(text = (outgoing.value.toString() + " руб."), maxLines = 3)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }
@@ -80,7 +86,8 @@ fun AlertDialog3(
     dialogTitle: String,
     dialogText: String,
     cost: OutgoingModel,
-    outgoings: MutableList<OutgoingModel>
+    outgoings: MutableList<OutgoingModel>,
+    context : Context
 ) {
     val name = remember {
         mutableStateOf(cost.name)
@@ -110,14 +117,18 @@ fun AlertDialog3(
         confirmButton = {
             TextButton(
                 onClick = {
-                    outgoings.remove(cost)
-                    outgoings.add(
-                        OutgoingModel(
-                            name.value,
-                            value.value.toInt(),
+                    if (name.value.isEmpty() || value.value.toIntOrNull() == null) {
+                        DataIncorrectToast(context = context)
+                    } else {
+                        outgoings.remove(cost)
+                        outgoings.add(
+                            OutgoingModel(
+                                name.value,
+                                value.value.toInt(),
+                            )
                         )
-                    )
-                    onConfirmation()
+                        onConfirmation()
+                    }
                 }
             ) {
                 Text("Редактировать")

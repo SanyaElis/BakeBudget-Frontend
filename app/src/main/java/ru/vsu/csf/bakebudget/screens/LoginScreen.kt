@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,12 +32,19 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
+import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
-fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean>, retrofitAPI: RetrofitAPI) {
+fun LoginScreen(
+    navController: NavHostController,
+    isLogged: MutableState<Boolean>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
+) {
     val ctx = LocalContext.current
     val userEmail = remember {
         mutableStateOf("")
@@ -71,7 +79,7 @@ fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean
             TextButton(
                 onClick = {
                     postDataUsingRetrofitLogin(
-                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged
+                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, jwtToken
                     )
                     navController.navigate("home")
                 }
@@ -89,7 +97,7 @@ fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean
             contentAlignment = Alignment.BottomCenter
         ) {
             TextButton(
-                onClick = {navController.navigate("register")},
+                onClick = { navController.navigate("register") },
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.button_register),
@@ -104,7 +112,7 @@ fun LoginScreen(navController: NavHostController, isLogged: MutableState<Boolean
             contentAlignment = Alignment.BottomCenter
         ) {
             TextButton(
-                onClick = {navController.navigate("passwordReset")},
+                onClick = { navController.navigate("passwordReset") },
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.reset_password_button),
@@ -120,18 +128,31 @@ private fun postDataUsingRetrofitLogin(
     userEmail: MutableState<String>,
     userPassword: MutableState<String>,
     retrofitAPI: RetrofitAPI,
-    isLogged: MutableState<Boolean>
+    isLogged: MutableState<Boolean>,
+    jwtToken: MutableState<String>
 ) {
     val dataModel = UserSignInRequestModel(userEmail.value, userPassword.value)
     val call: Call<UserSignInResponseModel?>? = retrofitAPI.login(dataModel)
     call!!.enqueue(object : Callback<UserSignInResponseModel?> {
-        override fun onResponse(call: Call<UserSignInResponseModel?>, response: Response<UserSignInResponseModel?>) {
+        override fun onResponse(
+            call: Call<UserSignInResponseModel?>,
+            response: Response<UserSignInResponseModel?>
+        ) {
             if (response.isSuccessful) {
                 isLogged.value = true
                 val model: UserSignInResponseModel? = response.body()
-                Toast.makeText(ctx, "Response Code : " + response.code() + "\n" + "User Name : " + model!!.username + "\n" + "Email : " + model.email + "\n" + "Token : " + model.token, Toast.LENGTH_SHORT).show()
+                jwtToken.value = model!!.token
+                Toast.makeText(
+                    ctx,
+                    "Response Code : " + response.code() + "\n" + "User Name : " + model.username + "\n" + "Email : " + model.email + "\n" + "Token : " + jwtToken.value,
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
-                Toast.makeText(ctx, "Response Code : " + response.code() + "\n" + "Такого пользователя не существует или пароль неверный", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    ctx,
+                    "Response Code : " + response.code() + "\n" + "Такого пользователя не существует или пароль неверный",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 

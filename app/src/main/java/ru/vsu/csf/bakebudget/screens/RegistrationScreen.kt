@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -112,6 +113,19 @@ private fun postDataUsingRetrofit(
     val call: Call<String?>? = retrofitAPI.register(dataModel)
     call!!.enqueue(object : Callback<String?> {
         override fun onResponse(call: Call<String?>, response: Response<String?>) {
+            if (response.isSuccessful) {
+                Toast.makeText(
+                    ctx,
+                    "Response Code : " + response.code() + "\n" + "Пользователь успешно зарегистрирован",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    ctx,
+                    "Response Code : " + response.code() +  "\n" + "Регистрация невозможна, некорректные данные",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         override fun onFailure(call: Call<String?>, t: Throwable) {

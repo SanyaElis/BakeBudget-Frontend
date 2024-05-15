@@ -1,7 +1,9 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,12 +34,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
@@ -58,6 +62,8 @@ fun ProductView(
     isLogged: MutableState<Boolean>,
     product: ProductModel
 ) {
+    val mContext = LocalContext.current
+
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -89,7 +95,8 @@ fun ProductView(
                 dialogText = "",
                 ingredientsAll = ingredientsAll,
                 selectedItemIndex,
-                product.ingredients
+                product.ingredients,
+                mContext
             )
         }
     }
@@ -131,16 +138,16 @@ fun ProductView(
                             }
                             TextButton(
                                 onClick = {
-                                    if (estimatedWeight.value.toIntOrNull() != null) {
+                                    if (estimatedWeight.value.toIntOrNull() == null || name.value.isEmpty()) {
+                                        DataIncorrectToast(mContext)
+                                    } else {
                                         product.estWeight = estimatedWeight.value.toInt()
-                                    }
-                                    if (name.value.isNotEmpty()) {
                                         product.name = name.value
+                                        if (selectedImageUri.value != null) {
+                                            product.uri = selectedImageUri.value
+                                        }
+                                        navController.navigate("products")
                                     }
-                                    if (selectedImageUri.value != null) {
-                                        product.uri = selectedImageUri.value
-                                    }
-                                    navController.navigate("products")
                                 }
                             ) {
                                 Image(

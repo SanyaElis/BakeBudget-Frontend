@@ -112,8 +112,6 @@ fun OutgoingsScreen(navController: NavHostController,
                                                 value.value.toInt()
                                             )
                                         )
-                                        name.value = "Что-то"
-                                        value.value = "100"
                                     }
                                 }
                             ) {
@@ -152,9 +150,9 @@ fun OutgoingsScreen(navController: NavHostController,
                             }
                             itemsIndexed(productsAll[selectedItemIndex.intValue].outgoings) { num, outgoing ->
                                 if (num % 2 == 0) {
-                                    Outgoing(outgoing, SideBack, outgoings)
+                                    Outgoing(outgoing, SideBack, productsAll[selectedItemIndex.intValue].outgoings)
                                 } else {
-                                    Outgoing(outgoing, Back2, outgoings)
+                                    Outgoing(outgoing, Back2, productsAll[selectedItemIndex.intValue].outgoings)
                                 }
                             }
                         }
