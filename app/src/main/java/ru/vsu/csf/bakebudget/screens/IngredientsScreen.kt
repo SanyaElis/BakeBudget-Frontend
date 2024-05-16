@@ -68,7 +68,7 @@ fun IngredientsScreen(
     jwtToken: MutableState<String>,
     isDataReceivedIngredients: MutableState<Boolean>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
-    ingredientsSet : MutableSet<IngredientModel>
+    ingredientsSet: MutableSet<IngredientModel>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
@@ -104,11 +104,13 @@ fun IngredientsScreen(
                     ingredient.cost
                 )
             )
-            ingredientsSet.add(IngredientModel(
-                ingredient.name,
-                ingredient.weight,
-                ingredient.cost
-            ))
+            ingredientsSet.add(
+                IngredientModel(
+                    ingredient.name,
+                    ingredient.weight,
+                    ingredient.cost
+                )
+            )
         }
     }
 
@@ -141,7 +143,14 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
-                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null || ingredientsSet.contains(IngredientModel(name.value,weight.value.toInt(), cost.value.toInt()))) {
+                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null || ingredientsSet.contains(
+                                            IngredientModel(
+                                                name.value,
+                                                weight.value.toInt(),
+                                                cost.value.toInt()
+                                            )
+                                        )
+                                    ) {
                                         AppMetrica.reportEvent(
                                             "Ingredient add failed",
                                             eventParameters1
@@ -156,17 +165,20 @@ fun IngredientsScreen(
                                                 cost.value.toInt()
                                             )
                                         )
-                                        ingredientsSet.add(IngredientModel(
-                                            name.value,
-                                            weight.value.toInt(),
-                                            cost.value.toInt()
-                                        ))
+                                        ingredientsSet.add(
+                                            IngredientModel(
+                                                name.value,
+                                                weight.value.toInt(),
+                                                cost.value.toInt()
+                                            )
+                                        )
                                         create(
                                             mContext, retrofitAPI, jwtToken, IngredientRequestModel(
                                                 name.value,
                                                 weight.value.toInt(),
                                                 cost.value.toInt()
-                                            )
+                                            ),
+                                            ingredientsResponse
                                         )
                                     }
                                 }
@@ -196,11 +208,27 @@ fun IngredientsScreen(
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
-                            itemsIndexed(ingredients) { num, ingredient ->
+                            itemsIndexed(ingredientsResponse) { num, ingredient ->
                                 if (num % 2 == 0) {
-                                    Ingredient(ingredient = ingredient, SideBack, ingredients, ingredientsSet)
+                                    Ingredient(
+                                        ingredient = ingredient,
+                                        SideBack,
+                                        ingredients,
+                                        ingredientsSet,
+                                        retrofitAPI,
+                                        jwtToken,
+                                        ingredientsResponse
+                                    )
                                 } else {
-                                    Ingredient(ingredient = ingredient, Back2, ingredients, ingredientsSet)
+                                    Ingredient(
+                                        ingredient = ingredient,
+                                        Back2,
+                                        ingredients,
+                                        ingredientsSet,
+                                        retrofitAPI,
+                                        jwtToken,
+                                        ingredientsResponse
+                                    )
                                 }
                             }
                         }
@@ -321,7 +349,8 @@ private fun create(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
-    ingredientRequestModel: IngredientRequestModel
+    ingredientRequestModel: IngredientRequestModel,
+    ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
 //    CoroutineScope(Dispatchers.IO).launch {
 //        val response = retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
@@ -344,17 +373,23 @@ private fun create(
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreate(res, ctx)
+        onResultCreate(res, ctx, ingredientsResponse)
     }
 }
 
 fun onResultCreate(
     result: Response<IngredientResponseModel?>?,
-    ctx: Context
+    ctx: Context,
+    ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     Toast.makeText(
         ctx,
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+    if (result.isSuccessful) {
+        if (result.body() != null) {
+            ingredientsResponse.add(result.body()!!)
+        }
+    }
 }
