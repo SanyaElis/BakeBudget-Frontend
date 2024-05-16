@@ -35,7 +35,7 @@ import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
-fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableList<IngredientModel>) {
+fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableList<IngredientModel>, ingredientsSet : MutableSet<IngredientModel>) {
     val mContext = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
@@ -50,7 +50,8 @@ fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableLi
                 dialogText = "Можете редактировать или удалить ингредиент",
                 ingredient,
                 ingredients,
-                mContext
+                mContext,
+                ingredientsSet
             )
         }
     }
@@ -97,7 +98,8 @@ fun AlertDialog(
     dialogText: String,
     ingredient: IngredientModel,
     ingredients: MutableList<IngredientModel>,
-    context: Context
+    context: Context,
+    ingredientsSet : MutableSet<IngredientModel>
 ) {
     val name = remember {
         mutableStateOf(ingredient.name)
@@ -131,13 +133,23 @@ fun AlertDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
+                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null || ingredientsSet.contains(IngredientModel(
+                            name.value,
+                            weight.value.toInt(),
+                            cost.value.toInt()
+                        ))) {
                         DataIncorrectToast(context)
                     } else {
                         val eventParameters1 = "{\"button_clicked\":\"ingredient_edit\"}"
                         AppMetrica.reportEvent("Ingredient edited", eventParameters1)
                         ingredients.remove(ingredient)
+                        ingredientsSet.remove(ingredient)
                         ingredients.add(IngredientModel(
+                            name.value,
+                            weight.value.toInt(),
+                            cost.value.toInt()
+                        ))
+                        ingredientsSet.add(IngredientModel(
                             name.value,
                             weight.value.toInt(),
                             cost.value.toInt()
@@ -155,6 +167,7 @@ fun AlertDialog(
                     val eventParameters1 = "{\"button_clicked\":\"ingredient_delete\"}"
                     AppMetrica.reportEvent("Ingredient deleted", eventParameters1)
                     ingredients.remove(ingredient)
+                    ingredientsSet.remove(ingredient)
                     onDismissRequest()
                 }
             ) {

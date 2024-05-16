@@ -93,38 +93,8 @@ fun IngredientsScreen(
 
     if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
         findAll(mContext, retrofitAPI, jwtToken, ingredientsResponse)
-//        for (ingredient in ingredientsResponse) {
-//            ingredients.add(
-//                IngredientModel(
-//                    ingredient.name,
-//                    ingredient.weight,
-//                    ingredient.cost
-//                )
-//            )
-//        }
         isDataReceivedIngredients.value = true
     }
-//    if (ingredients.isEmpty()) {
-//        if (ingredientsResponse.isEmpty()) {
-//            ingredients.add(
-//                IngredientModel(
-//                    "Молоко",
-//                    900,
-//                    70
-//                )
-//            )
-//        } else {
-//            for (ingredient in ingredientsResponse) {
-//                ingredients.add(
-//                    IngredientModel(
-//                        ingredient.name,
-//                        ingredient.weight,
-//                        ingredient.cost
-//                    )
-//                )
-//            }
-//        }
-//    }
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {
             ingredients.add(
@@ -134,6 +104,11 @@ fun IngredientsScreen(
                     ingredient.cost
                 )
             )
+            ingredientsSet.add(IngredientModel(
+                ingredient.name,
+                ingredient.weight,
+                ingredient.cost
+            ))
         }
     }
 
@@ -223,9 +198,9 @@ fun IngredientsScreen(
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
                                 if (num % 2 == 0) {
-                                    Ingredient(ingredient = ingredient, SideBack, ingredients)
+                                    Ingredient(ingredient = ingredient, SideBack, ingredients, ingredientsSet)
                                 } else {
-                                    Ingredient(ingredient = ingredient, Back2, ingredients)
+                                    Ingredient(ingredient = ingredient, Back2, ingredients, ingredientsSet)
                                 }
                             }
                         }
