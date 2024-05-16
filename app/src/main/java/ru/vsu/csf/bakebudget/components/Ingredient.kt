@@ -1,5 +1,7 @@
 package ru.vsu.csf.bakebudget.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,16 +24,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import io.appmetrica.analytics.AppMetrica
+import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
 fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableList<IngredientModel>) {
+    val mContext = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
@@ -44,7 +49,8 @@ fun Ingredient(ingredient: IngredientModel, color: Color, ingredients: MutableLi
                 dialogTitle = ingredient.name,
                 dialogText = "Можете редактировать или удалить ингредиент",
                 ingredient,
-                ingredients
+                ingredients,
+                mContext
             )
         }
     }
@@ -90,7 +96,8 @@ fun AlertDialog(
     dialogTitle: String,
     dialogText: String,
     ingredient: IngredientModel,
-    ingredients: MutableList<IngredientModel>
+    ingredients: MutableList<IngredientModel>,
+    context: Context
 ) {
     val name = remember {
         mutableStateOf(ingredient.name)
@@ -124,15 +131,19 @@ fun AlertDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val eventParameters1 = "{\"button_clicked\":\"ingredient_edit\"}"
-                    AppMetrica.reportEvent("Ingredient edited", eventParameters1)
-                    ingredients.remove(ingredient)
-                    ingredients.add(IngredientModel(
-                        name.value,
-                        weight.value.toInt(),
-                        cost.value.toInt()
-                    ))
-                    onConfirmation()
+                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
+                        DataIncorrectToast(context)
+                    } else {
+                        val eventParameters1 = "{\"button_clicked\":\"ingredient_edit\"}"
+                        AppMetrica.reportEvent("Ingredient edited", eventParameters1)
+                        ingredients.remove(ingredient)
+                        ingredients.add(IngredientModel(
+                            name.value,
+                            weight.value.toInt(),
+                            cost.value.toInt()
+                        ))
+                        onConfirmation()
+                    }
                 }
             ) {
                 Text("Редактировать")

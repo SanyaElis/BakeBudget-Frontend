@@ -1,5 +1,7 @@
 package ru.vsu.csf.bakebudget.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
@@ -39,6 +43,7 @@ fun IngredientInRecipe(
     ingredientsAll: MutableList<IngredientModel>,
     selectedItemIndex: MutableIntState,
 ) {
+    val mContext = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
@@ -55,7 +60,8 @@ fun IngredientInRecipe(
                 ingredient,
                 ingredients,
                 ingredientsAll,
-                selectedItemIndex
+                selectedItemIndex,
+                mContext
             )
         }
     }
@@ -107,7 +113,8 @@ fun AlertDialog1(
     ingredient: IngredientInProductModel,
     ingredients: MutableList<IngredientInProductModel>,
     ingredientsAll: MutableList<IngredientModel>,
-    selectedItemIndex: MutableIntState
+    selectedItemIndex: MutableIntState,
+    context: Context
 ) {
     val weight = remember {
         mutableStateOf(ingredient.weight.toString())
@@ -124,11 +131,13 @@ fun AlertDialog1(
         text = {
             Column {
                 Text(text = dialogText)
-                DropdownMenuBox(
-                    ingredientsAll = ingredientsAll,
-                    selectedItemIndex = selectedItemIndex
-                )
-                InputTextField(text = "Вес", weight, 30)
+                if (ingredientsAll.isNotEmpty()) {
+                    DropdownMenuBox(
+                        ingredientsAll = ingredientsAll,
+                        selectedItemIndex = selectedItemIndex
+                    )
+                    InputTextField(text = "Вес", weight, 30, true)
+                }
             }
         },
         onDismissRequest = {
@@ -137,14 +146,18 @@ fun AlertDialog1(
         confirmButton = {
             TextButton(
                 onClick = {
-                    ingredients.remove(ingredient)
-                    ingredients.add(
-                        IngredientInProductModel(
-                            ingredientsAll[selectedItemIndex.intValue].name,
-                            weight.value.toInt()
+                    if (weight.value.toIntOrNull() != null) {
+                        ingredients.remove(ingredient)
+                        ingredients.add(
+                            IngredientInProductModel(
+                                ingredientsAll[selectedItemIndex.intValue].name,
+                                weight.value.toInt()
+                            )
                         )
-                    )
-                    onConfirmation()
+                        onConfirmation()
+                    } else {
+                        DataIncorrectToast(context = context)
+                    }
                 }
             ) {
                 Text("Редактировать")

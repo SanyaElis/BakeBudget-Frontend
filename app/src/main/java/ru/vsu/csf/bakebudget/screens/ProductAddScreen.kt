@@ -1,7 +1,9 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,6 +51,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
@@ -72,6 +76,7 @@ fun ProductAddScreen(
     products: MutableList<ProductModel>,
     outgoings: MutableList<OutgoingModel>
 ) {
+    val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -103,7 +108,8 @@ fun ProductAddScreen(
                 dialogText = "",
                 ingredientsAll = ingredientsAll,
                 selectedItemIndex,
-                ingredients
+                ingredients,
+                context = mContext
             )
         }
     }
@@ -145,8 +151,21 @@ fun ProductAddScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    products.add(ProductModel(selectedImageUri.value, R.drawable.cake, name.value, ingredients, outgoings, estimatedWeight.value.toInt()))
-                                    navController.navigate("products")
+                                    if (name.value.isEmpty() || estimatedWeight.value.toIntOrNull() == null) {
+                                        DataIncorrectToast(context = mContext)
+                                    } else {
+                                        products.add(
+                                            ProductModel(
+                                                selectedImageUri.value,
+                                                R.drawable.cake,
+                                                name.value,
+                                                ingredients,
+                                                outgoings,
+                                                estimatedWeight.value.toInt()
+                                            )
+                                        )
+                                        navController.navigate("products")
+                                    }
                                 }
                             ) {
                                 Image(
@@ -254,7 +273,8 @@ fun AlertDialog2(
     dialogText: String,
     ingredientsAll: MutableList<IngredientModel>,
     selectedItemIndex: MutableIntState,
-    ingredients: MutableList<IngredientInProductModel>
+    ingredients: MutableList<IngredientInProductModel>,
+    context: Context
 ) {
     val name = remember {
         mutableStateOf("")
@@ -274,8 +294,10 @@ fun AlertDialog2(
         text = {
             Column {
                 Text(text = dialogText)
-                DropdownMenuBox(ingredientsAll = ingredientsAll, selectedItemIndex = selectedItemIndex)
-                InputTextField(text = "Вес", weight, 30, true)
+                if (ingredientsAll.isNotEmpty()) {
+                    DropdownMenuBox(ingredientsAll = ingredientsAll, selectedItemIndex = selectedItemIndex)
+                    InputTextField(text = "Вес", weight, 30, true)
+                }
             }
         },
         onDismissRequest = {
@@ -284,8 +306,12 @@ fun AlertDialog2(
         confirmButton = {
             TextButton(
                 onClick = {
-                    ingredients.add(IngredientInProductModel(ingredientsAll[selectedItemIndex.intValue].name, weight = weight.value.toInt()))
-                    onConfirmation()
+                    if (weight.value.toIntOrNull() != null) {
+                        ingredients.add(IngredientInProductModel(ingredientsAll[selectedItemIndex.intValue].name, weight = weight.value.toInt()))
+                        onConfirmation()
+                    } else {
+                        DataIncorrectToast(context)
+                    }
                 }
             ) {
                 Text("ОК")

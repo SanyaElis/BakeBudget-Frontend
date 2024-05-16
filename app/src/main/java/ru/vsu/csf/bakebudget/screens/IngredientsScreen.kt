@@ -40,21 +40,34 @@ import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Ingredient
 import ru.vsu.csf.bakebudget.components.IngredientAdd
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.withContext
+import ru.vsu.csf.bakebudget.DataIncorrectToast
+import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun IngredientsScreen(
     navController: NavHostController,
     ingredients: MutableList<IngredientModel>,
-    isLogged: MutableState<Boolean>
+    isLogged: MutableState<Boolean>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    isDataReceivedIngredients: MutableState<Boolean>,
+    ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
@@ -75,6 +88,52 @@ fun IngredientsScreen(
     }
     val cost = remember {
         mutableStateOf("")
+    }
+
+    if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
+        findAll(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+//        for (ingredient in ingredientsResponse) {
+//            ingredients.add(
+//                IngredientModel(
+//                    ingredient.name,
+//                    ingredient.weight,
+//                    ingredient.cost
+//                )
+//            )
+//        }
+        isDataReceivedIngredients.value = true
+    }
+//    if (ingredients.isEmpty()) {
+//        if (ingredientsResponse.isEmpty()) {
+//            ingredients.add(
+//                IngredientModel(
+//                    "Молоко",
+//                    900,
+//                    70
+//                )
+//            )
+//        } else {
+//            for (ingredient in ingredientsResponse) {
+//                ingredients.add(
+//                    IngredientModel(
+//                        ingredient.name,
+//                        ingredient.weight,
+//                        ingredient.cost
+//                    )
+//                )
+//            }
+//        }
+//    }
+    if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
+        for (ingredient in ingredientsResponse) {
+            ingredients.add(
+                IngredientModel(
+                    ingredient.name,
+                    ingredient.weight,
+                    ingredient.cost
+                )
+            )
+        }
     }
 
     ModalNavigationDrawer(
@@ -107,8 +166,11 @@ fun IngredientsScreen(
                             TextButton(
                                 onClick = {
                                     if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
-                                        AppMetrica.reportEvent("Ingredient add failed", eventParameters1)
-                                        mToast(context = mContext)
+                                        AppMetrica.reportEvent(
+                                            "Ingredient add failed",
+                                            eventParameters1
+                                        )
+                                        DataIncorrectToast(context = mContext)
                                     } else {
                                         AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                         ingredients.add(
@@ -118,9 +180,13 @@ fun IngredientsScreen(
                                                 cost.value.toInt()
                                             )
                                         )
-                                        name.value = "q"
-                                        weight.value = "1"
-                                        cost.value = "1"
+                                        create(
+                                            mContext, retrofitAPI, jwtToken, IngredientRequestModel(
+                                                name.value,
+                                                weight.value.toInt(),
+                                                cost.value.toInt()
+                                            )
+                                        )
                                     }
                                 }
                             ) {
@@ -218,10 +284,96 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
     }
 }
 
-private fun mToast(context: Context) {
+@OptIn(DelicateCoroutinesApi::class)
+private fun findAll(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    ingredientsResponse: MutableList<IngredientResponseModel>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.findAllIngredients("Bearer ".plus(jwtToken.value))
+        onResultFindAll(res, ingredientsResponse)
+    }
+//    var model: List<IngredientResponseModel>? = null
+//    call!!.enqueue(object : Callback<List<IngredientResponseModel>?> {
+//        override fun onResponse(
+//            call: Call<List<IngredientResponseModel>?>,
+//            response: Response<List<IngredientResponseModel>?>
+//        ) {
+//            if (response.isSuccessful) {
+//                model = response.body()
+//                for (ing in model!!) {
+//                    ingredientsResponse.add(ing)
+//                }
+//                Toast.makeText(ctx, "Response Code : " + response.code() + "\n", Toast.LENGTH_SHORT)
+//                    .show()
+//            } else {
+//                Toast.makeText(
+//                    ctx,
+//                    "Response Code : " + response.code() + "\n" + "Ошибка получения ингредиентов",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//        }
+//
+//        override fun onFailure(call: Call<List<IngredientResponseModel>?>, t: Throwable) {
+//        }
+//    })
+}
+
+fun onResultFindAll(
+    result: Response<List<IngredientResponseModel>?>?,
+    ingredientsResponse: MutableList<IngredientResponseModel>
+) {
+    if (result!!.body() != null) {
+        if (result.body()!!.isNotEmpty()) {
+            for (ing in result.body()!!) {
+                ingredientsResponse.add(ing)
+            }
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun create(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    ingredientRequestModel: IngredientRequestModel
+) {
+//    CoroutineScope(Dispatchers.IO).launch {
+//        val response = retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
+//
+//        withContext(Dispatchers.Main) {
+//            if (response!!.isSuccessful) {
+//                onResultCreate(response, ctx)
+//
+//            } else {
+//
+//                Toast.makeText(
+//                    ctx,
+//                    "Response Code : " + response.code(),
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//
+//            }
+//        }
+//    }
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
+        onResultCreate(res, ctx)
+    }
+}
+
+fun onResultCreate(
+    result: Response<IngredientResponseModel?>?,
+    ctx: Context
+) {
     Toast.makeText(
-        context,
-        "Некорректные данные",
-        Toast.LENGTH_LONG
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
     ).show()
 }
