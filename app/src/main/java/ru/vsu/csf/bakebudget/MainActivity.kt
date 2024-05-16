@@ -74,7 +74,6 @@ class MainActivity : ComponentActivity() {
 
                 val ingredients = remember { mutableStateListOf<IngredientModel>() }
                 val ingredientsSet = remember { mutableSetOf<IngredientModel>() }
-
                 val ingredientsResponse = remember {
                     mutableStateListOf<IngredientResponseModel>()
                 }
