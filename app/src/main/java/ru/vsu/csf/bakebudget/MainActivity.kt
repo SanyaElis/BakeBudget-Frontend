@@ -74,6 +74,8 @@ class MainActivity : ComponentActivity() {
                 val isLoggedIn = remember { mutableStateOf(false) }
 
                 val ingredients = remember {mutableStateListOf<IngredientModel>()}
+                val ingredientsSet = remember {mutableSetOf<IngredientModel>()}
+
                 val ingredientsResponse = remember {
                     mutableStateListOf<IngredientResponseModel>()
                 }
@@ -137,7 +139,8 @@ class MainActivity : ComponentActivity() {
                         OrderModel(0, products[2], 3000, 1000)
                     )
                 }
-                NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings, orders, jwtToken, isDataReceivedIngredients, ingredientsResponse)
+                NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings, orders, jwtToken, isDataReceivedIngredients, ingredientsResponse,
+                    ingredientsSet)
             }
         }
     }
@@ -146,7 +149,8 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
                  , products: MutableList<ProductModel>, ingredientsInRecipe : MutableList<IngredientInProductModel>, outgoings: MutableList<OutgoingModel>,
-                 orders: MutableList<OrderModel>, jwtToken: MutableState<String>, isDataReceivedIngredients : MutableState<Boolean>, ingredientsResponse : MutableList<IngredientResponseModel>) {
+                 orders: MutableList<OrderModel>, jwtToken: MutableState<String>, isDataReceivedIngredients : MutableState<Boolean>, ingredientsResponse : MutableList<IngredientResponseModel>,
+                 ingredientsSet : MutableSet<IngredientModel>) {
         NavHost(
             navController = navController,
             startDestination = "home"
@@ -164,7 +168,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "ingredients") {
-                IngredientsScreen(navController, ingredients, isLogged, retrofitAPI, jwtToken, isDataReceivedIngredients, ingredientsResponse)
+                IngredientsScreen(navController, ingredients, isLogged, retrofitAPI, jwtToken, isDataReceivedIngredients, ingredientsResponse, ingredientsSet)
             }
 
             composable(route = "passwordReset") {
