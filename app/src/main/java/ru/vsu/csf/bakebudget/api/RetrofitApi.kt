@@ -3,6 +3,7 @@ package ru.vsu.csf.bakebudget.api
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -22,6 +23,7 @@ interface RetrofitAPI {
     fun login(@Body userModel: UserSignInRequestModel?): Call<UserSignInResponseModel?>?
 
 //___________________________________________________________________________________________________________________________________
+
     @GET("ingredients/findAll")
     suspend fun findAllIngredients(@Header("Authorization") authorization: String): Response<List<IngredientResponseModel>?>?
 
@@ -30,4 +32,11 @@ interface RetrofitAPI {
 
     @PUT("ingredients/update/{id}")
     suspend fun updateIngredient(@Path("id") id: Int, @Body ingredientModel: IngredientRequestModel?, @Header("Authorization") authorization: String): Response<IngredientResponseModel?>?
+
+    @DELETE("ingredients/delete/{id}")
+    suspend fun deleteIngredient(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
+
+    //___________________________________________________________________________________________________________________________________
+
+
 }
