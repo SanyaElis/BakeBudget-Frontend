@@ -67,7 +67,8 @@ fun IngredientsScreen(
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     isDataReceivedIngredients: MutableState<Boolean>,
-    ingredientsResponse: MutableList<IngredientResponseModel>
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    ingredientsSet : MutableSet<IngredientModel>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
@@ -165,7 +166,7 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
-                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null) {
+                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null || ingredientsSet.contains(IngredientModel(name.value,weight.value.toInt(), cost.value.toInt()))) {
                                         AppMetrica.reportEvent(
                                             "Ingredient add failed",
                                             eventParameters1
@@ -180,6 +181,11 @@ fun IngredientsScreen(
                                                 cost.value.toInt()
                                             )
                                         )
+                                        ingredientsSet.add(IngredientModel(
+                                            name.value,
+                                            weight.value.toInt(),
+                                            cost.value.toInt()
+                                        ))
                                         create(
                                             mContext, retrofitAPI, jwtToken, IngredientRequestModel(
                                                 name.value,
