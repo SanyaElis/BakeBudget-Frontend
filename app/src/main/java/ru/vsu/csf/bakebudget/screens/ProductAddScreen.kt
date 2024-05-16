@@ -3,7 +3,6 @@ package ru.vsu.csf.bakebudget.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +50,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
@@ -65,6 +63,10 @@ import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isCostValid
+import ru.vsu.csf.bakebudget.utils.isNameValid
+import ru.vsu.csf.bakebudget.utils.isWeightValid
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -151,8 +153,8 @@ fun ProductAddScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    if (name.value.isEmpty() || estimatedWeight.value.toIntOrNull() == null) {
-                                        DataIncorrectToast(context = mContext)
+                                    if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
+                                        dataIncorrectToast(context = mContext)
                                     } else {
                                         products.add(
                                             ProductModel(
@@ -306,11 +308,11 @@ fun AlertDialog2(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (weight.value.toIntOrNull() != null) {
+                    if (isWeightValid(weight.value)) {
                         ingredients.add(IngredientInProductModel(ingredientsAll[selectedItemIndex.intValue].name, weight = weight.value.toInt()))
                         onConfirmation()
                     } else {
-                        DataIncorrectToast(context)
+                        dataIncorrectToast(context)
                     }
                 }
             ) {

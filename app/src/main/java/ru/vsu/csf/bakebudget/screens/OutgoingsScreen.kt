@@ -50,6 +50,9 @@ import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isCostValid
+import ru.vsu.csf.bakebudget.utils.isNameValid
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -103,8 +106,8 @@ fun OutgoingsScreen(navController: NavHostController,
                             OutgoingAdd(name, value)
                             TextButton(
                                 onClick = {
-                                    if (name.value.isEmpty() || value.value.isEmpty() || value.value.toIntOrNull() == null ) {
-                                        mToast(context = mContext)
+                                    if (!(isNameValid(name.value) && isCostValid(value.value))) {
+                                        dataIncorrectToast(context = mContext)
                                     } else {
                                         productsAll[selectedItemIndex.intValue].outgoings.add(
                                             OutgoingModel(
@@ -214,12 +217,4 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
             }
         }
     }
-}
-
-private fun mToast(context: Context) {
-    Toast.makeText(
-        context,
-        "Некорректные данные",
-        Toast.LENGTH_LONG
-    ).show()
 }

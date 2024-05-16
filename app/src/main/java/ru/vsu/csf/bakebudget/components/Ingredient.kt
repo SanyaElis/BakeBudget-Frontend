@@ -31,13 +31,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isCostValid
+import ru.vsu.csf.bakebudget.utils.isNameValid
+import ru.vsu.csf.bakebudget.utils.isWeightValid
 
 @Composable
 fun Ingredient(
@@ -162,15 +165,16 @@ fun AlertDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null || ingredientsSet.contains(
+                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(
                             IngredientModel(
                                 name.value,
                                 weight.value.toInt(),
                                 cost.value.toInt()
                             )
                         )
+                                )
                     ) {
-                        DataIncorrectToast(context)
+                        dataIncorrectToast(context)
                     } else {
                         update(
                             context, retrofitAPI, jwtToken, ingredient, IngredientRequestModel(

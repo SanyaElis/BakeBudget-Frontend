@@ -22,10 +22,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isCostValid
+import ru.vsu.csf.bakebudget.utils.isNameValid
 
 @Composable
 fun Outgoing(outgoing: OutgoingModel, color: Color, outgoings: MutableList<OutgoingModel>) {
@@ -117,8 +119,8 @@ fun AlertDialog3(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (name.value.isEmpty() || value.value.toIntOrNull() == null) {
-                        DataIncorrectToast(context = context)
+                    if (!isNameValid(name.value) || !isCostValid(value.value)) {
+                        dataIncorrectToast(context = context)
                     } else {
                         outgoings.remove(cost)
                         outgoings.add(

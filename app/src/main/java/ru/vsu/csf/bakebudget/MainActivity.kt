@@ -1,10 +1,8 @@
 package ru.vsu.csf.bakebudget
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -58,6 +56,7 @@ class MainActivity : ComponentActivity() {
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
     private val retrofitAPI: RetrofitAPI = retrofit.create(RetrofitAPI::class.java)
+
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnrememberedMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,8 +72,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val isLoggedIn = remember { mutableStateOf(false) }
 
-                val ingredients = remember {mutableStateListOf<IngredientModel>()}
-                val ingredientsSet = remember {mutableSetOf<IngredientModel>()}
+                val ingredients = remember { mutableStateListOf<IngredientModel>() }
+                val ingredientsSet = remember { mutableSetOf<IngredientModel>() }
 
                 val ingredientsResponse = remember {
                     mutableStateListOf<IngredientResponseModel>()
@@ -127,9 +126,30 @@ class MainActivity : ComponentActivity() {
                 }
                 val products = remember {
                     mutableStateListOf(
-                        ProductModel(null, R.drawable.cake, "Тортик 1", ingredientsInRecipe1, outgoings1, 1000),
-                        ProductModel(null, R.drawable.cake, "Тортик 2", ingredientsInRecipe2, outgoings2,1000),
-                        ProductModel(null, R.drawable.cake, "Тортик 3", ingredientsInRecipe3, outgoings3,1000)
+                        ProductModel(
+                            null,
+                            R.drawable.cake,
+                            "Тортик 1",
+                            ingredientsInRecipe1,
+                            outgoings1,
+                            1000
+                        ),
+                        ProductModel(
+                            null,
+                            R.drawable.cake,
+                            "Тортик 2",
+                            ingredientsInRecipe2,
+                            outgoings2,
+                            1000
+                        ),
+                        ProductModel(
+                            null,
+                            R.drawable.cake,
+                            "Тортик 3",
+                            ingredientsInRecipe3,
+                            outgoings3,
+                            1000
+                        )
                     )
                 }
                 val orders = remember {
@@ -139,18 +159,38 @@ class MainActivity : ComponentActivity() {
                         OrderModel(0, products[2], 3000, 1000)
                     )
                 }
-                NavGraph(navController = navController, ingredients, isLoggedIn, products, ingredientsInRecipe, outgoings, orders, jwtToken, isDataReceivedIngredients, ingredientsResponse,
-                    ingredientsSet)
+                NavGraph(
+                    navController = navController,
+                    ingredients,
+                    isLoggedIn,
+                    products,
+                    ingredientsInRecipe,
+                    outgoings,
+                    orders,
+                    jwtToken,
+                    isDataReceivedIngredients,
+                    ingredientsResponse,
+                    ingredientsSet
+                )
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
-    fun NavGraph(navController: NavHostController, ingredients : MutableList<IngredientModel>, isLogged : MutableState<Boolean>
-                 , products: MutableList<ProductModel>, ingredientsInRecipe : MutableList<IngredientInProductModel>, outgoings: MutableList<OutgoingModel>,
-                 orders: MutableList<OrderModel>, jwtToken: MutableState<String>, isDataReceivedIngredients : MutableState<Boolean>, ingredientsResponse : MutableList<IngredientResponseModel>,
-                 ingredientsSet : MutableSet<IngredientModel>) {
+    fun NavGraph(
+        navController: NavHostController,
+        ingredients: MutableList<IngredientModel>,
+        isLogged: MutableState<Boolean>,
+        products: MutableList<ProductModel>,
+        ingredientsInRecipe: MutableList<IngredientInProductModel>,
+        outgoings: MutableList<OutgoingModel>,
+        orders: MutableList<OrderModel>,
+        jwtToken: MutableState<String>,
+        isDataReceivedIngredients: MutableState<Boolean>,
+        ingredientsResponse: MutableList<IngredientResponseModel>,
+        ingredientsSet: MutableSet<IngredientModel>
+    ) {
         NavHost(
             navController = navController,
             startDestination = "home"
@@ -168,7 +208,16 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "ingredients") {
-                IngredientsScreen(navController, ingredients, isLogged, retrofitAPI, jwtToken, isDataReceivedIngredients, ingredientsResponse, ingredientsSet)
+                IngredientsScreen(
+                    navController,
+                    ingredients,
+                    isLogged,
+                    retrofitAPI,
+                    jwtToken,
+                    isDataReceivedIngredients,
+                    ingredientsResponse,
+                    ingredientsSet
+                )
             }
 
             composable(route = "passwordReset") {
@@ -180,13 +229,25 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "productAdd") {
-                ProductAddScreen(navController, ingredientsInRecipe, ingredients, isLogged, products, outgoings)
+                ProductAddScreen(
+                    navController,
+                    ingredientsInRecipe,
+                    ingredients,
+                    isLogged,
+                    products,
+                    outgoings
+                )
             }
 
             composable(route = "products/{id}", arguments = listOf(navArgument(name = "id") {
                 type = NavType.IntType
             })) { backstackEntry ->
-                ProductView(navController = navController, ingredientsAll = ingredients, isLogged = isLogged, product = products[backstackEntry.arguments?.getInt("id")!!])
+                ProductView(
+                    navController = navController,
+                    ingredientsAll = ingredients,
+                    isLogged = isLogged,
+                    product = products[backstackEntry.arguments?.getInt("id")!!]
+                )
             }
 
             composable(route = "outgoings") {
@@ -210,12 +271,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-fun DataIncorrectToast(context: Context) {
-    Toast.makeText(
-        context,
-        "Некорректные данные",
-        Toast.LENGTH_LONG
-    ).show()
 }

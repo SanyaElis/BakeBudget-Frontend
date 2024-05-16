@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.components
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -28,12 +27,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.screens.DropdownMenuBox
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isWeightValid
 
 @Composable
 fun IngredientInRecipe(
@@ -146,7 +146,7 @@ fun AlertDialog1(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (weight.value.toIntOrNull() != null) {
+                    if (isWeightValid(weight.value)) {
                         ingredients.remove(ingredient)
                         ingredients.add(
                             IngredientInProductModel(
@@ -156,7 +156,7 @@ fun AlertDialog1(
                         )
                         onConfirmation()
                     } else {
-                        DataIncorrectToast(context = context)
+                        dataIncorrectToast(context = context)
                     }
                 }
             ) {
