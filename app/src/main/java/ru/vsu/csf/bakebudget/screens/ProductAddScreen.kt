@@ -51,6 +51,7 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
@@ -60,6 +61,7 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -76,7 +78,10 @@ fun ProductAddScreen(
     ingredientsAll: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
     products: MutableList<ProductModel>,
-    outgoings: MutableList<OutgoingModel>
+    outgoings: MutableList<OutgoingModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    productsResponse: MutableList<ProductResponseModel>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
@@ -158,6 +163,7 @@ fun ProductAddScreen(
                                     } else {
                                         products.add(
                                             ProductModel(
+                                                0,
                                                 selectedImageUri.value,
                                                 R.drawable.cake,
                                                 name.value,

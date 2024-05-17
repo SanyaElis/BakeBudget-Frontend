@@ -30,6 +30,7 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.screens.CalculationScreen
 import ru.vsu.csf.bakebudget.screens.OutgoingsScreen
 import ru.vsu.csf.bakebudget.screens.ProductAddScreen
@@ -124,39 +125,18 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 val products = remember {
-                    mutableStateListOf(
-                        ProductModel(
-                            null,
-                            R.drawable.cake,
-                            "Тортик 1",
-                            ingredientsInRecipe1,
-                            outgoings1,
-                            1000
-                        ),
-                        ProductModel(
-                            null,
-                            R.drawable.cake,
-                            "Тортик 2",
-                            ingredientsInRecipe2,
-                            outgoings2,
-                            1000
-                        ),
-                        ProductModel(
-                            null,
-                            R.drawable.cake,
-                            "Тортик 3",
-                            ingredientsInRecipe3,
-                            outgoings3,
-                            1000
-                        )
-                    )
+                    mutableStateListOf<ProductModel>()
                 }
+                val productsResponse = remember {
+                    mutableStateListOf<ProductResponseModel>()
+                }
+                val isDataReceivedProducts = remember {
+                    mutableStateOf(false)
+                }
+
+
                 val orders = remember {
-                    mutableStateListOf(
-                        OrderModel(0, products[0], 1000, 2000),
-                        OrderModel(0, products[1], 100, 200),
-                        OrderModel(0, products[2], 3000, 1000)
-                    )
+                    mutableStateListOf<OrderModel>()
                 }
                 NavGraph(
                     navController = navController,
@@ -169,7 +149,9 @@ class MainActivity : ComponentActivity() {
                     jwtToken,
                     isDataReceivedIngredients,
                     ingredientsResponse,
-                    ingredientsSet
+                    ingredientsSet,
+                    isDataReceivedProducts,
+                    productsResponse
                 )
             }
         }
@@ -188,7 +170,9 @@ class MainActivity : ComponentActivity() {
         jwtToken: MutableState<String>,
         isDataReceivedIngredients: MutableState<Boolean>,
         ingredientsResponse: MutableList<IngredientResponseModel>,
-        ingredientsSet: MutableSet<IngredientModel>
+        ingredientsSet: MutableSet<IngredientModel>,
+        isDataReceivedProducts: MutableState<Boolean>,
+        productsResponse: MutableList<ProductResponseModel>
     ) {
         NavHost(
             navController = navController,
@@ -224,7 +208,11 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "products") {
-                ProductsScreen(navController, products, ingredients, isLogged)
+                ProductsScreen(navController, products, ingredients, isLogged,
+                    retrofitAPI,
+                    jwtToken,
+                    isDataReceivedProducts,
+                    productsResponse)
             }
 
             composable(route = "productAdd") {
@@ -234,7 +222,10 @@ class MainActivity : ComponentActivity() {
                     ingredients,
                     isLogged,
                     products,
-                    outgoings
+                    outgoings,
+                    retrofitAPI,
+                    jwtToken,
+                    productsResponse
                 )
             }
 

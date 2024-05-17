@@ -334,7 +334,7 @@ private fun findAll(
 //    })
 }
 
-fun onResultFindAll(
+private fun onResultFindAll(
     result: Response<List<IngredientResponseModel>?>?,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
