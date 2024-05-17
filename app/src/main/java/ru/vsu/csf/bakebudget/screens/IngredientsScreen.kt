@@ -94,7 +94,7 @@ fun IngredientsScreen(
     }
 
     if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
-        findAll(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+        findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
@@ -297,7 +297,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
 }
 
 @OptIn(DelicateCoroutinesApi::class)
-private fun findAll(
+fun findAllIngredients(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,

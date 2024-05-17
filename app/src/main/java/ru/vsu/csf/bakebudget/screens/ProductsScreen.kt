@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerState
@@ -67,7 +66,11 @@ fun ProductsScreen(
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     isDataReceivedProducts: MutableState<Boolean>,
-    productsResponse: MutableList<ProductResponseModel>
+    productsResponse: MutableList<ProductResponseModel>,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    isDataReceivedIngredients: MutableState<Boolean>,
+    ingredients: MutableList<IngredientModel>,
+    ingredientsSet: MutableSet<IngredientModel>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
@@ -78,8 +81,12 @@ fun ProductsScreen(
     }
     val eventParameters1 = "{\"button_clicked\":\"product_add\"}"
 
+    if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
+        findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+        isDataReceivedIngredients.value = true
+    }
     if (jwtToken.value != "" && !isDataReceivedProducts.value) {
-        findAll(mContext, retrofitAPI, jwtToken, productsResponse)
+        findAllProducts(mContext, retrofitAPI, jwtToken, productsResponse)
         isDataReceivedProducts.value = true
     }
     if (products.isEmpty() && productsResponse.isNotEmpty()) {
@@ -97,6 +104,24 @@ fun ProductsScreen(
                         mutableStateListOf<OutgoingModel>()
                     },
                     product.weight
+                )
+            )
+        }
+    }
+    if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
+        for (ingredient in ingredientsResponse) {
+            ingredients.add(
+                IngredientModel(
+                    ingredient.name,
+                    ingredient.weight,
+                    ingredient.cost
+                )
+            )
+            ingredientsSet.add(
+                IngredientModel(
+                    ingredient.name,
+                    ingredient.weight,
+                    ingredient.cost
                 )
             )
         }
@@ -211,7 +236,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
 }
 
 @OptIn(DelicateCoroutinesApi::class)
-private fun findAll(
+fun findAllProducts(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,

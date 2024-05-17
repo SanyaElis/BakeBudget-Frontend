@@ -109,21 +109,6 @@ class MainActivity : ComponentActivity() {
                 val ingredientsInRecipe = remember {
                     mutableStateListOf<IngredientInProductModel>()
                 }
-                val ingredientsInRecipe1 = remember {
-                    mutableStateListOf(
-                        IngredientInProductModel("Молоко", 100),
-                    )
-                }
-                val ingredientsInRecipe2 = remember {
-                    mutableStateListOf(
-                        IngredientInProductModel("Молоко", 100),
-                    )
-                }
-                val ingredientsInRecipe3 = remember {
-                    mutableStateListOf(
-                        IngredientInProductModel("Молоко", 100),
-                    )
-                }
                 val products = remember {
                     mutableStateListOf<ProductModel>()
                 }
@@ -212,7 +197,12 @@ class MainActivity : ComponentActivity() {
                     retrofitAPI,
                     jwtToken,
                     isDataReceivedProducts,
-                    productsResponse)
+                    productsResponse,
+                    ingredientsResponse,
+                    isDataReceivedIngredients,
+                    ingredients,
+                    ingredientsSet
+                )
             }
 
             composable(route = "productAdd") {
@@ -225,7 +215,8 @@ class MainActivity : ComponentActivity() {
                     outgoings,
                     retrofitAPI,
                     jwtToken,
-                    productsResponse
+                    productsResponse,
+                    ingredientsResponse
                 )
             }
 
@@ -236,7 +227,8 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     ingredientsAll = ingredients,
                     isLogged = isLogged,
-                    product = products[backstackEntry.arguments?.getInt("id")!!]
+                    product = products[backstackEntry.arguments?.getInt("id")!!],
+                    ingredientsResponse
                 )
             }
 

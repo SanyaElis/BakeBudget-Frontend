@@ -150,6 +150,8 @@ fun AlertDialog1(
                         ingredients.remove(ingredient)
                         ingredients.add(
                             IngredientInProductModel(
+                                ingredient.ingredientId,
+                                ingredient.productId,
                                 ingredientsAll[selectedItemIndex.intValue].name,
                                 weight.value.toInt()
                             )

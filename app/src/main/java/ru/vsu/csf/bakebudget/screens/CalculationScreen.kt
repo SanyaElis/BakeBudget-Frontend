@@ -178,10 +178,12 @@ fun CalculationScreen(
                                         fontSize = 24.sp
                                     )
                                 }
-                                DropdownMenuProducts(
-                                    productsAll,
-                                    selectedItemIndex = selectedItemIndex
-                                )
+                                if (productsAll.isNotEmpty()) {
+                                    DropdownMenuProducts(
+                                        productsAll,
+                                        selectedItemIndex = selectedItemIndex
+                                    )
+                                }//TODO:make mock if there is no products
                                 Spacer(modifier = Modifier.padding(12.dp))
                                 Box(modifier = Modifier.padding(start = 8.dp)) {
                                     Text(

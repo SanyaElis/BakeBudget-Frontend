@@ -9,6 +9,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
@@ -46,8 +47,9 @@ interface RetrofitAPI {
     suspend fun findAllProducts(@Header("Authorization") authorization: String): Response<List<ProductResponseModel>?>?
 
     @POST("products/create")
-    suspend fun createProduct(@Body ingredientModel: ProductRequestModel?, @Header("Authorization") authorization: String): Response<ProductResponseModel?>?
+    suspend fun createProduct(@Body productModel: ProductRequestModel?, @Header("Authorization") authorization: String): Response<ProductResponseModel?>?
 
     @POST("products/addIngredient")
     suspend fun addIngredientToProduct(@Body ingredientModel: IngredientInProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
+
 }

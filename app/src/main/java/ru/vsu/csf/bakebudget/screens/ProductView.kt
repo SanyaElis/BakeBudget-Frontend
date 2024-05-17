@@ -46,6 +46,7 @@ import ru.vsu.csf.bakebudget.components.IngredientInRecipe
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -60,7 +61,8 @@ fun ProductView(
     navController: NavHostController,
     ingredientsAll: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
-    product: ProductModel
+    product: ProductModel,
+    ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     val mContext = LocalContext.current
 
@@ -96,7 +98,9 @@ fun ProductView(
                 ingredientsAll = ingredientsAll,
                 selectedItemIndex,
                 product.ingredients,
-                mContext
+                mContext,
+                ingredientsResponse,
+                product.id
             )
         }
     }
