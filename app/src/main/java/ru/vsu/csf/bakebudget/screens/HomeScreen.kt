@@ -69,6 +69,9 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
         mutableStateOf(item[0])
     }
 
+    //TODO: добавить кнопку типа начать, чтобы открылось выпадающее меню или придумать другой вариант
+
+
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {

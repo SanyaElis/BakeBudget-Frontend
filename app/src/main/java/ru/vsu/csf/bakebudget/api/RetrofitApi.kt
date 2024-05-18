@@ -60,6 +60,9 @@ interface RetrofitAPI {
     @PUT("products/updateIngredient")
     suspend fun updateIngredientInProduct(@Body ingredientModel: IngredientInProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
 
+    @PUT("products/update/{id}")
+    suspend fun updateProduct(@Path("id") id: Int, @Body productModel: ProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
+
     @HTTP(method = "DELETE", path = "products/deleteIngredient", hasBody = true)
     suspend fun deleteIngredientInProduct(@Body ingredientModel: IngredientInProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
 }

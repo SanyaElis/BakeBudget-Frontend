@@ -72,6 +72,8 @@ fun OutgoingsScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+    //TODO: подсказки пользователям, когда нет ингредиентов
+
     val name = remember {
         mutableStateOf("")
     }

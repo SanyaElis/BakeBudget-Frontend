@@ -97,6 +97,7 @@ fun IngredientsScreen(
         findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
+        //TODO: подсказки пользователям, когда нет ингредиентов
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {
             ingredients.add(

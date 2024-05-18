@@ -70,6 +70,8 @@ fun OrdersScreen(
     val orders0 = remember {
         mutableStateListOf<OrderModel>()
     }
+    //TODO: подсказки пользователям, когда нет изделий
+
     val orders1 = remember {
         mutableStateListOf<OrderModel>()
     }

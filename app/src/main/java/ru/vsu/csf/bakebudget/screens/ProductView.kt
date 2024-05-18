@@ -56,6 +56,8 @@ import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
+import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
+import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -172,6 +174,7 @@ fun ProductView(
                                             ingredient.productId = product.id
                                             addIngredient(mContext, retrofitAPI, jwtToken, ingredient)
                                         }
+                                        updateProduct(mContext, retrofitAPI, jwtToken, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id)
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
                                         if (selectedImageUri.value != null) {
@@ -318,4 +321,30 @@ private fun onResultFindAllIngredientsInProduct(
             }
         }
     }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun updateProduct(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    product: ProductRequestModel,
+    productId : Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.updateProduct(productId, product, "Bearer ".plus(jwtToken.value))
+        onResultUpdateProduct(res, ctx)
+    }
+}
+
+private fun onResultUpdateProduct(
+    result: Response<Void>?,
+    ctx: Context
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
 }

@@ -192,6 +192,8 @@ fun AlertDialog1(
                                 )
                             )
                         }
+                        //TODO: подумать над тем, чтобы все таки производить сохранение на кнопку, а не сразу
+
                         ingredients.remove(ingredient)
                         ingredients.add(
                             IngredientInProductModel(
