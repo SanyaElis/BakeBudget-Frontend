@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.models
 
 data class OutgoingModel(
+    var id: Int,
     val name: String,
-    val value: Int
+    val cost: Int
 )

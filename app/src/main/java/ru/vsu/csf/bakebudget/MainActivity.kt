@@ -85,28 +85,11 @@ class MainActivity : ComponentActivity() {
 
                 val outgoings = remember {
                     mutableStateListOf(
-                        OutgoingModel("Вода", 100),
-                        OutgoingModel("Электроэнергия", 150)
+                        OutgoingModel(0, "Вода", 100),
+                        OutgoingModel(0, "Электроэнергия", 150)
                     )
                 }
-                val outgoings1 = remember {
-                    mutableStateListOf(
-                        OutgoingModel("Вода", 100),
-                        OutgoingModel("Электроэнергия", 150)
-                    )
-                }
-                val outgoings2 = remember {
-                    mutableStateListOf(
-                        OutgoingModel("Вода", 100),
-                        OutgoingModel("Электроэнергия", 150)
-                    )
-                }
-                val outgoings3 = remember {
-                    mutableStateListOf(
-                        OutgoingModel("Вода", 100),
-                        OutgoingModel("Электроэнергия", 150)
-                    )
-                }
+
                 val ingredientsInRecipe = remember {
                     mutableStateListOf<IngredientInProductModel>()
                 }
@@ -119,7 +102,9 @@ class MainActivity : ComponentActivity() {
                 val isDataReceivedProducts = remember {
                     mutableStateOf(false)
                 }
-
+                val isDataReceivedOutgoings = remember {
+                    mutableStateOf(false)
+                }
 
                 val orders = remember {
                     mutableStateListOf<OrderModel>()
@@ -137,7 +122,8 @@ class MainActivity : ComponentActivity() {
                     ingredientsResponse,
                     ingredientsSet,
                     isDataReceivedProducts,
-                    productsResponse
+                    productsResponse,
+                    isDataReceivedOutgoings
                 )
             }
         }
@@ -160,7 +146,8 @@ class MainActivity : ComponentActivity() {
         ingredientsResponse: MutableList<IngredientResponseModel>,
         ingredientsSet: MutableSet<IngredientModel>,
         isDataReceivedProducts: MutableState<Boolean>,
-        productsResponse: MutableList<ProductResponseModel>
+        productsResponse: MutableList<ProductResponseModel>,
+        isDataReceivedOutgoings : MutableState<Boolean>
     ) {
         NavHost(
             navController = navController,
@@ -238,7 +225,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "outgoings") {
-                OutgoingsScreen(navController, outgoings, products, isLogged)
+                OutgoingsScreen(navController, outgoings, products, isLogged, retrofitAPI, jwtToken, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, isDataReceivedOutgoings)
             }
 
             composable(route = "reports") {

@@ -67,7 +67,7 @@ fun Outgoing(outgoing: OutgoingModel, color: Color, outgoings: MutableList<Outgo
             }
             Box(modifier = Modifier.fillMaxWidth(0.8f),
                 contentAlignment = Alignment.CenterEnd) {
-                Text(text = (outgoing.value.toString() + " руб."), maxLines = 3)
+                Text(text = (outgoing.cost.toString() + " руб."), maxLines = 3)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }
@@ -87,15 +87,15 @@ fun AlertDialog3(
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String,
-    cost: OutgoingModel,
+    outgoing: OutgoingModel,
     outgoings: MutableList<OutgoingModel>,
     context : Context
 ) {
     val name = remember {
-        mutableStateOf(cost.name)
+        mutableStateOf(outgoing.name)
     }
     val value = remember {
-        mutableStateOf(cost.value.toString())
+        mutableStateOf(outgoing.cost.toString())
     }
     androidx.compose.material3.AlertDialog(
         containerColor = SideBack,
@@ -122,9 +122,10 @@ fun AlertDialog3(
                     if (!isNameValid(name.value) || !isCostValid(value.value)) {
                         dataIncorrectToast(context = context)
                     } else {
-                        outgoings.remove(cost)
+                        outgoings.remove(outgoing)
                         outgoings.add(
                             OutgoingModel(
+                                0,
                                 name.value,
                                 value.value.toInt(),
                             )
@@ -139,7 +140,7 @@ fun AlertDialog3(
         dismissButton = {
             TextButton(
                 onClick = {
-                    outgoings.remove(cost)
+                    outgoings.remove(outgoing)
                     onDismissRequest()
                 }
             ) {
