@@ -228,7 +228,9 @@ class MainActivity : ComponentActivity() {
                     ingredientsAll = ingredients,
                     isLogged = isLogged,
                     product = products[backstackEntry.arguments?.getInt("id")!!],
-                    ingredientsResponse
+                    ingredientsResponse,
+                    retrofitAPI,
+                    jwtToken
                 )
             }
 

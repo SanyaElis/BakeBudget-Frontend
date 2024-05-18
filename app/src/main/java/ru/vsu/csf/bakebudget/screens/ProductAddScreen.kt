@@ -96,7 +96,7 @@ fun ProductAddScreen(
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     val productId = remember {
-        mutableIntStateOf(0)
+        mutableIntStateOf(-1)
     }
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
@@ -185,17 +185,22 @@ fun ProductAddScreen(
                                                 addIngredient(mContext, retrofitAPI, jwtToken, ingredient)
                                             }
                                         }
+                                        val ings = mutableListOf<IngredientInProductModel>()
+                                        for (ing in ingredients) {
+                                            ings.add(ing)
+                                        }
                                         products.add(
                                             ProductModel(
                                                 0,
                                                 selectedImageUri.value,
                                                 R.drawable.cake,
                                                 name.value,
-                                                ingredients,
+                                                ings,
                                                 outgoings,
                                                 estimatedWeight.value.toInt()
                                             )
                                         )
+                                        ingredients.clear()
                                         navController.navigate("products")
                                     }
                                 }
@@ -227,7 +232,7 @@ fun ProductAddScreen(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients, ingredientsAll, selectedItemIndex)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, jwtToken)
                                 last = num
                             }
                             item {
@@ -441,7 +446,7 @@ private fun onResultCreate(
 }
 
 @OptIn(DelicateCoroutinesApi::class)
-private fun addIngredient(
+fun addIngredient(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
@@ -460,7 +465,7 @@ private fun addIngredient(
     }
 }
 
-private fun onResultAdd(
+fun onResultAdd(
     result: Response<Void>?,
     ctx: Context,
 ) {

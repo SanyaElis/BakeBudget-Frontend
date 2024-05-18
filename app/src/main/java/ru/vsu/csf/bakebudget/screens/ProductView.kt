@@ -1,7 +1,9 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +28,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,14 +41,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -54,6 +64,8 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import java.util.Locale
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -62,7 +74,9 @@ fun ProductView(
     ingredientsAll: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
     product: ProductModel,
-    ingredientsResponse: MutableList<IngredientResponseModel>
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
 ) {
     val mContext = LocalContext.current
 
@@ -83,6 +97,15 @@ fun ProductView(
     val selectedImageUri = remember {
         mutableStateOf<Uri?>(null)
     }
+    val productDataReceived = remember {
+        mutableStateOf(false);
+    }
+
+    if (product.ingredients.isEmpty() && !productDataReceived.value) {
+        findAllIngredientsInProduct(mContext, retrofitAPI, jwtToken, product, ingredientsResponse)
+        productDataReceived.value = true
+    }
+
 
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
@@ -145,6 +168,10 @@ fun ProductView(
                                     if (!(isWeightValid(estimatedWeight.value) && isNameValid(name.value))) {
                                         dataIncorrectToast(mContext)
                                     } else {
+                                        for (ingredient in product.ingredients) {
+                                            ingredient.productId = product.id
+                                            addIngredient(mContext, retrofitAPI, jwtToken, ingredient)
+                                        }
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
                                         if (selectedImageUri.value != null) {
@@ -181,7 +208,7 @@ fun ProductView(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(product.ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, jwtToken)
                                 last = num
                             }
                             item {
@@ -246,6 +273,48 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName:
             ) {
                 Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
                 Text(text = "КОЛИЧЕСТВО В РЕЦЕПТЕ", color = Color.White, fontSize = 12.sp)
+            }
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun findAllIngredientsInProduct(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    product: ProductModel,
+    ingredientsResponse: MutableList<IngredientResponseModel>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.findAllIngredientsInProduct(product.id, "Bearer ".plus(jwtToken.value)
+            )
+        onResultFindAllIngredientsInProduct(res, ctx, product, ingredientsResponse)
+    }
+}
+
+private fun onResultFindAllIngredientsInProduct(
+    result: Response<List<IngredientInProductRequestModel>?>?,
+    ctx: Context,
+    product: ProductModel,
+    ingredientsResponse: MutableList<IngredientResponseModel>
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    if (result.body() != null) {
+        if (result.body()!!.isNotEmpty()) {
+            for (ing in result.body()!!) {
+                var ingName = ""
+                for (ingr in ingredientsResponse) {
+                    if (ingr.id == ing.ingredientId) {
+                        ingName = ingr.name
+                    }
+                }
+                product.ingredients.add(IngredientInProductModel(ing.ingredientId, product.id, ingName, ing.weight))
             }
         }
     }
