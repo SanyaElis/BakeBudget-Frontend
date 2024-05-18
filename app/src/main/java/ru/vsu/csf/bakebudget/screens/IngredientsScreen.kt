@@ -54,9 +54,11 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.withContext
-import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isCostValid
+import ru.vsu.csf.bakebudget.utils.isNameValid
+import ru.vsu.csf.bakebudget.utils.isWeightValid
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -143,19 +145,20 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
-                                    if (name.value.isEmpty() || weight.value.isEmpty() || weight.value.toIntOrNull() == null || cost.value.isEmpty() || cost.value.toIntOrNull() == null || ingredientsSet.contains(
+                                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(
                                             IngredientModel(
                                                 name.value,
                                                 weight.value.toInt(),
                                                 cost.value.toInt()
                                             )
                                         )
+                                                )
                                     ) {
                                         AppMetrica.reportEvent(
                                             "Ingredient add failed",
                                             eventParameters1
                                         )
-                                        DataIncorrectToast(context = mContext)
+                                        dataIncorrectToast(context = mContext)
                                     } else {
                                         AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                         ingredients.add(

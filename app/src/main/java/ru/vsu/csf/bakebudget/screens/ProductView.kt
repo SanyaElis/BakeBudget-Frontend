@@ -1,9 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.vsu.csf.bakebudget.DataIncorrectToast
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
@@ -52,6 +49,9 @@ import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isNameValid
+import ru.vsu.csf.bakebudget.utils.isWeightValid
 import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -138,8 +138,8 @@ fun ProductView(
                             }
                             TextButton(
                                 onClick = {
-                                    if (estimatedWeight.value.toIntOrNull() == null || name.value.isEmpty()) {
-                                        DataIncorrectToast(mContext)
+                                    if (!(isWeightValid(estimatedWeight.value) && isNameValid(name.value))) {
+                                        dataIncorrectToast(mContext)
                                     } else {
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
