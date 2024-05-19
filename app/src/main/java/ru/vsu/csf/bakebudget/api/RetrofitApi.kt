@@ -12,8 +12,10 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
+import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
@@ -65,4 +67,19 @@ interface RetrofitAPI {
 
     @HTTP(method = "DELETE", path = "products/deleteIngredient", hasBody = true)
     suspend fun deleteIngredientInProduct(@Body ingredientModel: IngredientInProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
+
+    //___________________________________________________________________________________________________________________________________
+
+    @GET("outgoings/findAll/productId/{id}")
+    suspend fun findAllOutgoingsInProduct(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<List<OutgoingModel>?>?
+
+    @POST("outgoings/create")
+    suspend fun createOutgoing(@Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<OutgoingModel?>?
+
+    @PUT("outgoings/update/{id}")
+    suspend fun updateOutgoing(@Path("id") id: Int, @Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
+
+    @DELETE("outgoings/delete/{id}")
+    suspend fun deleteOutgoing(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
+
 }
