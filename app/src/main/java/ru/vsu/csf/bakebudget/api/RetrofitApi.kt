@@ -70,9 +70,16 @@ interface RetrofitAPI {
 
     //___________________________________________________________________________________________________________________________________
 
+    @GET("outgoings/findAll/productId/{id}")
+    suspend fun findAllOutgoingsInProduct(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<List<OutgoingModel>?>?
+
     @POST("outgoings/create")
     suspend fun createOutgoing(@Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<OutgoingModel?>?
 
-    @GET("outgoings/findAll/productId/{id}")
-    suspend fun findAllOutgoingsInProduct(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<List<OutgoingModel>?>?
+    @PUT("outgoings/update/{id}")
+    suspend fun updateOutgoing(@Path("id") id: Int, @Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
+
+    @DELETE("outgoings/delete/{id}")
+    suspend fun deleteOutgoing(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
+
 }

@@ -224,13 +224,17 @@ fun OutgoingsScreen(
                                         Outgoing(
                                             outgoing,
                                             SideBack,
-                                            productsAll[selectedItemIndex.intValue].outgoings
+                                            productsAll[selectedItemIndex.intValue].outgoings,
+                                            productsAll[selectedItemIndex.intValue].id,
+                                            retrofitAPI, jwtToken
                                         )
                                     } else {
                                         Outgoing(
                                             outgoing,
                                             Back2,
-                                            productsAll[selectedItemIndex.intValue].outgoings
+                                            productsAll[selectedItemIndex.intValue].outgoings,
+                                            productsAll[selectedItemIndex.intValue].id,
+                                            retrofitAPI, jwtToken
                                         )
                                     }
                                 }
