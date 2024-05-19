@@ -3,6 +3,7 @@ package ru.vsu.csf.bakebudget.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,8 +50,13 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
@@ -60,6 +66,11 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
+import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
+import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -67,6 +78,8 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -76,8 +89,15 @@ fun ProductAddScreen(
     ingredientsAll: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
     products: MutableList<ProductModel>,
-    outgoings: MutableList<OutgoingModel>
+    outgoings: MutableList<OutgoingModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    productsResponse: MutableList<ProductResponseModel>,
+    ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
+    val productId = remember {
+        mutableIntStateOf(-1)
+    }
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -111,7 +131,9 @@ fun ProductAddScreen(
                 ingredientsAll = ingredientsAll,
                 selectedItemIndex,
                 ingredients,
-                context = mContext
+                context = mContext,
+                ingredientsResponse,
+                productId.intValue
             )
         }
     }
@@ -156,16 +178,29 @@ fun ProductAddScreen(
                                     if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
                                         dataIncorrectToast(context = mContext)
                                     } else {
+                                        create(mContext,retrofitAPI,jwtToken,ProductRequestModel(name.value, estimatedWeight.value.toInt()), productId)
+                                        Timer().schedule(3000) {
+                                            for (ingredient in ingredients) {
+                                                ingredient.productId = productId.intValue
+                                                addIngredient(mContext, retrofitAPI, jwtToken, ingredient)
+                                            }
+                                        }
+                                        val ings = mutableListOf<IngredientInProductModel>()
+                                        for (ing in ingredients) {
+                                            ings.add(ing)
+                                        }
                                         products.add(
                                             ProductModel(
+                                                0,
                                                 selectedImageUri.value,
                                                 R.drawable.cake,
                                                 name.value,
-                                                ingredients,
+                                                ings,
                                                 outgoings,
                                                 estimatedWeight.value.toInt()
                                             )
                                         )
+                                        ingredients.clear()
                                         navController.navigate("products")
                                     }
                                 }
@@ -197,7 +232,7 @@ fun ProductAddScreen(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients, ingredientsAll, selectedItemIndex)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, jwtToken)
                                 last = num
                             }
                             item {
@@ -276,11 +311,10 @@ fun AlertDialog2(
     ingredientsAll: MutableList<IngredientModel>,
     selectedItemIndex: MutableIntState,
     ingredients: MutableList<IngredientInProductModel>,
-    context: Context
+    context: Context,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    productId: Int
 ) {
-    val name = remember {
-        mutableStateOf("")
-    }
     val weight = remember {
         mutableStateOf("")
     }
@@ -309,7 +343,7 @@ fun AlertDialog2(
             TextButton(
                 onClick = {
                     if (isWeightValid(weight.value)) {
-                        ingredients.add(IngredientInProductModel(ingredientsAll[selectedItemIndex.intValue].name, weight = weight.value.toInt()))
+                        ingredients.add(IngredientInProductModel(ingredientsResponse[selectedItemIndex.intValue].id, productId, ingredientsAll[selectedItemIndex.intValue].name, weight = weight.value.toInt()))
                         onConfirmation()
                     } else {
                         dataIncorrectToast(context)
@@ -379,4 +413,65 @@ fun DropdownMenuBox(ingredientsAll: MutableList<IngredientModel>, selectedItemIn
             }
         }
     }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun create(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    productRequestModel: ProductRequestModel,
+    productId : MutableState<Int>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(jwtToken.value))
+        onResultCreate(res, ctx, productId)
+    }
+}
+
+private fun onResultCreate(
+    result: Response<ProductResponseModel?>?,
+    ctx: Context,
+    productId : MutableState<Int>
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    if (result.body() != null) {
+        productId.value = result.body()!!.id
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun addIngredient(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    ingredientInProductModel: IngredientInProductModel
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.addIngredientToProduct(
+                IngredientInProductRequestModel(
+                    ingredientInProductModel.ingredientId,
+                    ingredientInProductModel.productId,
+                    ingredientInProductModel.weight
+                ), "Bearer ".plus(jwtToken.value)
+            )
+        onResultAdd(res, ctx)
+    }
+}
+
+fun onResultAdd(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
 }

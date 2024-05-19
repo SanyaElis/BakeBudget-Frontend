@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.components
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,10 +29,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.screens.DropdownMenuBox
+import ru.vsu.csf.bakebudget.screens.addIngredient
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isWeightValid
@@ -42,6 +53,9 @@ fun IngredientInRecipe(
     ingredients: MutableList<IngredientInProductModel>,
     ingredientsAll: MutableList<IngredientModel>,
     selectedItemIndex: MutableIntState,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
 ) {
     val mContext = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -61,7 +75,10 @@ fun IngredientInRecipe(
                 ingredients,
                 ingredientsAll,
                 selectedItemIndex,
-                mContext
+                mContext,
+                ingredientsResponse,
+                retrofitAPI,
+                jwtToken
             )
         }
     }
@@ -114,7 +131,10 @@ fun AlertDialog1(
     ingredients: MutableList<IngredientInProductModel>,
     ingredientsAll: MutableList<IngredientModel>,
     selectedItemIndex: MutableIntState,
-    context: Context
+    context: Context,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
 ) {
     val weight = remember {
         mutableStateOf(ingredient.weight.toString())
@@ -146,10 +166,39 @@ fun AlertDialog1(
         confirmButton = {
             TextButton(
                 onClick = {
+                    //TODO:same ingredients NOOOOO
                     if (isWeightValid(weight.value)) {
+                        var id = ingredient.ingredientId
+                        for (ingr in ingredientsResponse) {
+                            if (ingredientsAll[selectedItemIndex.intValue].name == ingr.name && ingredientsAll[selectedItemIndex.intValue].weight == ingr.weight && ingredientsAll[selectedItemIndex.intValue].cost == ingr.cost) {
+                                id = ingr.id
+                            }
+                        }
+                        if (ingredient.productId != -1) {
+                            deleteIngredient(
+                                context, retrofitAPI, jwtToken, IngredientInProductModel(
+                                    ingredient.ingredientId,
+                                    ingredient.productId,
+                                    ingredientsAll[selectedItemIndex.intValue].name,
+                                    ingredient.weight
+                                )
+                            )
+                            addIngredient(
+                                context, retrofitAPI, jwtToken, IngredientInProductModel(
+                                    id,
+                                    ingredient.productId,
+                                    ingredientsAll[selectedItemIndex.intValue].name,
+                                    weight.value.toInt()
+                                )
+                            )
+                        }
+                        //TODO: подумать над тем, чтобы все таки производить сохранение на кнопку, а не сразу
+
                         ingredients.remove(ingredient)
                         ingredients.add(
                             IngredientInProductModel(
+                                id,
+                                ingredient.productId,
                                 ingredientsAll[selectedItemIndex.intValue].name,
                                 weight.value.toInt()
                             )
@@ -166,6 +215,16 @@ fun AlertDialog1(
         dismissButton = {
             TextButton(
                 onClick = {
+                    if (ingredient.productId != -1) {
+                        deleteIngredient(
+                            context, retrofitAPI, jwtToken, IngredientInProductModel(
+                                ingredient.ingredientId,
+                                ingredient.productId,
+                                ingredientsAll[selectedItemIndex.intValue].name,
+                                ingredient.weight
+                            )
+                        )
+                    }
                     ingredients.remove(ingredient)
                     onDismissRequest()
                 }
@@ -174,4 +233,66 @@ fun AlertDialog1(
             }
         }
     )
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun updateIngredient(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    ingredientInProductModel: IngredientInProductModel
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.updateIngredientInProduct(
+                IngredientInProductRequestModel(
+                    ingredientInProductModel.ingredientId,
+                    ingredientInProductModel.productId,
+                    ingredientInProductModel.weight
+                ), "Bearer ".plus(jwtToken.value)
+            )
+        onResultUpdate(res, ctx)
+    }
+}
+
+private fun onResultUpdate(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun deleteIngredient(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    ingredientInProductModel: IngredientInProductModel
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.deleteIngredientInProduct(
+                IngredientInProductRequestModel(
+                    ingredientInProductModel.ingredientId,
+                    ingredientInProductModel.productId,
+                    ingredientInProductModel.weight
+                ), "Bearer ".plus(jwtToken.value)
+            )
+        onResultDelete(res, ctx)
+    }
+}
+
+private fun onResultDelete(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
 }

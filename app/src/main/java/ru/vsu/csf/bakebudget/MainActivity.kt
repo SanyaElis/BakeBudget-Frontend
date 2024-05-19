@@ -30,6 +30,7 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.screens.CalculationScreen
 import ru.vsu.csf.bakebudget.screens.OutgoingsScreen
 import ru.vsu.csf.bakebudget.screens.ProductAddScreen
@@ -46,6 +47,7 @@ import ru.vsu.csf.bakebudget.screens.ReportsScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
+    //TODO:больше метрик и воронок
     private val API_KEY = "a6d5ee67-5fc9-4adf-bab5-17730828b9b5"
     private val url = "http://185.251.89.195:8080/api/"
     private val gson = GsonBuilder()
@@ -74,7 +76,6 @@ class MainActivity : ComponentActivity() {
 
                 val ingredients = remember { mutableStateListOf<IngredientModel>() }
                 val ingredientsSet = remember { mutableSetOf<IngredientModel>() }
-
                 val ingredientsResponse = remember {
                     mutableStateListOf<IngredientResponseModel>()
                 }
@@ -109,55 +110,19 @@ class MainActivity : ComponentActivity() {
                 val ingredientsInRecipe = remember {
                     mutableStateListOf<IngredientInProductModel>()
                 }
-                val ingredientsInRecipe1 = remember {
-                    mutableStateListOf(
-                        IngredientInProductModel("Молоко", 100),
-                    )
-                }
-                val ingredientsInRecipe2 = remember {
-                    mutableStateListOf(
-                        IngredientInProductModel("Молоко", 100),
-                    )
-                }
-                val ingredientsInRecipe3 = remember {
-                    mutableStateListOf(
-                        IngredientInProductModel("Молоко", 100),
-                    )
-                }
                 val products = remember {
-                    mutableStateListOf(
-                        ProductModel(
-                            null,
-                            R.drawable.cake,
-                            "Тортик 1",
-                            ingredientsInRecipe1,
-                            outgoings1,
-                            1000
-                        ),
-                        ProductModel(
-                            null,
-                            R.drawable.cake,
-                            "Тортик 2",
-                            ingredientsInRecipe2,
-                            outgoings2,
-                            1000
-                        ),
-                        ProductModel(
-                            null,
-                            R.drawable.cake,
-                            "Тортик 3",
-                            ingredientsInRecipe3,
-                            outgoings3,
-                            1000
-                        )
-                    )
+                    mutableStateListOf<ProductModel>()
                 }
+                val productsResponse = remember {
+                    mutableStateListOf<ProductResponseModel>()
+                }
+                val isDataReceivedProducts = remember {
+                    mutableStateOf(false)
+                }
+
+
                 val orders = remember {
-                    mutableStateListOf(
-                        OrderModel(0, products[0], 1000, 2000),
-                        OrderModel(0, products[1], 100, 200),
-                        OrderModel(0, products[2], 3000, 1000)
-                    )
+                    mutableStateListOf<OrderModel>()
                 }
                 NavGraph(
                     navController = navController,
@@ -170,11 +135,15 @@ class MainActivity : ComponentActivity() {
                     jwtToken,
                     isDataReceivedIngredients,
                     ingredientsResponse,
-                    ingredientsSet
+                    ingredientsSet,
+                    isDataReceivedProducts,
+                    productsResponse
                 )
             }
         }
     }
+
+    //TODO:везде добавить подписи (гр.) (руб.)
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
@@ -189,7 +158,9 @@ class MainActivity : ComponentActivity() {
         jwtToken: MutableState<String>,
         isDataReceivedIngredients: MutableState<Boolean>,
         ingredientsResponse: MutableList<IngredientResponseModel>,
-        ingredientsSet: MutableSet<IngredientModel>
+        ingredientsSet: MutableSet<IngredientModel>,
+        isDataReceivedProducts: MutableState<Boolean>,
+        productsResponse: MutableList<ProductResponseModel>
     ) {
         NavHost(
             navController = navController,
@@ -225,7 +196,16 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "products") {
-                ProductsScreen(navController, products, ingredients, isLogged)
+                ProductsScreen(navController, products, ingredients, isLogged,
+                    retrofitAPI,
+                    jwtToken,
+                    isDataReceivedProducts,
+                    productsResponse,
+                    ingredientsResponse,
+                    isDataReceivedIngredients,
+                    ingredients,
+                    ingredientsSet
+                )
             }
 
             composable(route = "productAdd") {
@@ -235,7 +215,11 @@ class MainActivity : ComponentActivity() {
                     ingredients,
                     isLogged,
                     products,
-                    outgoings
+                    outgoings,
+                    retrofitAPI,
+                    jwtToken,
+                    productsResponse,
+                    ingredientsResponse
                 )
             }
 
@@ -246,7 +230,10 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     ingredientsAll = ingredients,
                     isLogged = isLogged,
-                    product = products[backstackEntry.arguments?.getInt("id")!!]
+                    product = products[backstackEntry.arguments?.getInt("id")!!],
+                    ingredientsResponse,
+                    retrofitAPI,
+                    jwtToken
                 )
             }
 

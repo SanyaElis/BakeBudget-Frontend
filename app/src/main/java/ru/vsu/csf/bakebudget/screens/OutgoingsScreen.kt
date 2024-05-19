@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -56,10 +57,11 @@ import ru.vsu.csf.bakebudget.utils.isNameValid
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun OutgoingsScreen(navController: NavHostController,
-                    outgoings: MutableList<OutgoingModel>,
-                    productsAll: MutableList<ProductModel>,
-                    isLogged: MutableState<Boolean>
+fun OutgoingsScreen(
+    navController: NavHostController,
+    outgoings: MutableList<OutgoingModel>,
+    productsAll: MutableList<ProductModel>,
+    isLogged: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
@@ -70,6 +72,8 @@ fun OutgoingsScreen(navController: NavHostController,
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+    //TODO: подсказки пользователям, когда нет ингредиентов
+
     val name = remember {
         mutableStateOf("")
     }
@@ -144,18 +148,43 @@ fun OutgoingsScreen(navController: NavHostController,
                                 .padding(top = 20.dp)
                         ) {
                             item {
-                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                    DropdownMenuProducts(
-                                        productsAll,
-                                        selectedItemIndex = selectedItemIndex
-                                    )
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (productsAll.isNotEmpty()) {
+                                        DropdownMenuProducts(
+                                            productsAll,
+                                            selectedItemIndex = selectedItemIndex
+                                        )
+                                    }
                                 }
                             }
-                            itemsIndexed(productsAll[selectedItemIndex.intValue].outgoings) { num, outgoing ->
-                                if (num % 2 == 0) {
-                                    Outgoing(outgoing, SideBack, productsAll[selectedItemIndex.intValue].outgoings)
-                                } else {
-                                    Outgoing(outgoing, Back2, productsAll[selectedItemIndex.intValue].outgoings)
+                            if (productsAll.isNotEmpty()) {
+                                itemsIndexed(productsAll[selectedItemIndex.intValue].outgoings) { num, outgoing ->
+                                    if (num % 2 == 0) {
+                                        Outgoing(
+                                            outgoing,
+                                            SideBack,
+                                            productsAll[selectedItemIndex.intValue].outgoings
+                                        )
+                                    } else {
+                                        Outgoing(
+                                            outgoing,
+                                            Back2,
+                                            productsAll[selectedItemIndex.intValue].outgoings
+                                        )
+                                    }
+                                }
+                            } else{
+                                item {
+                                    Box(
+                                        modifier = Modifier.padding(8.dp),
+                                        contentAlignment = Alignment.BottomCenter
+                                    ) {
+                                        Text(text = "Сначала добавьте готовые изделия", fontSize = 20.sp,
+                                            textAlign = TextAlign.Center)
+                                    }
                                 }
                             }
                         }
