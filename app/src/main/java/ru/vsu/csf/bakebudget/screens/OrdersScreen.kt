@@ -98,6 +98,7 @@ fun OrdersScreen(
     val orders3 = remember {
         mutableStateListOf<OrderModel>()
     }
+    //TODO: подгружать все, а то заказы не грузятся
 
     val state1 = remember { mutableStateOf(true) }
     val state2 = remember { mutableStateOf(true) }
@@ -109,6 +110,8 @@ fun OrdersScreen(
         findAllOrders(mContext, retrofitAPI, jwtToken, orders, productsAll)
         isDataReceivedOrders.value = true
     }
+
+
 
     sortByState(orders, orders0, orders1, orders2, orders3)
 

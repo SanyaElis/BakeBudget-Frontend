@@ -45,11 +45,11 @@ fun SideMenu(
 ) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
-        MenuItemModel(R.drawable.orders, "Заказы"),
         MenuItemModel(R.drawable.ingredients, "Ингредиенты"),
         MenuItemModel(R.drawable.products, "Готовые изделия"),
-        MenuItemModel(R.drawable.calculation, "Расчет стоимости"),
         MenuItemModel(R.drawable.outgoings, "Издержки"),
+        MenuItemModel(R.drawable.calculation, "Расчет стоимости"),
+        MenuItemModel(R.drawable.orders, "Заказы"),
         MenuItemModel(R.drawable.reports, "Отчеты"),
         MenuItemModel(R.drawable.groups, "Группы"),
     )
@@ -102,7 +102,7 @@ fun SideMenu(
                         } else {
                             when (selectedItem.value) {
                                 items[0] -> navController.navigate("home")
-                                items[1] -> {
+                                items[5] -> {
                                     AppMetrica.reportEvent(
                                         "Orders slide menu click",
                                         eventParameters3
@@ -110,7 +110,7 @@ fun SideMenu(
                                     navController.navigate("orders")
                                 }
 
-                                items[2] -> {
+                                items[1] -> {
                                     AppMetrica.reportEvent(
                                         "Ingredients slide menu click",
                                         eventParameters1
@@ -118,7 +118,7 @@ fun SideMenu(
                                     navController.navigate("ingredients")
                                 }
 
-                                items[3] -> {
+                                items[2] -> {
                                     AppMetrica.reportEvent(
                                         "Products slide menu click",
                                         eventParameters2
@@ -134,7 +134,7 @@ fun SideMenu(
                                     navController.navigate("calculation")
                                 }
 
-                                items[5] -> {
+                                items[3] -> {
                                     AppMetrica.reportEvent(
                                         "Outgoings slide menu click",
                                         eventParameters5
