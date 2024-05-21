@@ -176,7 +176,7 @@ fun OutgoingsScreen(
                                         dataIncorrectToast(context = mContext)
                                     } else {
                                         createOutgoing(mContext, retrofitAPI, jwtToken, OutgoingRequestModel(name.value,
-                                            value.value.toInt(), productsAll[selectedItemIndex.intValue].id), productsAll[selectedItemIndex.intValue], productsAll)
+                                            value.value.toInt()), productsAll[selectedItemIndex.intValue], productsAll)
                                     }
                                 }
                             ) {
@@ -188,6 +188,7 @@ fun OutgoingsScreen(
                         }
                     }
                 }
+                    //TODO:выводить на какой вес
             }) {
                 Surface(
                     modifier = Modifier
@@ -321,7 +322,7 @@ private fun createOutgoing(
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.createOutgoing(outgoingModel, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.createOutgoing(product.id, outgoingModel, "Bearer ".plus(jwtToken.value))
         onResultCreateOutgoing(res, ctx, product, productsAll)
     }
 }

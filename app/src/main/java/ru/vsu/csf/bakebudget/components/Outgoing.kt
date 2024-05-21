@@ -201,7 +201,7 @@ private fun updateOutgoing(
         val res =
             retrofitAPI.updateOutgoing(
                 outgoing.id,
-                OutgoingRequestModel(outgoing.name, outgoing.cost, productId),
+                OutgoingRequestModel(outgoing.name, outgoing.cost),
                 "Bearer ".plus(jwtToken.value)
             )
         onResultUpdateOutgoing(res, ctx)

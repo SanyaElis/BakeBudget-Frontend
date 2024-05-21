@@ -25,6 +25,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,18 +39,33 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
+import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
+import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
+import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
+import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
+import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameOrder
 import java.util.Random
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -58,8 +74,13 @@ fun CalculationScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
     productsAll: MutableList<ProductModel>,
-    orders: MutableList<OrderModel>
-) {
+    orders: MutableList<OrderModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    isDataReceivedProducts: MutableState<Boolean>,
+    productsResponse: MutableList<ProductResponseModel>,
+
+    ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.calculation, "Расчет стоимости"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -85,7 +106,38 @@ fun CalculationScreen(
         mutableIntStateOf(0)
     }
 
+    val resultPriceLast = remember {
+        mutableIntStateOf(0)
+    }
+    val same = remember {
+        mutableStateOf(false)
+    }
+
     val eventParameters1 = "{\"button_clicked\":\"order_created\"}"
+
+    if (jwtToken.value != "" && !isDataReceivedProducts.value) {
+        findAllProducts(mContext, retrofitAPI, jwtToken, productsResponse)
+        isDataReceivedProducts.value = true
+    }
+    if (productsAll.isEmpty() && productsResponse.isNotEmpty()) {
+        for (product in productsResponse) {
+            productsAll.add(
+                ProductModel(
+                    product.id,
+                    null,
+                    R.drawable.cake,
+                    product.name,
+                    remember {
+                        mutableStateListOf<IngredientInProductModel>()
+                    },
+                    remember {
+                        mutableStateListOf<OutgoingModel>()
+                    },
+                    product.weight
+                )
+            )
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -115,11 +167,27 @@ fun CalculationScreen(
                         Column {
                             TextButton(
                                 onClick = {
-                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(extraCost.value))) {
+                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(
+                                            extraCost.value
+                                        ))
+                                    ) {
                                         dataIncorrectToast(mContext)
                                     } else {
-                                        costPrice.intValue = (1000..5000).random()
-                                        resultPrice.intValue = costPrice.intValue*(100+markup.value.toInt())/100 + extraCost.value.toInt()
+                                        calculate(
+                                            mContext,
+                                            retrofitAPI,
+                                            jwtToken,
+                                            CalculationRequestModel(
+                                                extraCost.value.toInt(),
+                                                (100 + markup.value.toInt()) / 100.0,
+                                                weight.value.toInt(),
+                                                productsAll[selectedItemIndex.intValue].id
+                                            ),
+                                            costPrice,
+                                            resultPrice
+                                        )
+//                                        costPrice.intValue = (1000..5000).random()
+//                                        resultPrice.intValue = costPrice.intValue*(100+markup.value.toInt())/100 + extraCost.value.toInt()
                                     }
                                 }
                             ) {
@@ -130,19 +198,37 @@ fun CalculationScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(extraCost.value))) {
+                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(
+                                            extraCost.value
+                                        ))
+                                    ) {
                                         dataIncorrectToast(mContext)
                                     } else {
+                                        //TODO:заблокировать повторное создание
                                         AppMetrica.reportEvent("Order created", eventParameters1)
-                                        orders.add(
-                                            OrderModel(
-                                                0,
-                                                productsAll[selectedItemIndex.intValue],
-                                                resultPrice.intValue,
-                                                weight.value.toInt()
+                                        if (resultPriceLast.intValue == resultPrice.intValue || same.value) {
+                                            sameOrder(mContext)
+                                            same.value = true
+                                        } else {
+                                            create(
+                                                mContext,
+                                                retrofitAPI,
+                                                jwtToken,
+                                                OrderRequestModel(
+                                                    productsAll[selectedItemIndex.intValue].name,
+                                                    "",
+                                                    extraCost.value.toInt(),
+                                                    weight.value.toInt(),
+                                                    (100 + markup.value.toInt()) / 100.0,
+                                                    "",
+                                                    "",
+                                                    productsAll[selectedItemIndex.intValue].id
+                                                ),
+                                                orders, productsAll, selectedItemIndex, resultPrice
                                             )
-                                        )
-                                        mToast(mContext)
+                                            resultPriceLast.intValue = resultPrice.intValue
+                                            same.value = false
+                                        }
                                     }
                                 }
                             ) {
@@ -230,6 +316,7 @@ fun CalculationScreen(
                                     )
                                 }
                             }
+                            //TODO:сначала нажал создать заказ до кнопки рассчитать
                             item {
                                 Column {
                                     Spacer(modifier = Modifier.padding(12.dp))
@@ -306,3 +393,83 @@ private fun mToast(context: Context) {
 }
 
 fun IntRange.random() = Random().nextInt((endInclusive + 1) - start) + start
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun calculate(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    calculationRequestModel: CalculationRequestModel,
+    costPrice: MutableState<Int>,
+    resultPrice: MutableState<Int>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.calculate(
+                calculationRequestModel,
+                "Bearer ".plus(jwtToken.value)
+            )
+        onResultCalculate(res, ctx, costPrice, resultPrice)
+    }
+}
+
+private fun onResultCalculate(
+    result: Response<CalculationResponseModel?>?,
+    ctx: Context,
+    costPrice: MutableState<Int>,
+    resultPrice: MutableState<Int>
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    costPrice.value = result.body()!!.costPrice.toInt()
+    resultPrice.value = result.body()!!.finalCost.toInt()
+}
+
+//TODO:разделить на классы
+@OptIn(DelicateCoroutinesApi::class)
+private fun create(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    orderRequestModel: OrderRequestModel,
+    orders : MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>,
+    selectedItemIndex : MutableState<Int>,
+    resultPrice: MutableState<Int>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.createOrder(orderRequestModel, "Bearer ".plus(jwtToken.value))
+        onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, resultPrice)
+    }
+}
+
+private fun onResultCreateOrder(
+    result: Response<OrderResponseModel?>?,
+    ctx: Context,
+    orders : MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>,
+    selectedItemIndex : MutableState<Int>,
+    resultPrice: MutableState<Int>
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    if (result.body()!=null) {
+        orders.add(
+            OrderModel(
+                result.body()!!.id,
+                0,
+                productsAll[selectedItemIndex.value],
+                resultPrice.value,
+                result.body()!!.finalWeight
+            )
+        )
+        mToast(ctx)
+    }
+}

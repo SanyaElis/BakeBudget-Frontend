@@ -105,7 +105,9 @@ class MainActivity : ComponentActivity() {
                 val isDataReceivedOutgoings = remember {
                     mutableStateOf(false)
                 }
-
+                val isDataReceivedOrders = remember {
+                    mutableStateOf(false)
+                }
                 val orders = remember {
                     mutableStateListOf<OrderModel>()
                 }
@@ -237,7 +239,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "calculation") {
-                CalculationScreen(navController, isLogged, products, orders)
+                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, jwtToken, isDataReceivedProducts, productsResponse)
             }
 
             composable(route = "orders") {

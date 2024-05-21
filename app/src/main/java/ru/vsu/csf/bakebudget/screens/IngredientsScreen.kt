@@ -296,7 +296,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
         }
     }
 }
-
+//TODO:делать все имена уникальными
 @OptIn(DelicateCoroutinesApi::class)
 fun findAllIngredients(
     ctx: Context,

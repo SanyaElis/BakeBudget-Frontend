@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,13 +43,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Order
 import ru.vsu.csf.bakebudget.components.OrderStateRow
 import ru.vsu.csf.bakebudget.components.Product
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
@@ -216,3 +224,30 @@ public fun sortByState(orders: MutableList<OrderModel>, orders0: MutableList<Ord
         }
     }
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun findAllOrders(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    orders: MutableList<OrderModel>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
+        onResultFindAllOrders(res, orders)
+    }
+}
+
+private fun onResultFindAllOrders(
+    result: Response<List<OrderResponseModel>?>?,
+    orders: MutableList<OrderModel>
+) {
+    if (result!!.body() != null) {
+        if (result.body()!!.isNotEmpty()) {
+            for (order in result.body()!!) {
+//                orders.add(OrderModel(order.id, 0, null,))
+            }
+        }
+    }
+}
+//TODO:делать все имена уникальными

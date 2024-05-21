@@ -125,7 +125,7 @@ fun SideMenu(
                                     )
                                     navController.navigate("products")
                                 }
-
+                                //TODO:расположить в праивильном порядке
                                 items[4] -> {
                                     AppMetrica.reportEvent(
                                         "Calculation slide menu click",
