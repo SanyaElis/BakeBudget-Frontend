@@ -6,7 +6,5 @@ data class OrderRequestModel(
     val extraExpenses : Int,
     val finalWeight : Int,
     val marginFactor : Double,
-    val creationDate : String,
-    val finishDate : String,
     val productId : Int
 )

@@ -206,22 +206,21 @@ fun CalculationScreen(
                                     } else {
                                         //TODO:заблокировать повторное создание
                                         AppMetrica.reportEvent("Order created", eventParameters1)
-                                        if (resultPriceLast.intValue == resultPrice.intValue || same.value) {
-                                            sameOrder(mContext)
-                                            same.value = true
-                                        } else {
+//                                        if (resultPriceLast.intValue == resultPrice.intValue || same.value) {
+//                                            sameOrder(mContext)
+//                                            same.value = true
+//                                        } else {
                                             create(
                                                 mContext,
                                                 retrofitAPI,
                                                 jwtToken,
                                                 OrderRequestModel(
-                                                    productsAll[selectedItemIndex.intValue].name,
+                                                    //TODO:ввод названия, чтобы одинаковые нельзя было создавать
+                                                    productsAll[selectedItemIndex.intValue].name.plus(productsAll[selectedItemIndex.intValue].id.toString()),
                                                     "",
                                                     extraCost.value.toInt(),
                                                     weight.value.toInt(),
                                                     (100 + markup.value.toInt()) / 100.0,
-                                                    "",
-                                                    "",
                                                     productsAll[selectedItemIndex.intValue].id
                                                 ),
                                                 orders, productsAll, selectedItemIndex, resultPrice
@@ -230,7 +229,7 @@ fun CalculationScreen(
                                             same.value = false
                                         }
                                     }
-                                }
+//                                }
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.button_make_order),
@@ -466,7 +465,7 @@ private fun onResultCreateOrder(
                 result.body()!!.id,
                 0,
                 productsAll[selectedItemIndex.value],
-                resultPrice.value,
+                resultPrice.value.toDouble(),
                 result.body()!!.finalWeight
             )
         )

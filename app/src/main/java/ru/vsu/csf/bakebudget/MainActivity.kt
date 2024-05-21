@@ -125,7 +125,8 @@ class MainActivity : ComponentActivity() {
                     ingredientsSet,
                     isDataReceivedProducts,
                     productsResponse,
-                    isDataReceivedOutgoings
+                    isDataReceivedOutgoings,
+                    isDataReceivedOrders
                 )
             }
         }
@@ -149,7 +150,8 @@ class MainActivity : ComponentActivity() {
         ingredientsSet: MutableSet<IngredientModel>,
         isDataReceivedProducts: MutableState<Boolean>,
         productsResponse: MutableList<ProductResponseModel>,
-        isDataReceivedOutgoings : MutableState<Boolean>
+        isDataReceivedOutgoings : MutableState<Boolean>,
+        isDataReceivedOrders : MutableState<Boolean>
     ) {
         NavHost(
             navController = navController,
@@ -243,7 +245,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "orders") {
-                OrdersScreen(navController, isLogged, orders)
+                OrdersScreen(navController, isLogged, orders, retrofitAPI, jwtToken, isDataReceivedOrders, products)
             }
         }
     }

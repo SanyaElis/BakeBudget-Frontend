@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,8 +54,10 @@ import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Order
 import ru.vsu.csf.bakebudget.components.OrderStateRow
 import ru.vsu.csf.bakebudget.components.Product
+import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -66,8 +69,14 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 fun OrdersScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    orders: MutableList<OrderModel>
+    orders: MutableList<OrderModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    productsAll: MutableList<ProductModel>
 ) {
+    val mContext = LocalContext.current
+
     val item = listOf(MenuItemModel(R.drawable.orders, "Заказы"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -94,6 +103,13 @@ fun OrdersScreen(
     val state2 = remember { mutableStateOf(true) }
     val state3 = remember { mutableStateOf(true) }
     val state4 = remember { mutableStateOf(true) }
+
+
+    if (jwtToken.value != "" && !isDataReceivedOrders.value) {
+        findAllOrders(mContext, retrofitAPI, jwtToken, orders, productsAll)
+        isDataReceivedOrders.value = true
+    }
+
     sortByState(orders, orders0, orders1, orders2, orders3)
 
     ModalNavigationDrawer(
@@ -230,22 +246,29 @@ fun findAllOrders(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
-    orders: MutableList<OrderModel>
+    orders: MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
-        onResultFindAllOrders(res, orders)
+        onResultFindAllOrders(res, orders, productsAll)
     }
 }
 
 private fun onResultFindAllOrders(
     result: Response<List<OrderResponseModel>?>?,
-    orders: MutableList<OrderModel>
+    orders: MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>
 ) {
     if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
             for (order in result.body()!!) {
-//                orders.add(OrderModel(order.id, 0, null,))
+                for (product in productsAll) {
+                    if (product.id == order.productId) {
+                        orders.add(OrderModel(order.id, 0, product, order.finalCost, order.finalWeight))
+                        break
+                    }
+                }
             }
         }
     }

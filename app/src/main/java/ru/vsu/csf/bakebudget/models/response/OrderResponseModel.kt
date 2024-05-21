@@ -5,9 +5,12 @@ data class OrderResponseModel(
     val name : String,
     val description : String,
     val status : String,
+    val costPrice : Double,
+    val finalCost : Double,
     val extraExpenses : Int,
     val finalWeight : Int,
     val marginFactor : Double,
     val creationDate : String,
-    val finishDate : String
+    val finishDate : String,
+    val productId : Int
 )

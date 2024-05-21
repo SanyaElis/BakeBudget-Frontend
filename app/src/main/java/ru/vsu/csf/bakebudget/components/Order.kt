@@ -95,7 +95,7 @@ fun Order(order: OrderModel,
         }
         Column {
             Text(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp), text = order.product.name, color = TextPrimary, fontSize = 16.sp)
-            Text(modifier = Modifier.padding(start = 8.dp), text = order.finalPrice.toString() + " р.", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(modifier = Modifier.padding(start = 8.dp), text = order.finalPrice.toInt().toString() + " р.", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Text(modifier = Modifier.padding(start = 10.dp), text = "за " + order.weight.toString() + " г.", fontSize = 12.sp, color = TextPrimary)
         }
     }
