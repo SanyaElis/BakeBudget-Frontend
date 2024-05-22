@@ -10,3 +10,11 @@ fun dataIncorrectToast(context: Context) {
         Toast.LENGTH_LONG
     ).show()
 }
+
+fun sameOrder(context: Context) {
+    Toast.makeText(
+        context,
+        "Вы недавно добавляли такой же заказ. Уверены, что хотите создать еще один? Если да, то нажмите еще раз",
+        Toast.LENGTH_LONG
+    ).show()
+}

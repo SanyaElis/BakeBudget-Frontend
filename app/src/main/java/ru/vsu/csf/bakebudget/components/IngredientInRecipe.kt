@@ -45,6 +45,8 @@ import ru.vsu.csf.bakebudget.screens.addIngredient
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @Composable
 fun IngredientInRecipe(
@@ -152,10 +154,10 @@ fun AlertDialog1(
             Column {
                 Text(text = dialogText)
                 if (ingredientsAll.isNotEmpty()) {
-                    DropdownMenuBox(
-                        ingredientsAll = ingredientsAll,
-                        selectedItemIndex = selectedItemIndex
-                    )
+//                    DropdownMenuBox(
+//                        ingredientsAll = ingredientsAll,
+//                        selectedItemIndex = selectedItemIndex
+//                    )
                     InputTextField(text = "Вес", weight, 30, true)
                 }
             }
@@ -168,41 +170,17 @@ fun AlertDialog1(
                 onClick = {
                     //TODO:same ingredients NOOOOO
                     if (isWeightValid(weight.value)) {
-                        var id = ingredient.ingredientId
-                        for (ingr in ingredientsResponse) {
-                            if (ingredientsAll[selectedItemIndex.intValue].name == ingr.name && ingredientsAll[selectedItemIndex.intValue].weight == ingr.weight && ingredientsAll[selectedItemIndex.intValue].cost == ingr.cost) {
-                                id = ingr.id
-                            }
-                        }
                         if (ingredient.productId != -1) {
-                            deleteIngredient(
-                                context, retrofitAPI, jwtToken, IngredientInProductModel(
-                                    ingredient.ingredientId,
-                                    ingredient.productId,
-                                    ingredientsAll[selectedItemIndex.intValue].name,
-                                    ingredient.weight
-                                )
-                            )
-                            addIngredient(
-                                context, retrofitAPI, jwtToken, IngredientInProductModel(
-                                    id,
-                                    ingredient.productId,
-                                    ingredientsAll[selectedItemIndex.intValue].name,
-                                    weight.value.toInt()
-                                )
-                            )
-                        }
-                        //TODO: подумать над тем, чтобы все таки производить сохранение на кнопку, а не сразу
-
-                        ingredients.remove(ingredient)
-                        ingredients.add(
-                            IngredientInProductModel(
-                                id,
+                            updateIngredient(context, retrofitAPI, jwtToken, IngredientInProductModel(
+                                ingredient.ingredientId,
                                 ingredient.productId,
                                 ingredientsAll[selectedItemIndex.intValue].name,
                                 weight.value.toInt()
-                            )
-                        )
+                            ))
+                        }
+                        //TODO: подумать над тем, чтобы все таки производить сохранение на кнопку, а не сразу
+
+                        ingredient.weight = weight.value.toInt()
                         onConfirmation()
                     } else {
                         dataIncorrectToast(context = context)
@@ -212,6 +190,7 @@ fun AlertDialog1(
                 Text("Редактировать")
             }
         },
+        //TODO:ломается при редактировании в готовых только добавленных редактирует похже нужного
         dismissButton = {
             TextButton(
                 onClick = {
@@ -276,11 +255,9 @@ private fun deleteIngredient(
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.deleteIngredientInProduct(
-                IngredientInProductRequestModel(
-                    ingredientInProductModel.ingredientId,
-                    ingredientInProductModel.productId,
-                    ingredientInProductModel.weight
-                ), "Bearer ".plus(jwtToken.value)
+                ingredientInProductModel.ingredientId,
+                ingredientInProductModel.productId,
+                "Bearer ".plus(jwtToken.value)
             )
         onResultDelete(res, ctx)
     }

@@ -35,6 +35,7 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -122,7 +123,8 @@ fun ProductAddScreen(
         openAlertDialog.value -> {
             AlertDialog2(
                 onDismissRequest = {
-                    openAlertDialog.value = false },
+                    openAlertDialog.value = false
+                },
                 onConfirmation = {
                     openAlertDialog.value = false
                 },
@@ -178,18 +180,20 @@ fun ProductAddScreen(
                                     if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
                                         dataIncorrectToast(context = mContext)
                                     } else {
-                                        create(mContext,retrofitAPI,jwtToken,ProductRequestModel(name.value, estimatedWeight.value.toInt()), productId)
-                                        Timer().schedule(3000) {
-                                            for (ingredient in ingredients) {
-                                                ingredient.productId = productId.intValue
-                                                addIngredient(mContext, retrofitAPI, jwtToken, ingredient)
-                                            }
-                                        }
-                                        val ings = mutableListOf<IngredientInProductModel>()
+                                        val ings = mutableStateListOf<IngredientInProductModel>()
                                         for (ing in ingredients) {
                                             ings.add(ing)
                                         }
-                                        products.add(
+                                        create(
+                                            mContext,
+                                            retrofitAPI,
+                                            jwtToken,
+                                            ProductRequestModel(
+                                                name.value,
+                                                estimatedWeight.value.toInt()
+                                            ),
+                                            productId,
+                                            products,
                                             ProductModel(
                                                 0,
                                                 selectedImageUri.value,
@@ -200,8 +204,8 @@ fun ProductAddScreen(
                                                 estimatedWeight.value.toInt()
                                             )
                                         )
-                                        ingredients.clear()
                                         navController.navigate("products")
+                                        ingredients.clear()
                                     }
                                 }
                             ) {
@@ -232,11 +236,24 @@ fun ProductAddScreen(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, jwtToken)
+                                IngredientInRecipe(
+                                    ingredient = ingredient,
+                                    if (num % 2 == 0) SideBack else Back2,
+                                    ingredients,
+                                    ingredientsAll,
+                                    selectedItemIndex,
+                                    ingredientsResponse,
+                                    retrofitAPI,
+                                    jwtToken
+                                )
                                 last = num
                             }
                             item {
-                                EstimatedWeightName(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight, name = name)
+                                EstimatedWeightName(
+                                    color = if (last % 2 != 0) SideBack else SideBack,
+                                    estimatedWeight = estimatedWeight,
+                                    name = name
+                                )
                             }
                             item {
                                 ImagePicker(selectedImageUri, null)
@@ -331,7 +348,10 @@ fun AlertDialog2(
             Column {
                 Text(text = dialogText)
                 if (ingredientsAll.isNotEmpty()) {
-                    DropdownMenuBox(ingredientsAll = ingredientsAll, selectedItemIndex = selectedItemIndex)
+                    DropdownMenuBox(
+                        ingredientsAll = ingredientsAll,
+                        selectedItemIndex = selectedItemIndex
+                    )
                     InputTextField(text = "Вес", weight, 30, true)
                 }
             }
@@ -343,7 +363,14 @@ fun AlertDialog2(
             TextButton(
                 onClick = {
                     if (isWeightValid(weight.value)) {
-                        ingredients.add(IngredientInProductModel(ingredientsResponse[selectedItemIndex.intValue].id, productId, ingredientsAll[selectedItemIndex.intValue].name, weight = weight.value.toInt()))
+                        ingredients.add(
+                            IngredientInProductModel(
+                                ingredientsResponse[selectedItemIndex.intValue].id,
+                                productId,
+                                ingredientsAll[selectedItemIndex.intValue].name,
+                                weight = weight.value.toInt()
+                            )
+                        )
                         onConfirmation()
                     } else {
                         dataIncorrectToast(context)
@@ -367,7 +394,10 @@ fun AlertDialog2(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownMenuBox(ingredientsAll: MutableList<IngredientModel>, selectedItemIndex: MutableIntState) {
+fun DropdownMenuBox(
+    ingredientsAll: MutableList<IngredientModel>,
+    selectedItemIndex: MutableIntState
+) {
     var expanded by remember { mutableStateOf(false) }
     val list = mutableListOf<String>()
     for (ingredient in ingredientsAll) {
@@ -421,19 +451,25 @@ private fun create(
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     productRequestModel: ProductRequestModel,
-    productId : MutableState<Int>
+    productId: MutableState<Int>,
+    products: MutableList<ProductModel>,
+    product: ProductModel
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreate(res, ctx, productId)
+        onResultCreate(res, ctx, productId, products, product, retrofitAPI, jwtToken)
     }
 }
 
 private fun onResultCreate(
     result: Response<ProductResponseModel?>?,
     ctx: Context,
-    productId : MutableState<Int>
+    productId: MutableState<Int>,
+    products: MutableList<ProductModel>,
+    product: ProductModel,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
 ) {
     Toast.makeText(
         ctx,
@@ -442,8 +478,23 @@ private fun onResultCreate(
     ).show()
     if (result.body() != null) {
         productId.value = result.body()!!.id
+        product.id = productId.value
+        products.add(
+            product
+        )
+        for (ingredient in product.ingredients) {
+            ingredient.productId = productId.value
+            addIngredient(
+                ctx,
+                retrofitAPI,
+                jwtToken,
+                ingredient
+            )
+        }
     }
 }
+
+//TODO:делать все имена уникальными
 
 @OptIn(DelicateCoroutinesApi::class)
 fun addIngredient(

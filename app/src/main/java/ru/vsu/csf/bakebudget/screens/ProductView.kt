@@ -103,6 +103,7 @@ fun ProductView(
         mutableStateOf(false);
     }
 
+
     if (product.ingredients.isEmpty() && !productDataReceived.value) {
         findAllIngredientsInProduct(mContext, retrofitAPI, jwtToken, product, ingredientsResponse)
         productDataReceived.value = true

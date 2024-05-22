@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -36,19 +37,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Order
 import ru.vsu.csf.bakebudget.components.OrderStateRow
 import ru.vsu.csf.bakebudget.components.Product
+import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
@@ -58,8 +69,14 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 fun OrdersScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    orders: MutableList<OrderModel>
+    orders: MutableList<OrderModel>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    productsAll: MutableList<ProductModel>
 ) {
+    val mContext = LocalContext.current
+
     val item = listOf(MenuItemModel(R.drawable.orders, "Заказы"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -81,11 +98,21 @@ fun OrdersScreen(
     val orders3 = remember {
         mutableStateListOf<OrderModel>()
     }
+    //TODO: подгружать все, а то заказы не грузятся
 
     val state1 = remember { mutableStateOf(true) }
     val state2 = remember { mutableStateOf(true) }
     val state3 = remember { mutableStateOf(true) }
     val state4 = remember { mutableStateOf(true) }
+
+
+    if (jwtToken.value != "" && !isDataReceivedOrders.value) {
+        findAllOrders(mContext, retrofitAPI, jwtToken, orders, productsAll)
+        isDataReceivedOrders.value = true
+    }
+
+
+
     sortByState(orders, orders0, orders1, orders2, orders3)
 
     ModalNavigationDrawer(
@@ -126,25 +153,25 @@ fun OrdersScreen(
                             item(span = { GridItemSpan(2) }) { OrderStateRow("НЕ НАЧАТЫ", state1) }
                             if (state1.value) {
                                 itemsIndexed(orders0) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("В ПРОЦЕССЕ", state2) }
                             if (state2.value) {
                                 itemsIndexed(orders1) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ЗАВЕРШЕНЫ", state3) }
                             if (state3.value) {
                                 itemsIndexed(orders2) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ОТМЕНЕНЫ", state4) }
                             if (state4.value) {
                                 itemsIndexed(orders3) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                         }
@@ -216,3 +243,61 @@ public fun sortByState(orders: MutableList<OrderModel>, orders0: MutableList<Ord
         }
     }
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun findAllOrders(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    orders: MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
+        onResultFindAllOrders(res, orders, productsAll)
+    }
+}
+
+private fun onResultFindAllOrders(
+    result: Response<List<OrderResponseModel>?>?,
+    orders: MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>
+) {
+    if (result!!.body() != null) {
+        if (result.body()!!.isNotEmpty()) {
+            for (order in result.body()!!) {
+                for (product in productsAll) {
+                    if (product.id == order.productId) {
+                        orders.add(OrderModel(order.id, 0, product, order.finalCost, order.finalWeight))
+                        break
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun setStatusOrder(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    order: OrderModel,
+    newStatus : Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
+        onResultSetStatus(res, order, newStatus)
+    }
+}
+
+private fun onResultSetStatus(
+    result: Response<List<OrderResponseModel>?>?,
+    order: OrderModel,
+    newStatus : Int
+) {
+    if (result!!.body() != null) {
+
+    }
+}
+//TODO:делать все имена уникальными

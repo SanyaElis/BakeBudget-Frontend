@@ -105,7 +105,9 @@ class MainActivity : ComponentActivity() {
                 val isDataReceivedOutgoings = remember {
                     mutableStateOf(false)
                 }
-
+                val isDataReceivedOrders = remember {
+                    mutableStateOf(false)
+                }
                 val orders = remember {
                     mutableStateListOf<OrderModel>()
                 }
@@ -123,7 +125,8 @@ class MainActivity : ComponentActivity() {
                     ingredientsSet,
                     isDataReceivedProducts,
                     productsResponse,
-                    isDataReceivedOutgoings
+                    isDataReceivedOutgoings,
+                    isDataReceivedOrders
                 )
             }
         }
@@ -147,7 +150,8 @@ class MainActivity : ComponentActivity() {
         ingredientsSet: MutableSet<IngredientModel>,
         isDataReceivedProducts: MutableState<Boolean>,
         productsResponse: MutableList<ProductResponseModel>,
-        isDataReceivedOutgoings : MutableState<Boolean>
+        isDataReceivedOutgoings : MutableState<Boolean>,
+        isDataReceivedOrders : MutableState<Boolean>
     ) {
         NavHost(
             navController = navController,
@@ -237,11 +241,11 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "calculation") {
-                CalculationScreen(navController, isLogged, products, orders)
+                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, jwtToken, isDataReceivedProducts, productsResponse)
             }
 
             composable(route = "orders") {
-                OrdersScreen(navController, isLogged, orders)
+                OrdersScreen(navController, isLogged, orders, retrofitAPI, jwtToken, isDataReceivedOrders, products)
             }
         }
     }

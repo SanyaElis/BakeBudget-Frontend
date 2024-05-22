@@ -11,16 +11,21 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
+import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
+import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 
 interface RetrofitAPI {
@@ -65,16 +70,16 @@ interface RetrofitAPI {
     @PUT("products/update/{id}")
     suspend fun updateProduct(@Path("id") id: Int, @Body productModel: ProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
 
-    @HTTP(method = "DELETE", path = "products/deleteIngredient", hasBody = true)
-    suspend fun deleteIngredientInProduct(@Body ingredientModel: IngredientInProductRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
+    @HTTP(method = "DELETE", path = "products/deleteIngredient/{ingredientId}/{productId}", hasBody = true)
+    suspend fun deleteIngredientInProduct(@Path("ingredientId") ingredientId: Int, @Path("productId") productId: Int, @Header("Authorization") authorization: String): Response<Void>?
 
     //___________________________________________________________________________________________________________________________________
 
-    @GET("outgoings/findAll/productId/{id}")
-    suspend fun findAllOutgoingsInProduct(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<List<OutgoingModel>?>?
+    @GET("outgoings/findAll/{productId}")
+    suspend fun findAllOutgoingsInProduct(@Path("productId") productId: Int, @Header("Authorization") authorization: String): Response<List<OutgoingModel>?>?
 
-    @POST("outgoings/create")
-    suspend fun createOutgoing(@Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<OutgoingModel?>?
+    @POST("outgoings/create/{productId}")
+    suspend fun createOutgoing(@Path("productId") productId: Int, @Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<OutgoingModel?>?
 
     @PUT("outgoings/update/{id}")
     suspend fun updateOutgoing(@Path("id") id: Int, @Body outgoingModel: OutgoingRequestModel?, @Header("Authorization") authorization: String): Response<Void>?
@@ -82,4 +87,19 @@ interface RetrofitAPI {
     @DELETE("outgoings/delete/{id}")
     suspend fun deleteOutgoing(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
 
+    //___________________________________________________________________________________________________________________________________
+
+    @GET("orders/findAll")
+    suspend fun findAllOrders(@Header("Authorization") authorization: String): Response<List<OrderResponseModel>?>?
+
+    @POST("orders/calculate")
+    suspend fun calculate(@Body calculationRequestModel: CalculationRequestModel, @Header("Authorization") authorization: String): Response<CalculationResponseModel?>?
+
+    @POST("orders/create")
+    suspend fun createOrder(@Body orderRequestModel: OrderRequestModel, @Header("Authorization") authorization: String): Response<OrderResponseModel?>?
+
+    @PUT("orders/setStatus/{id}")
+    suspend fun setStatus(@Path("id") id: Int, @Query("status") status: String, @Header("Authorization") authorization: String): Response<Void>?
+
 }
+//TODO: не разделить бы на отдельные классы?
