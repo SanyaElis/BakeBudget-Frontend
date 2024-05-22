@@ -11,6 +11,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
@@ -96,6 +97,9 @@ interface RetrofitAPI {
 
     @POST("orders/create")
     suspend fun createOrder(@Body orderRequestModel: OrderRequestModel, @Header("Authorization") authorization: String): Response<OrderResponseModel?>?
+
+    @PUT("orders/setStatus/{id}")
+    suspend fun setStatus(@Path("id") id: Int, @Query("status") status: String, @Header("Authorization") authorization: String): Response<Void>?
 
 }
 //TODO: не разделить бы на отдельные классы?

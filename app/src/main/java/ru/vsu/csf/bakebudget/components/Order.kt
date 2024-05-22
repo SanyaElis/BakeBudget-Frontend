@@ -1,5 +1,6 @@
 package ru.vsu.csf.bakebudget.components
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,14 +24,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Response
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.screens.sortByState
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
@@ -41,7 +50,11 @@ fun Order(order: OrderModel,
           orders0: MutableList<OrderModel>,
           orders1: MutableList<OrderModel>,
           orders2: MutableList<OrderModel>,
-          orders3: MutableList<OrderModel>) {
+          orders3: MutableList<OrderModel>,
+          retrofitAPI: RetrofitAPI,
+          jwtToken: MutableState<String>) {
+    val mContext = LocalContext.current
+
     val openAlertDialog = remember { mutableStateOf(false) }
     val selectedValue = remember { mutableIntStateOf(order.status) }
 
@@ -64,7 +77,9 @@ fun Order(order: OrderModel,
                 orders0,
                 orders1,
                 orders2,
-                orders3
+                orders3,
+                mContext,
+                retrofitAPI, jwtToken
             )
         }
     }
@@ -101,6 +116,8 @@ fun Order(order: OrderModel,
     }
 }
 
+val orderState = mapOf(0 to "NOT_STARTED", 1 to "IN_PROCESS", 2 to "DONE", 3 to "CANCELLED")
+
 @Composable
 fun AlertDialogOrder(
     onDismissRequest: () -> Unit,
@@ -113,7 +130,10 @@ fun AlertDialogOrder(
     orders0: MutableList<OrderModel>,
     orders1: MutableList<OrderModel>,
     orders2: MutableList<OrderModel>,
-    orders3: MutableList<OrderModel>
+    orders3: MutableList<OrderModel>,
+    context: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
 ) {
     androidx.compose.material3.AlertDialog(
         containerColor = SideBack,
@@ -137,6 +157,7 @@ fun AlertDialogOrder(
             TextButton(
                 onClick = {
                     order.status = selectedValue.value
+                    setStatusOrder(context, retrofitAPI, jwtToken, order, selectedValue.value)
                     sortByState(orders, orders0, orders1, orders2, orders3)
                     onConfirmation()
                 }
@@ -154,4 +175,25 @@ fun AlertDialogOrder(
             }
         }
     )
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun setStatusOrder(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    order: OrderModel,
+    newStatus : Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.setStatus(order.id, orderState[newStatus]!!, "Bearer ".plus(jwtToken.value))
+        onResultSetStatus(res, order, newStatus)
+    }
+}
+
+private fun onResultSetStatus(
+    result: Response<Void>?,
+    order: OrderModel,
+    newStatus : Int
+) {
 }

@@ -153,25 +153,25 @@ fun OrdersScreen(
                             item(span = { GridItemSpan(2) }) { OrderStateRow("НЕ НАЧАТЫ", state1) }
                             if (state1.value) {
                                 itemsIndexed(orders0) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("В ПРОЦЕССЕ", state2) }
                             if (state2.value) {
                                 itemsIndexed(orders1) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ЗАВЕРШЕНЫ", state3) }
                             if (state3.value) {
                                 itemsIndexed(orders2) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ОТМЕНЕНЫ", state4) }
                             if (state4.value) {
                                 itemsIndexed(orders3) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
                                 }
                             }
                         }
@@ -274,6 +274,30 @@ private fun onResultFindAllOrders(
                 }
             }
         }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun setStatusOrder(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    order: OrderModel,
+    newStatus : Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
+        onResultSetStatus(res, order, newStatus)
+    }
+}
+
+private fun onResultSetStatus(
+    result: Response<List<OrderResponseModel>?>?,
+    order: OrderModel,
+    newStatus : Int
+) {
+    if (result!!.body() != null) {
+
     }
 }
 //TODO:делать все имена уникальными
