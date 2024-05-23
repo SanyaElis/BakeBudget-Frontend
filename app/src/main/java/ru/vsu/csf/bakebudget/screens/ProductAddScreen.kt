@@ -68,7 +68,6 @@ import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
-import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
@@ -79,8 +78,6 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -352,7 +349,7 @@ fun AlertDialog2(
                         ingredientsAll = ingredientsAll,
                         selectedItemIndex = selectedItemIndex
                     )
-                    InputTextField(text = "Вес", weight, 30, true)
+                    InputTextField(placeholder = "Вес", weight, 30, true)
                 }
             }
         },

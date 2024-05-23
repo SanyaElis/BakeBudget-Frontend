@@ -5,16 +5,23 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,7 +56,7 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 fun GroupsScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    isPro: Boolean
+    isPro: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.groups, "Группы"))
@@ -92,7 +100,7 @@ fun GroupsScreen(
                     ) {
                         TextButton(
                             onClick = {
-                                if (isPro) {
+                                if (isPro.value) {
                                     generatedCode.value = getRandomString(14)
                                 } else {
                                     if (code.value.length == 14) {
@@ -103,7 +111,7 @@ fun GroupsScreen(
                                 }
                             }
                         ) {
-                            if (isPro) {
+                            if (isPro.value) {
                                 Image(
                                     painter = painterResource(id = R.drawable.button_generate),
                                     contentDescription = "generate"
@@ -127,14 +135,31 @@ fun GroupsScreen(
                 ) {
                     Column {
                         Header(scope = scope, drawerState = drawerState)
-                        Box(modifier = Modifier
-                            .fillMaxHeight(0.91f)
-                            .fillMaxWidth()
-                            .background(SideBack),
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight(0.91f)
+                                .fillMaxWidth()
+                                .background(SideBack),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                if (isPro) {
+                            Column(
+                                modifier = Modifier.fillMaxHeight(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                if (isPro.value) {
+                                    if (generatedCode.value == "") {
+                                        Box(
+                                            modifier = Modifier.padding(8.dp),
+                                            contentAlignment = Alignment.TopCenter
+                                        ) {
+                                            Text(
+                                                text = "Вы пользуетесь продвинутой версией приложения! Нажмите на кнопку «СГЕНЕРИРОВАТЬ», чтобы создать группу.",
+                                                fontSize = 20.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
                                     SelectionContainer {
                                         Text(text = generatedCode.value, fontSize = 40.sp)
                                     }
@@ -143,21 +168,58 @@ fun GroupsScreen(
                                             modifier = Modifier.padding(8.dp),
                                             contentAlignment = Alignment.BottomCenter
                                         ) {
-                                            Text(text = "Другие пользователи смогут ввести данный код, чтобы присоединиться к группе", fontSize = 20.sp,
-                                                textAlign = TextAlign.Center)
+                                            Text(
+                                                text = "Другие пользователи смогут ввести данный код, чтобы присоединиться к группе",
+                                                fontSize = 20.sp,
+                                                textAlign = TextAlign.Center
+                                            )
                                         }
                                     }
                                 } else {
-                                    InputTextField(text = "Введите код группы", value = code, max = 14, 300)
+                                    InputTextField(
+                                        placeholder = "Введите код группы",
+                                        text = code,
+                                        max = 14,
+                                        300
+                                    )
+                                    Box(
+                                        modifier = Modifier.padding(8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "Введите код, чтобы присоединиться к группе",
+                                            fontSize = 20.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
                                     Box(
                                         modifier = Modifier.padding(8.dp),
                                         contentAlignment = Alignment.BottomCenter
                                     ) {
-                                        Text(text = "Введите код, чтобы присоединиться к группе", fontSize = 20.sp,
-                                            textAlign = TextAlign.Center)
+                                        Text(
+                                            text = "Перейдите на продвинутую версию, чтобы получить возможность создать свою группу!",
+                                            fontSize = 20.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        isPro.value = true
+                                    }) {
+                                        Icon(
+                                            modifier = Modifier
+                                                .background(PrimaryBack)
+                                                .size(80.dp)
+                                                .clip(
+                                                    CircleShape
+                                                ),
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                            contentDescription = "pro",
+                                            tint = Color.White
+                                        )
                                     }
                                 }
                             }
+                            //TODO:добавить описание того, что надо делать
                         }
                     }
                 }
@@ -223,7 +285,7 @@ private fun mToastWrong(context: Context) {
     ).show()
 }
 
-fun getRandomString(length: Int) : String {
+fun getRandomString(length: Int): String {
     val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
     return (1..length)
         .map { allowedChars.random() }

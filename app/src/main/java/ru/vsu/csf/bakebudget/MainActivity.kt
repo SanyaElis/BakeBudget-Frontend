@@ -90,6 +90,10 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
+                val isPro = remember {
+                    mutableStateOf(false)
+                }
+
                 val ingredientsInRecipe = remember {
                     mutableStateListOf<IngredientInProductModel>()
                 }
@@ -126,7 +130,8 @@ class MainActivity : ComponentActivity() {
                     isDataReceivedProducts,
                     productsResponse,
                     isDataReceivedOutgoings,
-                    isDataReceivedOrders
+                    isDataReceivedOrders,
+                    isPro
                 )
             }
         }
@@ -151,7 +156,8 @@ class MainActivity : ComponentActivity() {
         isDataReceivedProducts: MutableState<Boolean>,
         productsResponse: MutableList<ProductResponseModel>,
         isDataReceivedOutgoings : MutableState<Boolean>,
-        isDataReceivedOrders : MutableState<Boolean>
+        isDataReceivedOrders : MutableState<Boolean>,
+        isPro : MutableState<Boolean>
     ) {
         NavHost(
             navController = navController,
@@ -237,7 +243,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "groups") {
-                GroupsScreen(navController, isLogged, true)
+                GroupsScreen(navController, isLogged, isPro)
             }
 
             composable(route = "calculation") {

@@ -55,8 +55,6 @@ import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
 import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
-import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
-import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
@@ -65,7 +63,6 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
-import ru.vsu.csf.bakebudget.utils.sameOrder
 import java.util.Random
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -278,8 +275,8 @@ fun CalculationScreen(
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
                                     InputTextField(
-                                        text = "Вес",
-                                        value = weight,
+                                        placeholder = "Вес",
+                                        text = weight,
                                         max = 10,
                                         true
                                     )
@@ -293,8 +290,8 @@ fun CalculationScreen(
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
                                     InputTextField(
-                                        text = "Расходы",
-                                        value = extraCost,
+                                        placeholder = "Расходы",
+                                        text = extraCost,
                                         max = 10,
                                         true
                                     )
@@ -308,8 +305,8 @@ fun CalculationScreen(
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
                                     InputTextField(
-                                        text = "Коэффициент",
-                                        value = markup,
+                                        placeholder = "Коэффициент",
+                                        text = markup,
                                         max = 10,
                                         true
                                     )

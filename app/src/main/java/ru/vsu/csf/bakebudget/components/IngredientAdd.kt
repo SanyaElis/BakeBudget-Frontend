@@ -8,15 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material3.Card
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
-import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
 @Composable
 fun IngredientAdd(
@@ -32,9 +29,9 @@ fun IngredientAdd(
             .fillMaxHeight()
             .background(PrimaryBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-            InputTextField(text = "Название", name, 30, 110)
-            InputTextField(text = "Вес", weight, 30, 110)
-            InputTextField(text = "Цена", cost, 30, 110)
+            InputTextField(placeholder = "Название", name, 30, 110)
+            InputTextField(placeholder = "Вес", weight, 30, 110)
+            InputTextField(placeholder = "Цена", cost, 30, 110)
         }
     }
 }

@@ -32,9 +32,7 @@ import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.OutgoingModel
-import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
-import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
@@ -140,8 +138,8 @@ fun AlertDialog3(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(text = "Название", name, 30, true)
-                InputTextField(text = "Значение", value, 30, true)
+                InputTextField(placeholder = "Название", name, 30, true)
+                InputTextField(placeholder = "Значение", value, 30, true)
             }
         },
         onDismissRequest = {
