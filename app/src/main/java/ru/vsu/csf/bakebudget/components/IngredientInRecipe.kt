@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -239,6 +240,11 @@ private fun onResultUpdate(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+    val eventParameters2 = "{\"button_clicked\":\"update ingredient in product\"}"
+    AppMetrica.reportEvent(
+        "Ingredient in product updated",
+        eventParameters2
+    )
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -268,4 +274,9 @@ private fun onResultDelete(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+    val eventParameters1 = "{\"button_clicked\":\"delete ingredient in product\"}"
+    AppMetrica.reportEvent(
+        "Ingredient in product deleted",
+        eventParameters1
+    )
 }

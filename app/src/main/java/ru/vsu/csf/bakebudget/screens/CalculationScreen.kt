@@ -170,6 +170,11 @@ fun CalculationScreen(
                                     ) {
                                         dataIncorrectToast(mContext)
                                     } else {
+                                        val eventParameters3 = "{\"button_clicked\":\"calculate\"}"
+                                        AppMetrica.reportEvent(
+                                            "Price calculated",
+                                            eventParameters3
+                                        )
                                         calculate(
                                             mContext,
                                             retrofitAPI,

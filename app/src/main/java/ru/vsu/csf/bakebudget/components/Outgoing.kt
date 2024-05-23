@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -215,6 +216,11 @@ private fun onResultUpdateOutgoing(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+    val eventParameters1 = "{\"button_clicked\":\"update outgoing\"}"
+    AppMetrica.reportEvent(
+        "Outgoing updated",
+        eventParameters1
+    )
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -243,4 +249,9 @@ private fun onResultDeleteOutgoing(
         "Response Code : " + result!!.code() + "\n" + "Deleted outgoing id: " + "\n" + outgoingId,
         Toast.LENGTH_SHORT
     ).show()
+    val eventParameters2 = "{\"button_clicked\":\"delete outgoing\"}"
+    AppMetrica.reportEvent(
+        "Outgoing deleted",
+        eventParameters2
+    )
 }

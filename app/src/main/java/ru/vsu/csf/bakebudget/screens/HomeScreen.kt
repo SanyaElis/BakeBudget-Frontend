@@ -128,7 +128,14 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                         }
                         Spacer(Modifier.weight(1f))
                         Box(modifier = Modifier.padding(5.dp)) {
-                            IconButton(onClick = { openAlertDialog.value = true }) {
+                            IconButton(onClick = {
+                                val eventParameters1 = "{\"button_clicked\":\"information\"}"
+                                AppMetrica.reportEvent(
+                                    "View of Info about app",
+                                    eventParameters1
+                                )
+                                openAlertDialog.value = true
+                            }) {
                                 Icon(imageVector = Icons.Default.Info, contentDescription = "Info", tint = Color.White)
                             }
                         }

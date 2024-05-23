@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
@@ -63,6 +64,11 @@ fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState
                 onClick = {
                     navController.navigate("login")
                     mToast(mContext)
+                    val eventParameters1 = "{\"button_clicked\":\"reset password\"}"
+                    AppMetrica.reportEvent(
+                        "Request for password reset",
+                        eventParameters1
+                    )
                 }
             ) {
                 Image(

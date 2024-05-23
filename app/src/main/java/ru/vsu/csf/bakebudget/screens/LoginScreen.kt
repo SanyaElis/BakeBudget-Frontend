@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.gson.GsonBuilder
+import io.appmetrica.analytics.AppMetrica
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -153,12 +154,22 @@ private fun postDataUsingRetrofitLogin(
                 ).show()
                 userRole.value = model.role
                 isPro.value = userRole.value == "ROLE_ADVANCED_USER"
+                val eventParameters1 = "{\"button_clicked\":\"enter to account\"}"
+                AppMetrica.reportEvent(
+                    "User enter to account",
+                    eventParameters1
+                )
             } else {
                 Toast.makeText(
                     ctx,
                     "Response Code : " + response.code() + "\n" + "Такого пользователя не существует или пароль неверный",
                     Toast.LENGTH_SHORT
                 ).show()
+                val eventParameters2 = "{\"button_clicked\":\"enter to account failed\"}"
+                AppMetrica.reportEvent(
+                    "User enter wrong name or password",
+                    eventParameters2
+                )
             }
         }
 

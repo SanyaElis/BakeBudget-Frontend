@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -176,6 +177,11 @@ fun ProductAddScreen(
                                 onClick = {
                                     if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
                                         dataIncorrectToast(context = mContext)
+                                        val eventParameters2 = "{\"button_clicked\":\"create product\"}"
+                                        AppMetrica.reportEvent(
+                                            "Product creation failed",
+                                            eventParameters2
+                                        )
                                     } else {
                                         val ings = mutableStateListOf<IngredientInProductModel>()
                                         for (ing in ingredients) {
@@ -201,6 +207,12 @@ fun ProductAddScreen(
                                                 estimatedWeight.value.toInt()
                                             )
                                         )
+                                        val eventParameters1 = "{\"button_clicked\":\"create product\"}"
+                                        AppMetrica.reportEvent(
+                                            "Product created",
+                                            eventParameters1
+                                        )
+                                        //TODO:удаляет со 2 раза
                                         navController.navigate("products")
                                         ingredients.clear()
                                     }

@@ -84,10 +84,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val outgoings = remember {
-                    mutableStateListOf(
-                        OutgoingModel(0, "Вода", 100),
-                        OutgoingModel(0, "Электроэнергия", 150)
-                    )
+                        mutableStateListOf<OutgoingModel>()
                 }
 
                 val isPro = remember {

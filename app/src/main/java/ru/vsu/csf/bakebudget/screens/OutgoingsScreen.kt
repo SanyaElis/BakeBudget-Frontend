@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -174,9 +175,19 @@ fun OutgoingsScreen(
                                 onClick = {
                                     if (!(isNameValid(name.value) && isCostValid(value.value))) {
                                         dataIncorrectToast(context = mContext)
+                                        val eventParameters2 = "{\"button_clicked\":\"create outgoing\"}"
+                                        AppMetrica.reportEvent(
+                                            "Outgoing add failed",
+                                            eventParameters2
+                                        )
                                     } else {
                                         createOutgoing(mContext, retrofitAPI, jwtToken, OutgoingRequestModel(name.value,
                                             value.value.toInt()), productsAll[selectedItemIndex.intValue], productsAll)
+                                        val eventParameters1 = "{\"button_clicked\":\"create outgoing\"}"
+                                        AppMetrica.reportEvent(
+                                            "Outgoing created",
+                                            eventParameters1
+                                        )
                                     }
                                 }
                             ) {

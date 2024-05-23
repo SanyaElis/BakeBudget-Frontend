@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.gson.GsonBuilder
+import io.appmetrica.analytics.AppMetrica
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -119,12 +120,22 @@ private fun postDataUsingRetrofit(
                     "Response Code : " + response.code() + "\n" + "Пользователь успешно зарегистрирован",
                     Toast.LENGTH_SHORT
                 ).show()
+                val eventParameters1 = "{\"button_clicked\":\"register\"}"
+                AppMetrica.reportEvent(
+                    "User registered",
+                    eventParameters1
+                )
             } else {
                 Toast.makeText(
                     ctx,
                     "Response Code : " + response.code() +  "\n" + "Регистрация невозможна, некорректные данные",
                     Toast.LENGTH_SHORT
                 ).show()
+                val eventParameters1 = "{\"button_clicked\":\"register\"}"
+                AppMetrica.reportEvent(
+                    "User registration failed",
+                    eventParameters1
+                )
             }
         }
 

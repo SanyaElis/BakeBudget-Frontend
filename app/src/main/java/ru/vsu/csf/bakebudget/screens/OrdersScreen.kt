@@ -277,27 +277,27 @@ private fun onResultFindAllOrders(
     }
 }
 
-@OptIn(DelicateCoroutinesApi::class)
-fun setStatusOrder(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    order: OrderModel,
-    newStatus : Int
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
-        onResultSetStatus(res, order, newStatus)
-    }
-}
-
-private fun onResultSetStatus(
-    result: Response<List<OrderResponseModel>?>?,
-    order: OrderModel,
-    newStatus : Int
-) {
-    if (result!!.body() != null) {
-
-    }
-}
+//@OptIn(DelicateCoroutinesApi::class)
+//fun setStatusOrder(
+//    ctx: Context,
+//    retrofitAPI: RetrofitAPI,
+//    jwtToken: MutableState<String>,
+//    order: OrderModel,
+//    newStatus : Int
+//) {
+//    GlobalScope.launch(Dispatchers.Main) {
+//        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
+//        onResultSetStatus(res, order, newStatus)
+//    }
+//}
+//
+//private fun onResultSetStatus(
+//    result: Response<List<OrderResponseModel>?>?,
+//    order: OrderModel,
+//    newStatus : Int
+//) {
+//    if (result!!.body() != null) {
+//
+//    }
+//}
 //TODO:делать все имена уникальными
