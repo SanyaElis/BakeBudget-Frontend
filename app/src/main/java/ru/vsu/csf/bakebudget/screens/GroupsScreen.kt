@@ -5,16 +5,23 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,8 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -48,7 +61,10 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 fun GroupsScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    isPro: Boolean
+    isPro: MutableState<Boolean>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    userRole: MutableState<String>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.groups, "Группы"))
@@ -63,6 +79,15 @@ fun GroupsScreen(
     }
     val generatedCode = remember {
         mutableStateOf("")
+    }
+
+    val codeExists = remember {
+        mutableStateOf(false)
+    }
+
+    if (jwtToken.value != "" && !codeExists.value) {
+        getCode(mContext, retrofitAPI, jwtToken, generatedCode)
+        codeExists.value = true
     }
 
     ModalNavigationDrawer(
@@ -92,18 +117,14 @@ fun GroupsScreen(
                     ) {
                         TextButton(
                             onClick = {
-                                if (isPro) {
-                                    generatedCode.value = getRandomString(14)
+                                if (isPro.value) {
+                                    createCode(mContext, retrofitAPI, jwtToken, generatedCode, userRole)
                                 } else {
-                                    if (code.value.length == 14) {
-                                        mToast(context = mContext)
-                                    } else {
-                                        mToastWrong(context = mContext)
-                                    }
+                                    setCode(mContext, retrofitAPI, jwtToken, code, generatedCode)
                                 }
                             }
                         ) {
-                            if (isPro) {
+                            if (isPro.value) {
                                 Image(
                                     painter = painterResource(id = R.drawable.button_generate),
                                     contentDescription = "generate"
@@ -127,37 +148,106 @@ fun GroupsScreen(
                 ) {
                     Column {
                         Header(scope = scope, drawerState = drawerState)
-                        Box(modifier = Modifier
-                            .fillMaxHeight(0.91f)
-                            .fillMaxWidth()
-                            .background(SideBack),
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight(0.91f)
+                                .fillMaxWidth()
+                                .background(SideBack),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                if (isPro) {
-                                    SelectionContainer {
-                                        Text(text = generatedCode.value, fontSize = 40.sp)
+                            Column(
+                                modifier = Modifier.fillMaxHeight(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                if (isPro.value) {
+                                    if (generatedCode.value == "") {
+                                        Box(
+                                            modifier = Modifier.padding(8.dp),
+                                            contentAlignment = Alignment.TopCenter
+                                        ) {
+                                            Text(
+                                                text = "Вы пользуетесь продвинутой версией приложения! Нажмите на кнопку «СГЕНЕРИРОВАТЬ», чтобы создать группу.",
+                                                fontSize = 20.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                    SelectionContainer(modifier = Modifier.padding(16.dp)) {
+                                        Text(text = generatedCode.value, fontSize = 30.sp, maxLines = 2, textAlign = TextAlign.Center)
                                     }
                                     if (generatedCode.value != "") {
                                         Box(
                                             modifier = Modifier.padding(8.dp),
                                             contentAlignment = Alignment.BottomCenter
                                         ) {
-                                            Text(text = "Другие пользователи смогут ввести данный код, чтобы присоединиться к группе", fontSize = 20.sp,
-                                                textAlign = TextAlign.Center)
+                                            Text(
+                                                text = "Другие пользователи смогут ввести данный код, чтобы присоединиться к группе",
+                                                fontSize = 20.sp,
+                                                textAlign = TextAlign.Center
+                                            )
                                         }
                                     }
                                 } else {
-                                    InputTextField(text = "Введите код группы", value = code, max = 14, 300)
+                                    if (generatedCode.value != "") {
+                                        Box(
+                                            modifier = Modifier.padding(8.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "Сейчас вы принадлежите группе с кодом: " + generatedCode.value,
+                                                fontSize = 20.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                    //TODO:выйти из группы
+                                    InputTextField(
+                                        placeholder = "Введите код группы",
+                                        text = code,
+                                        max = 50,
+                                        300
+                                    )
+                                    Box(
+                                        modifier = Modifier.padding(8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = "Введите код, чтобы присоединиться к группе",
+                                            fontSize = 20.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
                                     Box(
                                         modifier = Modifier.padding(8.dp),
                                         contentAlignment = Alignment.BottomCenter
                                     ) {
-                                        Text(text = "Введите код, чтобы присоединиться к группе", fontSize = 20.sp,
-                                            textAlign = TextAlign.Center)
+                                        Text(
+                                            text = "Перейдите на продвинутую версию, чтобы получить возможность создать свою группу!",
+                                            fontSize = 20.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        isPro.value = true
+                                        generatedCode.value = ""
+                                        changeRole(mContext, retrofitAPI, jwtToken)
+                                    }) {
+                                        Icon(
+                                            modifier = Modifier
+                                                .background(PrimaryBack)
+                                                .size(80.dp)
+                                                .clip(
+                                                    CircleShape
+                                                ),
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                            contentDescription = "pro",
+                                            tint = Color.White
+                                        )
                                     }
                                 }
                             }
+                            //TODO:добавить описание того, что надо делать
                         }
                     }
                 }
@@ -223,9 +313,130 @@ private fun mToastWrong(context: Context) {
     ).show()
 }
 
-fun getRandomString(length: Int) : String {
+fun getRandomString(length: Int): String {
     val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
     return (1..length)
         .map { allowedChars.random() }
         .joinToString("")
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun changeRole(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.changeRole("Bearer ".plus(jwtToken.value))
+        onResultChangeRole(res, ctx)
+    }
+}
+
+private fun onResultChangeRole(
+    result: Response<Void>?,
+    context: Context
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun createCode(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    code : MutableState<String>,
+    userRole: MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.createCode("Bearer ".plus(jwtToken.value))
+        onResultCreateCode(res, ctx, code, userRole)
+    }
+}
+
+private fun onResultCreateCode(
+    result: Response<String>?,
+    context: Context,
+    code : MutableState<String>,
+    userRole: MutableState<String>
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Code : " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+            code.value = result.body()!!
+            userRole.value = "ROLE_ADVANCED_USER"
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun getCode(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    code : MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.getCode("Bearer ".plus(jwtToken.value))
+        onResultGetCode(res, ctx, code)
+    }
+}
+
+private fun onResultGetCode(
+    result: Response<String>?,
+    context: Context,
+    code : MutableState<String>
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Code : " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+            code.value = result.body()!!
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun setCode(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    code : MutableState<String>,
+    generatedCode : MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.setCode(code.value, "Bearer ".plus(jwtToken.value))
+        onResultSetCode(res, ctx, code, generatedCode)
+    }
+}
+
+private fun onResultSetCode(
+    result: Response<String>?,
+    context: Context,
+    code : MutableState<String>,
+    generatedCode : MutableState<String>
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Code : " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+            generatedCode.value = result.body()!!
+        } else {
+            Toast.makeText(context, "Такой группы не существует или вы уже состоите в группе",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+}
+
+
+//TODO:кнопку скопировать добавить

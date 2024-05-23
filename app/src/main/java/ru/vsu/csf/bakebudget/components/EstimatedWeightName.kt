@@ -26,8 +26,8 @@ fun EstimatedWeightName(color: Color, estimatedWeight: MutableState<String>, nam
             .fillMaxHeight()
             .background(color), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-            InputTextField(text = "Расчетный вес", estimatedWeight, 10, 160)
-            InputTextField(text = "Название", name, 10, 160)
+            InputTextField(placeholder = "Расчетный вес", estimatedWeight, 10, 160)
+            InputTextField(placeholder = "Название", name, 10, 160)
         }
     }
 }

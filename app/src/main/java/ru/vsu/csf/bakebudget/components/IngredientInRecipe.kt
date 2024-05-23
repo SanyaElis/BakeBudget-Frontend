@@ -40,13 +40,9 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
-import ru.vsu.csf.bakebudget.screens.DropdownMenuBox
-import ru.vsu.csf.bakebudget.screens.addIngredient
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isWeightValid
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @Composable
 fun IngredientInRecipe(
@@ -158,7 +154,7 @@ fun AlertDialog1(
 //                        ingredientsAll = ingredientsAll,
 //                        selectedItemIndex = selectedItemIndex
 //                    )
-                    InputTextField(text = "Вес", weight, 30, true)
+                    InputTextField(placeholder = "Вес", weight, 30, true)
                 }
             }
         },
