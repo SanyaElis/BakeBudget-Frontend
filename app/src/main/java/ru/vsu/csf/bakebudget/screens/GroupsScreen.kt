@@ -44,8 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -56,7 +61,9 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 fun GroupsScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    isPro: MutableState<Boolean>
+    isPro: MutableState<Boolean>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.groups, "Группы"))
@@ -71,6 +78,20 @@ fun GroupsScreen(
     }
     val generatedCode = remember {
         mutableStateOf("")
+    }
+
+    val codeExists = remember {
+        mutableStateOf(false)
+    }
+
+
+    if (jwtToken.value != "" && !codeExists.value) {
+        getCode(mContext, retrofitAPI, jwtToken, generatedCode)
+        codeExists.value = true
+    }
+
+    if (codeExists.value) {
+        isPro.value = true
     }
 
     ModalNavigationDrawer(
@@ -101,7 +122,7 @@ fun GroupsScreen(
                         TextButton(
                             onClick = {
                                 if (isPro.value) {
-                                    generatedCode.value = getRandomString(14)
+                                    createCode(mContext, retrofitAPI, jwtToken, generatedCode)
                                 } else {
                                     if (code.value.length == 14) {
                                         mToast(context = mContext)
@@ -160,8 +181,8 @@ fun GroupsScreen(
                                             )
                                         }
                                     }
-                                    SelectionContainer {
-                                        Text(text = generatedCode.value, fontSize = 40.sp)
+                                    SelectionContainer(modifier = Modifier.padding(16.dp)) {
+                                        Text(text = generatedCode.value, fontSize = 30.sp, maxLines = 2, textAlign = TextAlign.Center)
                                     }
                                     if (generatedCode.value != "") {
                                         Box(
@@ -204,6 +225,7 @@ fun GroupsScreen(
                                     }
                                     IconButton(onClick = {
                                         isPro.value = true
+                                        changeRole(mContext, retrofitAPI, jwtToken)
                                     }) {
                                         Icon(
                                             modifier = Modifier
@@ -291,3 +313,118 @@ fun getRandomString(length: Int): String {
         .map { allowedChars.random() }
         .joinToString("")
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun changeRole(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.changeRole("Bearer ".plus(jwtToken.value))
+        onResultChangeRole(res, ctx)
+    }
+}
+
+private fun onResultChangeRole(
+    result: Response<Void>?,
+    context: Context
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun createCode(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    code : MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.createCode("Bearer ".plus(jwtToken.value))
+        onResultCreateCode(res, ctx, code)
+    }
+}
+
+private fun onResultCreateCode(
+    result: Response<String>?,
+    context: Context,
+    code : MutableState<String>
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Code : " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+            code.value = result.body()!!
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun getCode(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    code : MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.getCode("Bearer ".plus(jwtToken.value))
+        onResultGetCode(res, ctx, code)
+    }
+}
+
+private fun onResultGetCode(
+    result: Response<String>?,
+    context: Context,
+    code : MutableState<String>
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Code : " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+            code.value = result.body()!!
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun setCode(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    code : MutableState<String>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.setCode(code.value, "Bearer ".plus(jwtToken.value))
+        onResultSetCode(res, ctx, code)
+    }
+}
+
+private fun onResultSetCode(
+    result: Response<String>?,
+    context: Context,
+    code : MutableState<String>
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Code : " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            Toast.makeText(context, "Code : " + result.code() + " " + result.body(),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+}
+
+
+//TODO:кнопку скопировать добавить

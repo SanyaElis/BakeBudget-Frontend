@@ -101,5 +101,21 @@ interface RetrofitAPI {
     @PUT("orders/setStatus/{id}")
     suspend fun setStatus(@Path("id") id: Int, @Query("status") status: String, @Header("Authorization") authorization: String): Response<Void>?
 
+    //___________________________________________________________________________________________________________________________________
+
+    @GET("getGroupCode")
+    suspend fun getCode(@Header("Authorization") authorization: String): Response<String>?
+
+    @PUT("changeRole")
+    suspend fun changeRole(@Header("Authorization") authorization: String): Response<Void>?
+
+    @PUT("createGroupCode")
+    suspend fun createCode(@Header("Authorization") authorization: String): Response<String>?
+
+    //_______
+
+    @PUT("setGroupCode")
+    suspend fun setCode( @Query("groupCode") groupCode: String, @Header("Authorization") authorization: String): Response<String>?
+
 }
 //TODO: не разделить бы на отдельные классы?

@@ -197,3 +197,5 @@ private fun onResultSetStatus(
     newStatus : Int
 ) {
 }
+
+//TODO:удалить заказ

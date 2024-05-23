@@ -243,7 +243,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "groups") {
-                GroupsScreen(navController, isLogged, isPro)
+                GroupsScreen(navController, isLogged, isPro, retrofitAPI, jwtToken)
             }
 
             composable(route = "calculation") {
