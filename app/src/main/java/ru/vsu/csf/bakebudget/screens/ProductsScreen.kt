@@ -70,7 +70,7 @@ fun ProductsScreen(
     ingredientsResponse: MutableList<IngredientResponseModel>,
     isDataReceivedIngredients: MutableState<Boolean>,
     ingredients: MutableList<IngredientModel>,
-    ingredientsSet: MutableSet<IngredientModel>
+    ingredientsSet: MutableSet<String>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
@@ -118,11 +118,7 @@ fun ProductsScreen(
                 )
             )
             ingredientsSet.add(
-                IngredientModel(
-                    ingredient.name,
-                    ingredient.weight,
-                    ingredient.cost
-                )
+                    ingredient.name
             )
         }
     }

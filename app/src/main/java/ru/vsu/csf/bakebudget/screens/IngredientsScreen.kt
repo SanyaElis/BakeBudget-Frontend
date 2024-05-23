@@ -70,7 +70,7 @@ fun IngredientsScreen(
     jwtToken: MutableState<String>,
     isDataReceivedIngredients: MutableState<Boolean>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
-    ingredientsSet: MutableSet<IngredientModel>
+    ingredientsSet: MutableSet<String>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
@@ -107,13 +107,7 @@ fun IngredientsScreen(
                     ingredient.cost
                 )
             )
-            ingredientsSet.add(
-                IngredientModel(
-                    ingredient.name,
-                    ingredient.weight,
-                    ingredient.cost
-                )
-            )
+            ingredientsSet.add(ingredient.name)
         }
     }
 
@@ -146,13 +140,7 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
-                                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(
-                                            IngredientModel(
-                                                name.value,
-                                                weight.value.toInt(),
-                                                cost.value.toInt()
-                                            )
-                                        )
+                                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(name.value)
                                                 )
                                     ) {
                                         AppMetrica.reportEvent(
@@ -170,11 +158,7 @@ fun IngredientsScreen(
                                             )
                                         )
                                         ingredientsSet.add(
-                                            IngredientModel(
-                                                name.value,
-                                                weight.value.toInt(),
-                                                cost.value.toInt()
-                                            )
+                                                name.value
                                         )
                                         create(
                                             mContext, retrofitAPI, jwtToken, IngredientRequestModel(

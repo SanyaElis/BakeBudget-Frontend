@@ -165,7 +165,6 @@ fun AlertDialog1(
         confirmButton = {
             TextButton(
                 onClick = {
-                    //TODO:same ingredients NOOOOO
                     if (isWeightValid(weight.value)) {
                         if (ingredient.productId != -1) {
                             updateIngredient(context, retrofitAPI, jwtToken, IngredientInProductModel(
@@ -187,7 +186,6 @@ fun AlertDialog1(
                 Text("Редактировать")
             }
         },
-        //TODO:ломается при редактировании в готовых только добавленных редактирует похже нужного
         dismissButton = {
             TextButton(
                 onClick = {

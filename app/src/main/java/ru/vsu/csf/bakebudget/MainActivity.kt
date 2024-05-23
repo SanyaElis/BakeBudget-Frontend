@@ -47,7 +47,6 @@ import ru.vsu.csf.bakebudget.screens.ReportsScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
-    //TODO:больше метрик и воронок
     private val API_KEY = "a6d5ee67-5fc9-4adf-bab5-17730828b9b5"
     private val url = "http://185.251.89.195:8080/api/"
     private val gson = GsonBuilder()
@@ -75,7 +74,7 @@ class MainActivity : ComponentActivity() {
                 val isLoggedIn = remember { mutableStateOf(false) }
 
                 val ingredients = remember { mutableStateListOf<IngredientModel>() }
-                val ingredientsSet = remember { mutableSetOf<IngredientModel>() }
+                val ingredientsSet = remember { mutableSetOf<String>() }
                 val ingredientsResponse = remember {
                     mutableStateListOf<IngredientResponseModel>()
                 }
@@ -153,7 +152,7 @@ class MainActivity : ComponentActivity() {
         jwtToken: MutableState<String>,
         isDataReceivedIngredients: MutableState<Boolean>,
         ingredientsResponse: MutableList<IngredientResponseModel>,
-        ingredientsSet: MutableSet<IngredientModel>,
+        ingredientsSet: MutableSet<String>,
         isDataReceivedProducts: MutableState<Boolean>,
         productsResponse: MutableList<ProductResponseModel>,
         isDataReceivedOutgoings : MutableState<Boolean>,

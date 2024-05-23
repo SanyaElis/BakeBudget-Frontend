@@ -47,7 +47,7 @@ fun Ingredient(
     ingredient: IngredientResponseModel,
     color: Color,
     ingredients: MutableList<IngredientModel>,
-    ingredientsSet: MutableSet<IngredientModel>,
+    ingredientsSet: MutableSet<String>,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     ingredientsResponse: MutableList<IngredientResponseModel>
@@ -128,7 +128,7 @@ fun AlertDialog(
     ingredient: IngredientResponseModel,
     ingredients: MutableList<IngredientModel>,
     context: Context,
-    ingredientsSet: MutableSet<IngredientModel>,
+    ingredientsSet: MutableSet<String>,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
@@ -166,11 +166,7 @@ fun AlertDialog(
             TextButton(
                 onClick = {
                     if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(
-                            IngredientModel(
-                                name.value,
-                                weight.value.toInt(),
-                                cost.value.toInt()
-                            )
+                                name.value
                         )
                                 )
                     ) {
@@ -187,7 +183,7 @@ fun AlertDialog(
                         AppMetrica.reportEvent("Ingredient edited", eventParameters1)
                         ingredients.remove(IngredientModel(ingredient.name, ingredient.weight, ingredient.cost))
                         ingredientsResponse.remove(ingredient)
-                        ingredientsSet.remove(IngredientModel(ingredient.name, ingredient.weight, ingredient.cost))
+                        ingredientsSet.remove(ingredient.name)
                         ingredients.add(
                             IngredientModel(
                                 name.value,
@@ -203,11 +199,7 @@ fun AlertDialog(
                         )
                         )
                         ingredientsSet.add(
-                            IngredientModel(
-                                name.value,
-                                weight.value.toInt(),
-                                cost.value.toInt()
-                            )
+                                name.value
                         )
                         onConfirmation()
                     }
@@ -223,7 +215,7 @@ fun AlertDialog(
                     val eventParameters1 = "{\"button_clicked\":\"ingredient_delete\"}"
                     AppMetrica.reportEvent("Ingredient deleted", eventParameters1)
                     ingredients.remove(IngredientModel(ingredient.name, ingredient.weight, ingredient.cost))
-                    ingredientsSet.remove(IngredientModel(ingredient.name, ingredient.weight, ingredient.cost))
+                    ingredientsSet.remove(ingredient.name)
                     ingredientsResponse.remove(ingredient)
                     onDismissRequest()
                 }
