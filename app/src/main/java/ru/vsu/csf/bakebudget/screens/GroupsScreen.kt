@@ -85,12 +85,6 @@ fun GroupsScreen(
         mutableStateOf(false)
     }
 
-    if (userRole.value == "ROLE_ADVANCED_USER") {
-        isPro.value = true
-    } else {
-        isPro.value = false
-    }
-
     if (jwtToken.value != "" && !codeExists.value) {
         getCode(mContext, retrofitAPI, jwtToken, generatedCode)
         codeExists.value = true

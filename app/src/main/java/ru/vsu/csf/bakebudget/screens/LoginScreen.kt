@@ -44,7 +44,8 @@ fun LoginScreen(
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
-    userRole: MutableState<String>
+    userRole: MutableState<String>,
+    isPro: MutableState<Boolean>
 ) {
     val ctx = LocalContext.current
     val userEmail = remember {
@@ -80,7 +81,7 @@ fun LoginScreen(
             TextButton(
                 onClick = {
                     postDataUsingRetrofitLogin(
-                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, jwtToken, userRole
+                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, jwtToken, userRole, isPro
                     )
                     navController.navigate("home")
                 }
@@ -131,7 +132,8 @@ private fun postDataUsingRetrofitLogin(
     retrofitAPI: RetrofitAPI,
     isLogged: MutableState<Boolean>,
     jwtToken: MutableState<String>,
-    userRole: MutableState<String>
+    userRole: MutableState<String>,
+    isPro: MutableState<Boolean>
 ) {
     val dataModel = UserSignInRequestModel(userEmail.value, userPassword.value)
     val call: Call<UserSignInResponseModel?>? = retrofitAPI.login(dataModel)
@@ -150,6 +152,7 @@ private fun postDataUsingRetrofitLogin(
                     Toast.LENGTH_SHORT
                 ).show()
                 userRole.value = model.role
+                isPro.value = userRole.value == "ROLE_ADVANCED_USER"
             } else {
                 Toast.makeText(
                     ctx,

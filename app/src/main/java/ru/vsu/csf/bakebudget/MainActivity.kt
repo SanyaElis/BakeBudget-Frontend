@@ -169,7 +169,7 @@ class MainActivity : ComponentActivity() {
             startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController, isLogged, retrofitAPI, jwtToken = jwtToken, userRole)
+                LoginScreen(navController, isLogged, retrofitAPI, jwtToken = jwtToken, userRole, isPro)
             }
 
             composable(route = "home") {
