@@ -63,7 +63,8 @@ fun GroupsScreen(
     isLogged: MutableState<Boolean>,
     isPro: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
+    jwtToken: MutableState<String>,
+    userRole: MutableState<String>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.groups, "Группы"))
@@ -84,14 +85,15 @@ fun GroupsScreen(
         mutableStateOf(false)
     }
 
+    if (userRole.value == "ROLE_ADVANCED_USER") {
+        isPro.value = true
+    } else {
+        isPro.value = false
+    }
 
     if (jwtToken.value != "" && !codeExists.value) {
         getCode(mContext, retrofitAPI, jwtToken, generatedCode)
         codeExists.value = true
-    }
-
-    if (codeExists.value) {
-        isPro.value = true
     }
 
     ModalNavigationDrawer(
@@ -122,13 +124,9 @@ fun GroupsScreen(
                         TextButton(
                             onClick = {
                                 if (isPro.value) {
-                                    createCode(mContext, retrofitAPI, jwtToken, generatedCode)
+                                    createCode(mContext, retrofitAPI, jwtToken, generatedCode, userRole)
                                 } else {
-                                    if (code.value.length == 14) {
-                                        mToast(context = mContext)
-                                    } else {
-                                        mToastWrong(context = mContext)
-                                    }
+                                    setCode(mContext, retrofitAPI, jwtToken, code, generatedCode)
                                 }
                             }
                         ) {
@@ -197,10 +195,23 @@ fun GroupsScreen(
                                         }
                                     }
                                 } else {
+                                    if (generatedCode.value != "") {
+                                        Box(
+                                            modifier = Modifier.padding(8.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "Сейчас вы принадлежите группе с кодом: " + generatedCode.value,
+                                                fontSize = 20.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                    //TODO:выйти из группы
                                     InputTextField(
                                         placeholder = "Введите код группы",
                                         text = code,
-                                        max = 14,
+                                        max = 50,
                                         300
                                     )
                                     Box(
@@ -225,6 +236,7 @@ fun GroupsScreen(
                                     }
                                     IconButton(onClick = {
                                         isPro.value = true
+                                        generatedCode.value = ""
                                         changeRole(mContext, retrofitAPI, jwtToken)
                                     }) {
                                         Icon(
@@ -344,18 +356,20 @@ fun createCode(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
-    code : MutableState<String>
+    code : MutableState<String>,
+    userRole: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.createCode("Bearer ".plus(jwtToken.value))
-        onResultCreateCode(res, ctx, code)
+        onResultCreateCode(res, ctx, code, userRole)
     }
 }
 
 private fun onResultCreateCode(
     result: Response<String>?,
     context: Context,
-    code : MutableState<String>
+    code : MutableState<String>,
+    userRole: MutableState<String>
 ) {
     if (result != null) {
         if (result.isSuccessful) {
@@ -363,6 +377,7 @@ private fun onResultCreateCode(
                 Toast.LENGTH_SHORT
             ).show()
             code.value = result.body()!!
+            userRole.value = "ROLE_ADVANCED_USER"
         }
     }
 }
@@ -400,26 +415,29 @@ fun setCode(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
-    code : MutableState<String>
+    code : MutableState<String>,
+    generatedCode : MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.setCode(code.value, "Bearer ".plus(jwtToken.value))
-        onResultSetCode(res, ctx, code)
+        onResultSetCode(res, ctx, code, generatedCode)
     }
 }
 
 private fun onResultSetCode(
     result: Response<String>?,
     context: Context,
-    code : MutableState<String>
+    code : MutableState<String>,
+    generatedCode : MutableState<String>
 ) {
     if (result != null) {
         if (result.isSuccessful) {
             Toast.makeText(context, "Code : " + result.body(),
                 Toast.LENGTH_SHORT
             ).show()
+            generatedCode.value = result.body()!!
         } else {
-            Toast.makeText(context, "Code : " + result.code() + " " + result.body(),
+            Toast.makeText(context, "Такой группы не существует или вы уже состоите в группе",
                 Toast.LENGTH_SHORT
             ).show()
         }

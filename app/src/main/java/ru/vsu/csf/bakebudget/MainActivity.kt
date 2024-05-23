@@ -115,6 +115,9 @@ class MainActivity : ComponentActivity() {
                 val orders = remember {
                     mutableStateListOf<OrderModel>()
                 }
+                val userRole = remember {
+                    mutableStateOf("")
+                }
                 NavGraph(
                     navController = navController,
                     ingredients,
@@ -131,7 +134,8 @@ class MainActivity : ComponentActivity() {
                     productsResponse,
                     isDataReceivedOutgoings,
                     isDataReceivedOrders,
-                    isPro
+                    isPro,
+                    userRole
                 )
             }
         }
@@ -157,14 +161,15 @@ class MainActivity : ComponentActivity() {
         productsResponse: MutableList<ProductResponseModel>,
         isDataReceivedOutgoings : MutableState<Boolean>,
         isDataReceivedOrders : MutableState<Boolean>,
-        isPro : MutableState<Boolean>
+        isPro : MutableState<Boolean>,
+        userRole : MutableState<String>
     ) {
         NavHost(
             navController = navController,
             startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController, isLogged, retrofitAPI, jwtToken = jwtToken)
+                LoginScreen(navController, isLogged, retrofitAPI, jwtToken = jwtToken, userRole)
             }
 
             composable(route = "home") {
@@ -243,7 +248,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "groups") {
-                GroupsScreen(navController, isLogged, isPro, retrofitAPI, jwtToken)
+                GroupsScreen(navController, isLogged, isPro, retrofitAPI, jwtToken, userRole)
             }
 
             composable(route = "calculation") {
