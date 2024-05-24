@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -196,6 +197,11 @@ private fun onResultSetStatus(
     order: OrderModel,
     newStatus : Int
 ) {
+    val eventParameters1 = "{\"button_clicked\":\"change order status\"}"
+    AppMetrica.reportEvent(
+        "Order status changed",
+        eventParameters1
+    )
 }
 
 //TODO:удалить заказ

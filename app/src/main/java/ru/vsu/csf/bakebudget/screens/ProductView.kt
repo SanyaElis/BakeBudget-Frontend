@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -181,6 +182,11 @@ fun ProductView(
                                         if (selectedImageUri.value != null) {
                                             product.uri = selectedImageUri.value
                                         }
+                                        val eventParameters1 = "{\"button_clicked\":\"save product\"}"
+                                        AppMetrica.reportEvent(
+                                            "Existing product saved",
+                                            eventParameters1
+                                        )
                                         navController.navigate("products")
                                     }
                                 }

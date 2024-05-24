@@ -258,6 +258,11 @@ private fun onResultUpdate(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+    val eventParameters2 = "{\"button_clicked\":\"uodate ingredient\"}"
+    AppMetrica.reportEvent(
+        "ingredient updated",
+        eventParameters2
+    )
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -284,4 +289,9 @@ private fun onResultDelete(
         "Response Code : " + result!!.code() + "\n" + "Deleted ingredient: " + "\n" + ingredient,
         Toast.LENGTH_SHORT
     ).show()
+    val eventParameters1 = "{\"button_clicked\":\"delete ingredient\"}"
+    AppMetrica.reportEvent(
+        "Ingredient deleted",
+        eventParameters1
+    )
 }

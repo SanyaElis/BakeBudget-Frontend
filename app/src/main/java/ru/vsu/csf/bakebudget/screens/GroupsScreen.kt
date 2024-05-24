@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -119,8 +120,18 @@ fun GroupsScreen(
                             onClick = {
                                 if (isPro.value) {
                                     createCode(mContext, retrofitAPI, jwtToken, generatedCode, userRole)
+                                    val eventParameters1 = "{\"button_clicked\":\"create group code\"}"
+                                    AppMetrica.reportEvent(
+                                        "Group code generated",
+                                        eventParameters1
+                                    )
                                 } else {
                                     setCode(mContext, retrofitAPI, jwtToken, code, generatedCode)
+                                    val eventParameters2 = "{\"button_clicked\":\"create group entered\"}"
+                                    AppMetrica.reportEvent(
+                                        "User enter group",
+                                        eventParameters2
+                                    )
                                 }
                             }
                         ) {
@@ -231,7 +242,12 @@ fun GroupsScreen(
                                     IconButton(onClick = {
                                         isPro.value = true
                                         generatedCode.value = ""
-                                        changeRole(mContext, retrofitAPI, jwtToken)
+                                        changeRole(mContext, retrofitAPI, jwtToken, isPro, userRole)
+                                        val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
+                                        AppMetrica.reportEvent(
+                                            "User enter advanced mode",
+                                            eventParameters3
+                                        )
                                     }) {
                                         Icon(
                                             modifier = Modifier
@@ -324,23 +340,28 @@ fun getRandomString(length: Int): String {
 fun changeRole(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
+    jwtToken: MutableState<String>,
+    isPro: MutableState<Boolean>,
+    userRole: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.changeRole("Bearer ".plus(jwtToken.value))
-        onResultChangeRole(res, ctx)
+        onResultChangeRole(res, ctx, isPro, userRole)
     }
 }
 
 private fun onResultChangeRole(
     result: Response<Void>?,
-    context: Context
+    context: Context,
+    isPro: MutableState<Boolean>,
+    userRole: MutableState<String>
 ) {
     if (result != null) {
         if (result.isSuccessful) {
             Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
                 Toast.LENGTH_SHORT
             ).show()
+            isPro.value = userRole.value == "ROLE_ADVANCED_USER"
         }
     }
 }
