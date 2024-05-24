@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -118,7 +119,7 @@ fun ProductsScreen(
                 )
             )
             ingredientsSet.add(
-                    ingredient.name
+                ingredient.name
             )
         }
     }
@@ -151,7 +152,10 @@ fun ProductsScreen(
                     ) {
                         TextButton(
                             onClick = {
-                                AppMetrica.reportEvent("Product add button clicked", eventParameters1)
+                                AppMetrica.reportEvent(
+                                    "Product add button clicked",
+                                    eventParameters1
+                                )
                                 navController.navigate("productAdd")
                             }
                         ) {
@@ -170,8 +174,17 @@ fun ProductsScreen(
                         .background(SideBack)
                         .padding(bottom = 10.dp)
                 ) {
-                    Column {
+                    Column(modifier = Modifier.background(SideBack)) {
                         Header(scope = scope, drawerState = drawerState)
+                        if (products.isEmpty()) {
+                            Box(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = "Это страница готовых изделий. \nЗдесь отображаются созданные вами кондитерские изделия! \nЧтобы добаить новое изделие, нажмите кнопку «ДОБАВИТЬ» в нижней панели. \nДля редактирования существующего изделия нажмите на изображение над названием изделия.",
+                                    fontSize = 18.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
                         LazyVerticalGrid(
                             modifier = Modifier
                                 .fillMaxWidth()

@@ -168,7 +168,7 @@ fun CalculationScreen(
                                 onClick = {
                                     if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(
                                             extraCost.value
-                                        ))
+                                        ) && productsAll.isNotEmpty())
                                     ) {
                                         dataIncorrectToast(mContext)
                                     } else {
@@ -202,10 +202,7 @@ fun CalculationScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(
-                                            extraCost.value
-                                        ))
-                                    ) {
+                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(extraCost.value) && productsAll.isNotEmpty())) {
                                         dataIncorrectToast(mContext)
                                     } else {
                                         //TODO:заблокировать повторное создание
@@ -220,7 +217,7 @@ fun CalculationScreen(
                                                 jwtToken,
                                                 OrderRequestModel(
                                                     //TODO:ввод названия, чтобы одинаковые нельзя было создавать
-                                                    productsAll[selectedItemIndex.intValue].name.plus(productsAll[selectedItemIndex.intValue].id.toString()),
+                                                    productsAll[selectedItemIndex.intValue].name,
                                                     "",
                                                     extraCost.value.toInt(),
                                                     weight.value.toInt(),
@@ -273,7 +270,7 @@ fun CalculationScreen(
                                         selectedItemIndex = selectedItemIndex
                                     )
                                 } else {
-                                    Box(modifier = Modifier.padding(start = 8.dp)) {
+                                    Box(modifier = Modifier.padding(16.dp)) {
                                         Text(
                                             text = "Это страница расчета стоимости. \nЗдесь вы можете рассчитать себестоимость и конечную стоимость изделия, введя требуемые параметры, а также создать заказ.\n Стоимость рассчитывается на основании готового изделия, поэтому сначала создайте его на соответствующей странице!",
                                             fontSize = 18.sp,

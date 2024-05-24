@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -200,6 +201,17 @@ fun IngredientsScreen(
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
+                            if (ingredientsResponse.isEmpty()) {
+                                item {
+                                    Box(modifier = Modifier.padding(16.dp)) {
+                                        Text(
+                                            text = "Это страница ингредиентов. \nЗдесь вы можете добавлять, редактировать и удалять ингредиенты, которые вы сможете использоватьв своих изделиях! \nЧтобы добаить ингредиент, введите его название, вес в упаковке и цену, а затем нажмите кнопку «ДОБАВИТЬ» в нижней панели. \nДля редактирования и удаления ингредиентов, нажмите на 3 точки справа от нужного ингредиента.",
+                                            fontSize = 18.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
+                            }
                             itemsIndexed(ingredientsResponse) { num, ingredient ->
                                 if (num % 2 == 0) {
                                     Ingredient(
