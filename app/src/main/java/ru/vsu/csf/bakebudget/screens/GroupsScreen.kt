@@ -101,7 +101,8 @@ fun GroupsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {

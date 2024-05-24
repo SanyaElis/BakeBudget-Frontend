@@ -98,6 +98,7 @@ fun IngredientsScreen(
         findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
+    //TODO:подгружается все, даже чужого пользователя
         //TODO: подсказки пользователям, когда нет ингредиентов
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {
@@ -120,7 +121,8 @@ fun IngredientsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {

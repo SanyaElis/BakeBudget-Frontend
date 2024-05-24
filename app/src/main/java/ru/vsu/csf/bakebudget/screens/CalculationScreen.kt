@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -144,7 +145,8 @@ fun CalculationScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {
@@ -259,18 +261,26 @@ fun CalculationScreen(
                                 .padding(start = 8.dp, top = 20.dp, bottom = 20.dp)
                         ) {
                             item {
-                                Box(modifier = Modifier.padding(start = 8.dp)) {
-                                    Text(
-                                        text = "Выберите изделие",
-                                        fontSize = 24.sp
-                                    )
-                                }
                                 if (productsAll.isNotEmpty()) {
+                                    Box(modifier = Modifier.padding(start = 8.dp)) {
+                                        Text(
+                                            text = "Выберите изделие",
+                                            fontSize = 24.sp
+                                        )
+                                    }
                                     DropdownMenuProducts(
                                         productsAll,
                                         selectedItemIndex = selectedItemIndex
                                     )
-                                }//TODO:make mock if there is no products
+                                } else {
+                                    Box(modifier = Modifier.padding(start = 8.dp)) {
+                                        Text(
+                                            text = "Это страница расчета стоимости. \nЗдесь вы можете рассчитать себестоимость и конечную стоимость изделия, введя требуемые параметры, а также создать заказ.\n Стоимость рассчитывается на основании готового изделия, поэтому сначала создайте его на соответствующей странице!",
+                                            fontSize = 18.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
                                 Spacer(modifier = Modifier.padding(12.dp))
                                 Box(modifier = Modifier.padding(start = 8.dp)) {
                                     Text(
@@ -317,7 +327,6 @@ fun CalculationScreen(
                                     )
                                 }
                             }
-                            //TODO:сначала нажал создать заказ до кнопки рассчитать
                             item {
                                 Column {
                                     Spacer(modifier = Modifier.padding(12.dp))

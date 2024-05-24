@@ -145,7 +145,8 @@ fun ProductAddScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {

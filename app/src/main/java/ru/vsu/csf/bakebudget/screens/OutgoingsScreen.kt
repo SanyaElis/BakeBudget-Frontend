@@ -152,7 +152,8 @@ fun OutgoingsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {

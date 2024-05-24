@@ -47,6 +47,7 @@ import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.BarGraph
 import ru.vsu.csf.bakebudget.components.BarType
 import ru.vsu.csf.bakebudget.components.DatePeriodField
@@ -63,7 +64,11 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ReportsScreen(
     navController: NavHostController,
-    isLogged: MutableState<Boolean>
+    isLogged: MutableState<Boolean>,
+    isPro: MutableState<Boolean>,
+    retrofitAPI: RetrofitAPI,
+    jwtToken: MutableState<String>,
+    userRole: MutableState<String>
 ) {
     val item = listOf(MenuItemModel(R.drawable.reports, "Отчеты"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -101,7 +106,8 @@ fun ReportsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {
