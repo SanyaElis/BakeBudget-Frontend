@@ -13,3 +13,8 @@ fun isCostValid(cost: String) : Boolean {
 fun isNameValid(name: String) : Boolean {
     return !(name.isEmpty() || name.length < 2)
 }
+
+//TODO:same ingredients toast
+//TODO:same outgoing toast
+//TODO:same product toast
+//TODO:same order toast

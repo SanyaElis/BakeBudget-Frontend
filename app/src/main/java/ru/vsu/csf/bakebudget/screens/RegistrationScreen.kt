@@ -77,6 +77,11 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
                     postDataUsingRetrofit(
                         ctx, userName, userEmail, userPassword, retrofitAPI = retrofitAPI
                     )
+                    val eventParameters1 = "{\"button_clicked\":\"register\"}"
+                    AppMetrica.reportEvent(
+                        "User registered",
+                        eventParameters1
+                    )
                     navController.navigate("login")}
             ) {
                 Image(
@@ -110,6 +115,11 @@ private fun postDataUsingRetrofit(
     userPassword: MutableState<String>,
     retrofitAPI: RetrofitAPI
 ) {
+//    val eventParameters1 = "{\"button_clicked\":\"register\"}"
+//    AppMetrica.reportEvent(
+//        "User registered",
+//        eventParameters1
+//    )
     val dataModel = UserSignUpRequestModel(userName.value, userEmail.value, userPassword.value)
     val call: Call<String?>? = retrofitAPI.register(dataModel)
     call!!.enqueue(object : Callback<String?> {
@@ -120,21 +130,16 @@ private fun postDataUsingRetrofit(
                     "Response Code : " + response.code() + "\n" + "Пользователь успешно зарегистрирован",
                     Toast.LENGTH_SHORT
                 ).show()
-                val eventParameters1 = "{\"button_clicked\":\"register\"}"
-                AppMetrica.reportEvent(
-                    "User registered",
-                    eventParameters1
-                )
             } else {
                 Toast.makeText(
                     ctx,
                     "Response Code : " + response.code() +  "\n" + "Регистрация невозможна, некорректные данные",
                     Toast.LENGTH_SHORT
                 ).show()
-                val eventParameters1 = "{\"button_clicked\":\"register\"}"
+                val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
                 AppMetrica.reportEvent(
                     "User registration failed",
-                    eventParameters1
+                    eventParameters2
                 )
             }
         }
