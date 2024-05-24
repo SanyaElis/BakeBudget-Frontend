@@ -87,7 +87,6 @@ fun OrdersScreen(
     val orders0 = remember {
         mutableStateListOf<OrderModel>()
     }
-    //TODO: подсказки пользователям, когда нет изделий
 
     val orders1 = remember {
         mutableStateListOf<OrderModel>()
@@ -269,7 +268,7 @@ private fun onResultFindAllOrders(
             for (order in result.body()!!) {
                 for (product in productsAll) {
                     if (product.id == order.productId) {
-                        orders.add(OrderModel(order.id, 0, product, order.finalCost, order.finalWeight))
+                        orders.add(OrderModel(order.id, order.name, 0, product, order.finalCost, order.finalWeight))
                         break
                     }
                 }

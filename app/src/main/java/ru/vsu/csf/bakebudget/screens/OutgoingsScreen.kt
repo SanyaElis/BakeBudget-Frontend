@@ -95,8 +95,6 @@ fun OutgoingsScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
-    //TODO: подсказки пользователям, когда нет ингредиентов
-
 
 
     if (jwtToken.value != "" && !isDataReceivedIngredients.value) {

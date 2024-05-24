@@ -63,6 +63,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
+import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import java.util.Random
 
@@ -87,6 +88,9 @@ fun CalculationScreen(
         mutableStateOf(item[0])
     }
     val selectedItemIndex = remember { mutableIntStateOf(0) }
+    val name = remember {
+        mutableStateOf("")
+    }
     val weight = remember {
         mutableStateOf("")
     }
@@ -202,7 +206,7 @@ fun CalculationScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    if (!(isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(extraCost.value) && productsAll.isNotEmpty())) {
+                                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(extraCost.value) && productsAll.isNotEmpty())) {
                                         dataIncorrectToast(mContext)
                                     } else {
                                         //TODO:заблокировать повторное создание
@@ -217,14 +221,14 @@ fun CalculationScreen(
                                                 jwtToken,
                                                 OrderRequestModel(
                                                     //TODO:ввод названия, чтобы одинаковые нельзя было создавать
-                                                    productsAll[selectedItemIndex.intValue].name,
+                                                    name.value,
                                                     "",
                                                     extraCost.value.toInt(),
                                                     weight.value.toInt(),
                                                     (100 + markup.value.toInt()) / 100.0,
                                                     productsAll[selectedItemIndex.intValue].id
                                                 ),
-                                                orders, productsAll, selectedItemIndex, costPrice, resultPrice
+                                                orders, productsAll, selectedItemIndex, costPrice, resultPrice, name
                                             )
                                             resultPriceLast.intValue = resultPrice.intValue
                                             same.value = false
@@ -277,6 +281,21 @@ fun CalculationScreen(
                                             textAlign = TextAlign.Center
                                         )
                                     }
+                                }
+                                Spacer(modifier = Modifier.padding(12.dp))
+                                Box(modifier = Modifier.padding(start = 8.dp)) {
+                                    Text(
+                                        text = "Название заказа:",
+                                        fontSize = 24.sp
+                                    )
+                                }
+                                Row(modifier = Modifier.padding(start = 3.dp)) {
+                                    InputTextField(
+                                        placeholder = "Название",
+                                        text = name,
+                                        max = 25,
+                                        true
+                                    )
                                 }
                                 Spacer(modifier = Modifier.padding(12.dp))
                                 Box(modifier = Modifier.padding(start = 8.dp)) {
@@ -446,12 +465,13 @@ private fun create(
     productsAll: MutableList<ProductModel>,
     selectedItemIndex : MutableState<Int>,
     costPrice: MutableState<Int>,
-    resultPrice: MutableState<Int>
+    resultPrice: MutableState<Int>,
+    name: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.createOrder(orderRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, costPrice, resultPrice)
+        onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, costPrice, resultPrice, name)
     }
 }
 
@@ -462,7 +482,8 @@ private fun onResultCreateOrder(
     productsAll: MutableList<ProductModel>,
     selectedItemIndex : MutableState<Int>,
     costPrice: MutableState<Int>,
-    resultPrice: MutableState<Int>
+    resultPrice: MutableState<Int>,
+    name: MutableState<String>
 ) {
     Toast.makeText(
         ctx,
@@ -475,6 +496,7 @@ private fun onResultCreateOrder(
         orders.add(
             OrderModel(
                 result.body()!!.id,
+                name.value,
                 0,
                 productsAll[selectedItemIndex.value],
                 resultPrice.value.toDouble(),

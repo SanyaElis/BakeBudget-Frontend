@@ -100,7 +100,6 @@ fun IngredientsScreen(
         isDataReceivedIngredients.value = true
     }
     //TODO:подгружается все, даже чужого пользователя
-        //TODO: подсказки пользователям, когда нет ингредиентов
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {
             ingredients.add(
