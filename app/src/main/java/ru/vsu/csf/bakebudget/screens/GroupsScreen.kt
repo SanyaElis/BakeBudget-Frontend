@@ -56,6 +56,8 @@ import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -239,15 +241,18 @@ fun GroupsScreen(
                                             textAlign = TextAlign.Center
                                         )
                                     }
+                                        //TODO:заблокировать возможность сгенерировать код, если он есть
                                     IconButton(onClick = {
-                                        isPro.value = true
-                                        generatedCode.value = ""
                                         changeRole(mContext, retrofitAPI, jwtToken, isPro, userRole)
                                         val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
                                         AppMetrica.reportEvent(
                                             "User enter advanced mode",
                                             eventParameters3
                                         )
+                                        Timer().schedule(2000) {
+                                            isPro.value = true
+                                            generatedCode.value = ""
+                                        }
                                     }) {
                                         Icon(
                                             modifier = Modifier

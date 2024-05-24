@@ -274,8 +274,8 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "КОЛИЧЕСТВО", color = Color.White, fontSize = 12.sp)
-                Text(text = "СТОИМОСТЬ", color = Color.White, fontSize = 12.sp)
+                Text(text = "КОЛИЧЕСТВО (гр.)", color = Color.White, fontSize = 12.sp)
+                Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
             }
         }
     }

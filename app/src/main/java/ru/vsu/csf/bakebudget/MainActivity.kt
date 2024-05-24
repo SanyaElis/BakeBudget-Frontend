@@ -48,7 +48,7 @@ import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
 
 class MainActivity : ComponentActivity() {
     private val API_KEY = "a6d5ee67-5fc9-4adf-bab5-17730828b9b5"
-    private val url = "http://185.251.89.195:8080/api/"
+    private val url = "http://185.251.89.195:80/api/"
     private val gson = GsonBuilder()
         .setLenient()
         .create()
