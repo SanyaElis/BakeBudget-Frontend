@@ -95,8 +95,6 @@ fun OutgoingsScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
-    //TODO: подсказки пользователям, когда нет ингредиентов
-
 
 
     if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
@@ -152,7 +150,8 @@ fun OutgoingsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {
@@ -227,6 +226,14 @@ fun OutgoingsScreen(
                                             productsAll,
                                             selectedItemIndex = selectedItemIndex
                                         )
+                                    } else {
+                                        Box(modifier = Modifier.padding(16.dp)) {
+                                            Text(
+                                                text = "Это страница добавления издержек. \nЗдесь вы можете добавить свои затраты на приготовление изделий!.\nСейчас у вас нет ни одного готового изделия, создайте его на соответствующей странице!",
+                                                fontSize = 18.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -248,16 +255,6 @@ fun OutgoingsScreen(
                                             productsAll[selectedItemIndex.intValue].id,
                                             retrofitAPI, jwtToken
                                         )
-                                    }
-                                }
-                            } else{
-                                item {
-                                    Box(
-                                        modifier = Modifier.padding(8.dp),
-                                        contentAlignment = Alignment.BottomCenter
-                                    ) {
-                                        Text(text = "Сначала добавьте готовые изделия", fontSize = 20.sp,
-                                            textAlign = TextAlign.Center)
                                     }
                                 }
                             }

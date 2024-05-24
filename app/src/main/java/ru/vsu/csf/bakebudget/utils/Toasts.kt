@@ -27,6 +27,22 @@ fun sameName(context: Context) {
     ).show()
 }
 
+fun codeAlreadyGenerated(context: Context) {
+    Toast.makeText(
+        context,
+        "Код уже сгенерирован",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
+fun codeCopied(context: Context) {
+    Toast.makeText(
+        context,
+        "Код скопирован",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
 //TODO:same outgoing toast
 //TODO:same product toast
 //TODO:same order toast

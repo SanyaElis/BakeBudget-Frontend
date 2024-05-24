@@ -168,7 +168,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "home") {
-                HomeScreen(navController, isLogged)
+                HomeScreen(navController, isLogged, jwtToken)
             }
 
             composable(route = "register") {
@@ -239,7 +239,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "reports") {
-                ReportsScreen(navController, isLogged)
+                ReportsScreen(navController, isLogged, isPro, retrofitAPI, jwtToken, userRole)
             }
 
             composable(route = "groups") {

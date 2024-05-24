@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -37,8 +38,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +60,8 @@ import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.utils.codeAlreadyGenerated
+import ru.vsu.csf.bakebudget.utils.codeCopied
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -70,6 +76,9 @@ fun GroupsScreen(
     userRole: MutableState<String>
 ) {
     val mContext = LocalContext.current
+
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+
     val item = listOf(MenuItemModel(R.drawable.groups, "Группы"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -101,7 +110,8 @@ fun GroupsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {
@@ -121,12 +131,23 @@ fun GroupsScreen(
                         TextButton(
                             onClick = {
                                 if (isPro.value) {
-                                    createCode(mContext, retrofitAPI, jwtToken, generatedCode, userRole)
-                                    val eventParameters1 = "{\"button_clicked\":\"create group code\"}"
-                                    AppMetrica.reportEvent(
-                                        "Group code generated",
-                                        eventParameters1
-                                    )
+                                    if (generatedCode.value == "") {
+                                        createCode(
+                                            mContext,
+                                            retrofitAPI,
+                                            jwtToken,
+                                            generatedCode,
+                                            userRole
+                                        )
+                                        val eventParameters1 =
+                                            "{\"button_clicked\":\"create group code\"}"
+                                        AppMetrica.reportEvent(
+                                            "Group code generated",
+                                            eventParameters1
+                                        )
+                                    } else {
+                                        codeAlreadyGenerated(mContext)
+                                    }
                                 } else {
                                     setCode(mContext, retrofitAPI, jwtToken, code, generatedCode)
                                     val eventParameters2 = "{\"button_clicked\":\"create group entered\"}"
@@ -190,6 +211,16 @@ fun GroupsScreen(
                                         Text(text = generatedCode.value, fontSize = 30.sp, maxLines = 2, textAlign = TextAlign.Center)
                                     }
                                     if (generatedCode.value != "") {
+                                        IconButton(onClick = {
+                                            clipboardManager.setText(AnnotatedString((generatedCode.value)))
+                                            codeCopied(mContext)
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.ContentCopy,
+                                                contentDescription = "copy",
+                                                tint = Color.Gray
+                                            )
+                                        }
                                         Box(
                                             modifier = Modifier.padding(8.dp),
                                             contentAlignment = Alignment.BottomCenter
@@ -241,7 +272,6 @@ fun GroupsScreen(
                                             textAlign = TextAlign.Center
                                         )
                                     }
-                                        //TODO:заблокировать возможность сгенерировать код, если он есть
                                     IconButton(onClick = {
                                         changeRole(mContext, retrofitAPI, jwtToken, isPro, userRole)
                                         val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
@@ -268,7 +298,6 @@ fun GroupsScreen(
                                     }
                                 }
                             }
-                            //TODO:добавить описание того, что надо делать
                         }
                     }
                 }
@@ -463,6 +492,3 @@ private fun onResultSetCode(
         }
     }
 }
-
-
-//TODO:кнопку скопировать добавить

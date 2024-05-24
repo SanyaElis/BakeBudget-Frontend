@@ -41,7 +41,8 @@ fun SideMenu(
     drawerState: DrawerState,
     scope: CoroutineScope,
     selectedItem: MutableState<MenuItemModel>,
-    isLogged: MutableState<Boolean>
+    isLogged: MutableState<Boolean>,
+    jwtToken: MutableState<String>
 ) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
@@ -178,6 +179,7 @@ fun SideMenu(
                 TextButton(
                     onClick = {
                         isLogged.value = false
+                        jwtToken.value = ""
                         navController.navigate("login")
                     }
                 ) {

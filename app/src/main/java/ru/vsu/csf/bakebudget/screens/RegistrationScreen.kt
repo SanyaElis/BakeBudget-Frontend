@@ -147,4 +147,5 @@ private fun postDataUsingRetrofit(
         override fun onFailure(call: Call<String?>, t: Throwable) {
         }
     })
+    //TODO:изменить коллы
 }

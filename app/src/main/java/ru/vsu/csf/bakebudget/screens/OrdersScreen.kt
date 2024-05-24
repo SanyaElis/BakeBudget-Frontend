@@ -87,7 +87,6 @@ fun OrdersScreen(
     val orders0 = remember {
         mutableStateListOf<OrderModel>()
     }
-    //TODO: подсказки пользователям, когда нет изделий
 
     val orders1 = remember {
         mutableStateListOf<OrderModel>()
@@ -107,7 +106,7 @@ fun OrdersScreen(
 
 
     if (jwtToken.value != "" && !isDataReceivedOrders.value) {
-        findAllOrders(mContext, retrofitAPI, jwtToken, orders, productsAll)
+        findAllOrders(mContext, retrofitAPI, jwtToken, orders, productsAll, orders0, orders1, orders2, orders3)
         isDataReceivedOrders.value = true
     }
 
@@ -123,7 +122,8 @@ fun OrdersScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {
@@ -250,30 +250,36 @@ fun findAllOrders(
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     orders: MutableList<OrderModel>,
-    productsAll: MutableList<ProductModel>
+    productsAll: MutableList<ProductModel>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
-        onResultFindAllOrders(res, orders, productsAll)
+        onResultFindAllOrders(res, orders, productsAll, orders0, orders1, orders2, orders3)
     }
 }
+
+val orderState = mapOf("NOT_STARTED" to 0, "IN_PROCESS" to 1, "DONE" to 2, "CANCELLED" to 3)
 
 private fun onResultFindAllOrders(
     result: Response<List<OrderResponseModel>?>?,
     orders: MutableList<OrderModel>,
-    productsAll: MutableList<ProductModel>
+    productsAll: MutableList<ProductModel>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
             for (order in result.body()!!) {
                 for (product in productsAll) {
                     if (product.id == order.productId) {
-                        orders.add(OrderModel(order.id, 0, product, order.finalCost, order.finalWeight))
+                        orders.add(OrderModel(order.id, order.name,
+                            orderState[order.status]!!, product, order.finalCost, order.finalWeight))
                         break
                     }
                 }
             }
         }
+        sortByState(orders, orders0, orders1, orders2, orders3)
     }
 }
 
@@ -300,4 +306,5 @@ private fun onResultFindAllOrders(
 //
 //    }
 //}
-//TODO:делать все имена уникальными
+
+//TODO:подгружать все в начале

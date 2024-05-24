@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -145,7 +146,8 @@ fun ProductAddScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged
+                isLogged = isLogged,
+                jwtToken
             )
         },
         content = {
@@ -244,6 +246,17 @@ fun ProductAddScreen(
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
+                            if (ingredients.isEmpty()) {
+                                item {
+                                    Box(modifier = Modifier.padding(16.dp)) {
+                                        Text(
+                                            text = "Это страница добавления готового изделия. \nЗдесь вы можете добавлять, редактировать и удалять ингредиенты, которые будут использоваться в этом изделии! \nЧтобы добаить ингредиент, нажмите кнопку «ДОБАВИТЬ» в нижней панели. \nДля сохранения изделия введите вес, на который рассчитан рецепт, его название и нажмите кнопку «СОХРАНИТЬ».",
+                                            fontSize = 18.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
+                            }
                             itemsIndexed(ingredients) { num, ingredient ->
                                 IngredientInRecipe(
                                     ingredient = ingredient,
