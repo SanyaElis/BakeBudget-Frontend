@@ -41,6 +41,7 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameName
 
 @Composable
 fun Ingredient(
@@ -99,13 +100,13 @@ fun Ingredient(
                 modifier = Modifier.fillMaxWidth(0.5f),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = ingredient.weight.toString(), maxLines = 3)
+                Text(text = ingredient.weight.toString() + " гр.", maxLines = 3)
             }
             Box(
                 modifier = Modifier.fillMaxWidth(0.75f),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text(text = ingredient.cost.toString(), maxLines = 3)
+                Text(text = ingredient.cost.toString() + " руб.", maxLines = 3)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }
@@ -154,9 +155,9 @@ fun AlertDialog(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(placeholder = "Название", name, 30, true)
-                InputTextField(placeholder = "Вес", weight, 30, true)
-                InputTextField(placeholder = "Цена", cost, 30, true)
+                InputTextField(placeholder = "Название", name, 25, true)
+                InputTextField(placeholder = "Вес", weight, 8, true)
+                InputTextField(placeholder = "Цена", cost, 8, true)
             }
         },
         onDismissRequest = {
@@ -165,12 +166,10 @@ fun AlertDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(
-                                name.value
-                        )
-                                )
-                    ) {
+                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value))) {
                         dataIncorrectToast(context)
+                    } else if (!(!ingredientsSet.contains(name.value) || (ingredient.name == name.value))) {
+                        sameName(context)
                     } else {
                         update(
                             context, retrofitAPI, jwtToken, ingredient, IngredientRequestModel(

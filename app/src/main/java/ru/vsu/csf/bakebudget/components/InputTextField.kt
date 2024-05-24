@@ -36,7 +36,6 @@ fun InputTextField(
             .padding(5.dp)
             .requiredWidth(120.dp)
     )
-    //TODO:поставить в использованиях более вменяемые параметры (для чисел до 9 знаков, для названий +- 20-30)
 }
 
 @Composable

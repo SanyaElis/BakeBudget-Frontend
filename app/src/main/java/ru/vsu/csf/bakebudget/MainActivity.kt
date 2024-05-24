@@ -136,8 +136,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-    //TODO:везде добавить подписи (гр.) (руб.)
+    //TODO:jwt to shared prefs
 
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable

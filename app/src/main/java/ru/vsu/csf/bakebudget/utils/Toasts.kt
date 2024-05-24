@@ -18,3 +18,15 @@ fun sameOrder(context: Context) {
         Toast.LENGTH_LONG
     ).show()
 }
+
+fun sameName(context: Context) {
+    Toast.makeText(
+        context,
+        "Все имена должны быть уникальными!",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
+//TODO:same outgoing toast
+//TODO:same product toast
+//TODO:same order toast

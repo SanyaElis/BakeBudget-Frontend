@@ -105,7 +105,7 @@ fun IngredientInRecipe(
                 modifier = Modifier.fillMaxWidth(0.8f),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = ingredient.weight.toString(), maxLines = 3)
+                Text(text = ingredient.weight.toString() + " гр.", maxLines = 3)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }
@@ -155,7 +155,7 @@ fun AlertDialog1(
 //                        ingredientsAll = ingredientsAll,
 //                        selectedItemIndex = selectedItemIndex
 //                    )
-                    InputTextField(placeholder = "Вес", weight, 30, true)
+                    InputTextField(placeholder = "Вес", weight, 8, true)
                 }
             }
         },
@@ -174,7 +174,6 @@ fun AlertDialog1(
                                 weight.value.toInt()
                             ))
                         }
-                        //TODO: подумать над тем, чтобы все таки производить сохранение на кнопку, а не сразу
 
                         ingredient.weight = weight.value.toInt()
                         onConfirmation()
