@@ -28,8 +28,8 @@ fun OutgoingAdd(name: MutableState<String>,
             .fillMaxHeight()
             .background(PrimaryBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-            InputTextField(placeholder = "Название", name, 30)
-            InputTextField(placeholder = "Стоимость", value, 30)
+            InputTextField(placeholder = "Название", name, 25)
+            InputTextField(placeholder = "Стоимость", value, 8)
         }
     }
 }

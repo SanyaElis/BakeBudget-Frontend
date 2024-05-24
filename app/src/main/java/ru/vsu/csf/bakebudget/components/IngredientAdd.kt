@@ -29,9 +29,9 @@ fun IngredientAdd(
             .fillMaxHeight()
             .background(PrimaryBack), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-            InputTextField(placeholder = "Название", name, 30, 110)
-            InputTextField(placeholder = "Вес", weight, 30, 110)
-            InputTextField(placeholder = "Цена", cost, 30, 110)
+            InputTextField(placeholder = "Название", name, 25, 110)
+            InputTextField(placeholder = "Вес", weight, 8, 110)
+            InputTextField(placeholder = "Цена", cost, 8, 110)
         }
     }
 }

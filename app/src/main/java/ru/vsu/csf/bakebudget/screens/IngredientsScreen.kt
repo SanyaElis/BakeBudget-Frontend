@@ -59,6 +59,7 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameName
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -140,14 +141,15 @@ fun IngredientsScreen(
                             IngredientAdd(name, weight, cost)
                             TextButton(
                                 onClick = {
-                                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value) && !ingredientsSet.contains(name.value)
-                                                )
-                                    ) {
+                                    if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(cost.value))
+                                    )  {
                                         AppMetrica.reportEvent(
                                             "Ingredient add failed",
                                             eventParameters1
                                         )
                                         dataIncorrectToast(context = mContext)
+                                    } else if(ingredientsSet.contains(name.value)) {
+                                        sameName(mContext)
                                     } else {
                                         AppMetrica.reportEvent("Ingredient added", eventParameters2)
                                         ingredients.add(
@@ -280,7 +282,6 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
         }
     }
 }
-//TODO:делать все имена уникальными
 @OptIn(DelicateCoroutinesApi::class)
 fun findAllIngredients(
     ctx: Context,
