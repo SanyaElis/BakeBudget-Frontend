@@ -25,6 +25,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,7 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameName
 import java.util.Random
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -77,7 +79,7 @@ fun CalculationScreen(
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     isDataReceivedProducts: MutableState<Boolean>,
-    productsResponse: MutableList<ProductResponseModel>,
+    productsResponse: MutableList<ProductResponseModel>
 
     ) {
     val mContext = LocalContext.current
@@ -102,14 +104,14 @@ fun CalculationScreen(
     }
 
     val costPrice = remember {
-        mutableIntStateOf(0)
+        mutableLongStateOf(0L)
     }
     val resultPrice = remember {
-        mutableIntStateOf(0)
+        mutableLongStateOf(0L)
     }
 
     val resultPriceLast = remember {
-        mutableIntStateOf(0)
+        mutableLongStateOf(0L)
     }
     val same = remember {
         mutableStateOf(false)
@@ -209,7 +211,6 @@ fun CalculationScreen(
                                     if (!(isNameValid(name.value) && isWeightValid(weight.value) && isCostValid(markup.value) && isCostValid(extraCost.value) && productsAll.isNotEmpty())) {
                                         dataIncorrectToast(mContext)
                                     } else {
-                                        //TODO:заблокировать повторное создание
                                         AppMetrica.reportEvent("Order created", eventParameters1)
 //                                        if (resultPriceLast.intValue == resultPrice.intValue || same.value) {
 //                                            sameOrder(mContext)
@@ -230,7 +231,7 @@ fun CalculationScreen(
                                                 ),
                                                 orders, productsAll, selectedItemIndex, costPrice, resultPrice, name
                                             )
-                                            resultPriceLast.intValue = resultPrice.intValue
+                                            resultPriceLast.longValue = resultPrice.longValue
                                             same.value = false
                                         }
                                     }
@@ -338,7 +339,7 @@ fun CalculationScreen(
                                     InputTextField(
                                         placeholder = "Коэффициент",
                                         text = markup,
-                                        max = 10,
+                                        max = 3,
                                         true
                                     )
                                 }
@@ -348,14 +349,14 @@ fun CalculationScreen(
                                     Spacer(modifier = Modifier.padding(12.dp))
                                     Box(modifier = Modifier.padding(start = 8.dp)) {
                                         Text(
-                                            text = "Себестоимость : ${costPrice.intValue} руб.",
+                                            text = "Себестоимость : ${costPrice.longValue} руб.",
                                             fontSize = 24.sp
                                         )
                                     }
                                     Spacer(modifier = Modifier.padding(12.dp))
                                     Box(modifier = Modifier.padding(start = 8.dp)) {
                                         Text(
-                                            text = "Конечная стоимость : ${resultPrice.intValue} руб.",
+                                            text = "Конечная стоимость : ${resultPrice.longValue} руб.",
                                             fontSize = 24.sp
                                         )
                                     }
@@ -426,8 +427,8 @@ private fun calculate(
     retrofitAPI: RetrofitAPI,
     jwtToken: MutableState<String>,
     calculationRequestModel: CalculationRequestModel,
-    costPrice: MutableState<Int>,
-    resultPrice: MutableState<Int>
+    costPrice: MutableState<Long>,
+    resultPrice: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
@@ -442,16 +443,16 @@ private fun calculate(
 private fun onResultCalculate(
     result: Response<CalculationResponseModel?>?,
     ctx: Context,
-    costPrice: MutableState<Int>,
-    resultPrice: MutableState<Int>
+    costPrice: MutableState<Long>,
+    resultPrice: MutableState<Long>
 ) {
     Toast.makeText(
         ctx,
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
-    costPrice.value = result.body()!!.costPrice.toInt()
-    resultPrice.value = result.body()!!.finalCost.toInt()
+    costPrice.value = result.body()!!.costPrice.toLong()
+    resultPrice.value = result.body()!!.finalCost.toLong()
 }
 
 //TODO:разделить на классы
@@ -464,8 +465,8 @@ private fun create(
     orders : MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
     selectedItemIndex : MutableState<Int>,
-    costPrice: MutableState<Int>,
-    resultPrice: MutableState<Int>,
+    costPrice: MutableState<Long>,
+    resultPrice: MutableState<Long>,
     name: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
@@ -481,8 +482,8 @@ private fun onResultCreateOrder(
     orders : MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
     selectedItemIndex : MutableState<Int>,
-    costPrice: MutableState<Int>,
-    resultPrice: MutableState<Int>,
+    costPrice: MutableState<Long>,
+    resultPrice: MutableState<Long>,
     name: MutableState<String>
 ) {
     Toast.makeText(
@@ -490,9 +491,13 @@ private fun onResultCreateOrder(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+    if (result.code() == 409) {
+        sameName(ctx)
+    }
+    //TODO:ограничение на суммарную стоимость
     if (result.body()!=null) {
-        costPrice.value = result.body()!!.costPrice.toInt()
-        resultPrice.value = result.body()!!.finalCost.toInt()
+        costPrice.value = result.body()!!.costPrice.toLong()
+        resultPrice.value = result.body()!!.finalCost.toLong()
         orders.add(
             OrderModel(
                 result.body()!!.id,
