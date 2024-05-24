@@ -225,7 +225,7 @@ fun CalculationScreen(
                                                     (100 + markup.value.toInt()) / 100.0,
                                                     productsAll[selectedItemIndex.intValue].id
                                                 ),
-                                                orders, productsAll, selectedItemIndex, resultPrice
+                                                orders, productsAll, selectedItemIndex, costPrice, resultPrice
                                             )
                                             resultPriceLast.intValue = resultPrice.intValue
                                             same.value = false
@@ -439,12 +439,13 @@ private fun create(
     orders : MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
     selectedItemIndex : MutableState<Int>,
+    costPrice: MutableState<Int>,
     resultPrice: MutableState<Int>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.createOrder(orderRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, resultPrice)
+        onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, costPrice, resultPrice)
     }
 }
 
@@ -454,6 +455,7 @@ private fun onResultCreateOrder(
     orders : MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
     selectedItemIndex : MutableState<Int>,
+    costPrice: MutableState<Int>,
     resultPrice: MutableState<Int>
 ) {
     Toast.makeText(
@@ -462,6 +464,8 @@ private fun onResultCreateOrder(
         Toast.LENGTH_SHORT
     ).show()
     if (result.body()!=null) {
+        costPrice.value = result.body()!!.costPrice.toInt()
+        resultPrice.value = result.body()!!.finalCost.toInt()
         orders.add(
             OrderModel(
                 result.body()!!.id,
