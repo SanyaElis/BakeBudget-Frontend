@@ -62,6 +62,7 @@ import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -199,6 +200,7 @@ fun OutgoingsScreen(
                     }
                 }
                     //TODO:выводить на какой вес
+                //TODO:все имена уникальные
             }) {
                 Surface(
                     modifier = Modifier

@@ -36,6 +36,8 @@ import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.services.deleteIngredient
+import ru.vsu.csf.bakebudget.services.updateIngredient
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
@@ -171,7 +173,7 @@ fun AlertDialog(
                     } else if (!(!ingredientsSet.contains(name.value) || (ingredient.name == name.value))) {
                         sameName(context)
                     } else {
-                        update(
+                        updateIngredient(
                             context, retrofitAPI, jwtToken, ingredient, IngredientRequestModel(
                                 name.value,
                                 weight.value.toInt(),
@@ -210,7 +212,7 @@ fun AlertDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    delete(context, retrofitAPI, jwtToken, ingredient)
+                    deleteIngredient(context, retrofitAPI, jwtToken, ingredient)
                     val eventParameters1 = "{\"button_clicked\":\"ingredient_delete\"}"
                     AppMetrica.reportEvent("Ingredient deleted", eventParameters1)
                     ingredients.remove(IngredientModel(ingredient.name, ingredient.weight, ingredient.cost))
@@ -222,67 +224,5 @@ fun AlertDialog(
                 Text("Удалить")
             }
         }
-    )
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun update(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    ingredient: IngredientResponseModel,
-    ingredientRequestModel: IngredientRequestModel
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.updateIngredient(ingredient.id, ingredientRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultUpdate(res, ctx)
-    }
-}
-
-private fun onResultUpdate(
-    result: Response<IngredientResponseModel?>?,
-    ctx: Context
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    val eventParameters2 = "{\"button_clicked\":\"uodate ingredient\"}"
-    AppMetrica.reportEvent(
-        "ingredient updated",
-        eventParameters2
-    )
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun delete(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    ingredient: IngredientResponseModel
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.deleteIngredient(ingredient.id, "Bearer ".plus(jwtToken.value))
-        onResultDelete(ingredient, ctx, res)
-    }
-}
-
-private fun onResultDelete(
-    ingredient: IngredientResponseModel,
-    ctx: Context,
-    result: Response<Void>?
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + "Deleted ingredient: " + "\n" + ingredient,
-        Toast.LENGTH_SHORT
-    ).show()
-    val eventParameters1 = "{\"button_clicked\":\"delete ingredient\"}"
-    AppMetrica.reportEvent(
-        "Ingredient deleted",
-        eventParameters1
     )
 }

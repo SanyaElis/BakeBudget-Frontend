@@ -42,7 +42,3 @@ fun codeCopied(context: Context) {
         Toast.LENGTH_LONG
     ).show()
 }
-
-//TODO:same outgoing toast
-//TODO:same product toast
-//TODO:same order toast

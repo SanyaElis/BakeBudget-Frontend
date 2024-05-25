@@ -221,7 +221,6 @@ fun CalculationScreen(
                                                 retrofitAPI,
                                                 jwtToken,
                                                 OrderRequestModel(
-                                                    //TODO:ввод названия, чтобы одинаковые нельзя было создавать
                                                     name.value,
                                                     "",
                                                     extraCost.value.toInt(),
@@ -494,7 +493,6 @@ private fun onResultCreateOrder(
     if (result.code() == 409) {
         sameName(ctx)
     }
-    //TODO:ограничение на суммарную стоимость
     if (result.body()!=null) {
         costPrice.value = result.body()!!.costPrice.toLong()
         resultPrice.value = result.body()!!.finalCost.toLong()
