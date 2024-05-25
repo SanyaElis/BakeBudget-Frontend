@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
@@ -18,14 +19,13 @@ import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 fun createOutgoing(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     outgoingModel: OutgoingRequestModel,
     product: ProductModel,
     productsAll: MutableList<ProductModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.createOutgoing(product.id, outgoingModel, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.createOutgoing(product.id, outgoingModel, "Bearer ".plus(getToken(ctx)))
         onResultCreateOutgoing(res, ctx, product, productsAll)
     }
 }
@@ -52,12 +52,11 @@ fun onResultCreateOutgoing(
 fun findAllOutgoingsInProduct(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     product: ProductModel
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.findAllOutgoingsInProduct(product.id, "Bearer ".plus(jwtToken.value)
+            retrofitAPI.findAllOutgoingsInProduct(product.id, "Bearer ".plus(getToken(ctx))
             )
         onResultFindAllOutgoingsInProduct(res, ctx, product)
     }
@@ -86,7 +85,6 @@ private fun onResultFindAllOutgoingsInProduct(
 fun updateOutgoing(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     outgoing: OutgoingModel,
     productId: Int
 ) {
@@ -95,7 +93,7 @@ fun updateOutgoing(
             retrofitAPI.updateOutgoing(
                 outgoing.id,
                 OutgoingRequestModel(outgoing.name, outgoing.cost),
-                "Bearer ".plus(jwtToken.value)
+                "Bearer ".plus(getToken(ctx))
             )
         onResultUpdateOutgoing(res, ctx)
     }
@@ -121,12 +119,11 @@ private fun onResultUpdateOutgoing(
 fun deleteOutgoing(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     outgoingId: Int
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.deleteOutgoing(outgoingId, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.deleteOutgoing(outgoingId, "Bearer ".plus(getToken(ctx)))
         onResultDeleteOutgoing(outgoingId, ctx, res)
     }
 }

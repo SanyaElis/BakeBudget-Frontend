@@ -30,6 +30,7 @@ import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.clearToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -41,8 +42,7 @@ fun SideMenu(
     drawerState: DrawerState,
     scope: CoroutineScope,
     selectedItem: MutableState<MenuItemModel>,
-    isLogged: MutableState<Boolean>,
-    jwtToken: MutableState<String>
+    isLogged: MutableState<Boolean>
 ) {
     val items = listOf(
         MenuItemModel(R.drawable.home, "Главная"),
@@ -179,7 +179,7 @@ fun SideMenu(
                 TextButton(
                     onClick = {
                         isLogged.value = false
-                        jwtToken.value = ""
+                        clearToken(mContext)
                         navController.navigate("login")
                     }
                 ) {

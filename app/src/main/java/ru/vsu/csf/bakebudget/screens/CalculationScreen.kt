@@ -50,6 +50,7 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
@@ -79,7 +80,6 @@ fun CalculationScreen(
     productsAll: MutableList<ProductModel>,
     orders: MutableList<OrderModel>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>
 
@@ -121,8 +121,8 @@ fun CalculationScreen(
 
     val eventParameters1 = "{\"button_clicked\":\"order_created\"}"
 
-    if (jwtToken.value != "" && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, jwtToken, productsResponse)
+    if (getToken(mContext) != null && !isDataReceivedProducts.value) {
+        findAllProducts(mContext, retrofitAPI, productsResponse)
         isDataReceivedProducts.value = true
     }
     if (productsAll.isEmpty() && productsResponse.isNotEmpty()) {
@@ -153,8 +153,7 @@ fun CalculationScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -188,7 +187,6 @@ fun CalculationScreen(
                                         calculate(
                                             mContext,
                                             retrofitAPI,
-                                            jwtToken,
                                             CalculationRequestModel(
                                                 extraCost.value.toInt(),
                                                 (100 + markup.value.toInt()) / 100.0,
@@ -221,7 +219,6 @@ fun CalculationScreen(
                                             createOrder(
                                                 mContext,
                                                 retrofitAPI,
-                                                jwtToken,
                                                 OrderRequestModel(
                                                     name.value,
                                                     "",

@@ -61,7 +61,7 @@ import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>, jwtToken: MutableState<String>) {
+fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>) {
     val item = listOf(MenuItemModel(R.drawable.home, "Главная"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -93,8 +93,7 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {

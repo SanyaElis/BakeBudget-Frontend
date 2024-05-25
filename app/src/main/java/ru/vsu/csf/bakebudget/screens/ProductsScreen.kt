@@ -47,6 +47,7 @@ import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Product
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.ProductModel
@@ -67,7 +68,6 @@ fun ProductsScreen(
     ingredientsAll: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
@@ -84,12 +84,12 @@ fun ProductsScreen(
     }
     val eventParameters1 = "{\"button_clicked\":\"product_add\"}"
 
-    if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
-        findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+    if (getToken(mContext) != null && !isDataReceivedIngredients.value) {
+        findAllIngredients(mContext, retrofitAPI, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
-    if (jwtToken.value != "" && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, jwtToken, productsResponse)
+    if (getToken(mContext) != null && !isDataReceivedProducts.value) {
+        findAllProducts(mContext, retrofitAPI, productsResponse)
         isDataReceivedProducts.value = true
     }
     if (products.isEmpty() && productsResponse.isNotEmpty()) {
@@ -134,8 +134,7 @@ fun ProductsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {

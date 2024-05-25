@@ -54,12 +54,14 @@ import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Order
 import ru.vsu.csf.bakebudget.components.OrderStateRow
 import ru.vsu.csf.bakebudget.components.Product
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
+import ru.vsu.csf.bakebudget.services.findAllOrders
 import ru.vsu.csf.bakebudget.services.onResultFindAllOrders
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -72,7 +74,6 @@ fun OrdersScreen(
     isLogged: MutableState<Boolean>,
     orders: MutableList<OrderModel>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     isDataReceivedOrders : MutableState<Boolean>,
     productsAll: MutableList<ProductModel>
 ) {
@@ -106,8 +107,8 @@ fun OrdersScreen(
     val state4 = remember { mutableStateOf(true) }
 
 
-    if (jwtToken.value != "" && !isDataReceivedOrders.value) {
-        findAllOrders(mContext, retrofitAPI, jwtToken, orders, productsAll, orders0, orders1, orders2, orders3)
+    if (getToken(mContext) != null && !isDataReceivedOrders.value) {
+        findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3)
         isDataReceivedOrders.value = true
     }
 
@@ -123,8 +124,7 @@ fun OrdersScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -154,25 +154,25 @@ fun OrdersScreen(
                             item(span = { GridItemSpan(2) }) { OrderStateRow("НЕ НАЧАТЫ", state1) }
                             if (state1.value) {
                                 itemsIndexed(orders0) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("В ПРОЦЕССЕ", state2) }
                             if (state2.value) {
                                 itemsIndexed(orders1) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ЗАВЕРШЕНЫ", state3) }
                             if (state3.value) {
                                 itemsIndexed(orders2) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI)
                                 }
                             }
                             item(span = { GridItemSpan(2) }) { OrderStateRow("ОТМЕНЕНЫ", state4) }
                             if (state4.value) {
                                 itemsIndexed(orders3) { _, order ->
-                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI, jwtToken)
+                                    Order(order = order, orders, orders0, orders1, orders2, orders3, retrofitAPI)
                                 }
                             }
                         }
@@ -242,21 +242,6 @@ public fun sortByState(orders: MutableList<OrderModel>, orders0: MutableList<Ord
         if (order.status == 3) {
             orders3.add(order)
         }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun findAllOrders(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    orders: MutableList<OrderModel>,
-    productsAll: MutableList<ProductModel>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
-        onResultFindAllOrders(res, orders, productsAll, orders0, orders1, orders2, orders3)
     }
 }
 

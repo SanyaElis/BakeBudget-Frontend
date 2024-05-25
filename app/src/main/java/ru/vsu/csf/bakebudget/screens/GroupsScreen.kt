@@ -57,6 +57,7 @@ import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.services.changeRole
 import ru.vsu.csf.bakebudget.services.createCode
@@ -76,7 +77,6 @@ fun GroupsScreen(
     isLogged: MutableState<Boolean>,
     isPro: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     userRole: MutableState<String>
 ) {
     val mContext = LocalContext.current
@@ -101,8 +101,8 @@ fun GroupsScreen(
         mutableStateOf(false)
     }
 
-    if (jwtToken.value != "" && !codeExists.value) {
-        getCode(mContext, retrofitAPI, jwtToken, generatedCode)
+    if (getToken(mContext) != null && !codeExists.value) {
+        getCode(mContext, retrofitAPI, generatedCode)
         codeExists.value = true
     }
 
@@ -114,8 +114,7 @@ fun GroupsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -139,7 +138,6 @@ fun GroupsScreen(
                                         createCode(
                                             mContext,
                                             retrofitAPI,
-                                            jwtToken,
                                             generatedCode,
                                             userRole
                                         )
@@ -153,7 +151,7 @@ fun GroupsScreen(
                                         codeAlreadyGenerated(mContext)
                                     }
                                 } else {
-                                    setCode(mContext, retrofitAPI, jwtToken, code, generatedCode)
+                                    setCode(mContext, retrofitAPI, code, generatedCode)
                                     val eventParameters2 = "{\"button_clicked\":\"create group entered\"}"
                                     AppMetrica.reportEvent(
                                         "User enter group",
@@ -277,7 +275,7 @@ fun GroupsScreen(
                                         )
                                     }
                                     IconButton(onClick = {
-                                        changeRole(mContext, retrofitAPI, jwtToken, isPro, userRole)
+                                        changeRole(mContext, retrofitAPI, isPro, userRole)
                                         val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
                                         AppMetrica.reportEvent(
                                             "User enter advanced mode",

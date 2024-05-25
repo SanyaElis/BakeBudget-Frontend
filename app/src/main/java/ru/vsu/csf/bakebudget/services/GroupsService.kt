@@ -9,17 +9,17 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.getToken
 
 @OptIn(DelicateCoroutinesApi::class)
 fun changeRole(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     isPro: MutableState<Boolean>,
     userRole: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.changeRole("Bearer ".plus(jwtToken.value))
+        val res = retrofitAPI.changeRole("Bearer ".plus(getToken(ctx)))
         onResultChangeRole(res, ctx, isPro, userRole)
     }
 }
@@ -44,12 +44,11 @@ private fun onResultChangeRole(
 fun createCode(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     code : MutableState<String>,
     userRole: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.createCode("Bearer ".plus(jwtToken.value))
+        val res = retrofitAPI.createCode("Bearer ".plus(getToken(ctx)))
         onResultCreateCode(res, ctx, code, userRole)
     }
 }
@@ -75,11 +74,10 @@ private fun onResultCreateCode(
 fun getCode(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     code : MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.getCode("Bearer ".plus(jwtToken.value))
+        val res = retrofitAPI.getCode("Bearer ".plus(getToken(ctx)))
         onResultGetCode(res, ctx, code)
     }
 }
@@ -103,12 +101,11 @@ private fun onResultGetCode(
 fun setCode(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     code : MutableState<String>,
     generatedCode : MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.setCode(code.value, "Bearer ".plus(jwtToken.value))
+        val res = retrofitAPI.setCode(code.value, "Bearer ".plus(getToken(ctx)))
         onResultSetCode(res, ctx, code, generatedCode)
     }
 }

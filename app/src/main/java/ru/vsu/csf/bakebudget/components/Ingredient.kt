@@ -52,7 +52,6 @@ fun Ingredient(
     ingredients: MutableList<IngredientModel>,
     ingredientsSet: MutableSet<String>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     val mContext = LocalContext.current
@@ -73,7 +72,6 @@ fun Ingredient(
                 mContext,
                 ingredientsSet,
                 retrofitAPI = retrofitAPI,
-                jwtToken = jwtToken,
                 ingredientsResponse
             )
         }
@@ -133,7 +131,6 @@ fun AlertDialog(
     context: Context,
     ingredientsSet: MutableSet<String>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
 ) {
     val name = remember {
@@ -174,7 +171,7 @@ fun AlertDialog(
                         sameName(context)
                     } else {
                         updateIngredient(
-                            context, retrofitAPI, jwtToken, ingredient, IngredientRequestModel(
+                            context, retrofitAPI, ingredient, IngredientRequestModel(
                                 name.value,
                                 weight.value.toInt(),
                                 cost.value.toInt()
@@ -212,7 +209,7 @@ fun AlertDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    deleteIngredient(context, retrofitAPI, jwtToken, ingredient)
+                    deleteIngredient(context, retrofitAPI, ingredient)
                     val eventParameters1 = "{\"button_clicked\":\"ingredient_delete\"}"
                     AppMetrica.reportEvent("Ingredient deleted", eventParameters1)
                     ingredients.remove(IngredientModel(ingredient.name, ingredient.weight, ingredient.cost))

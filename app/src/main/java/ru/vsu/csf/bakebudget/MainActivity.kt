@@ -1,6 +1,8 @@
 package ru.vsu.csf.bakebudget
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -67,9 +69,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BakeBudgetTheme {
                 val ctx = LocalContext.current
-                val jwtToken = remember {
-                    mutableStateOf("")
-                }
+
                 val navController = rememberNavController()
                 val isLoggedIn = remember { mutableStateOf(false) }
 
@@ -122,7 +122,6 @@ class MainActivity : ComponentActivity() {
                     ingredientsInRecipe,
                     outgoings,
                     orders,
-                    jwtToken,
                     isDataReceivedIngredients,
                     ingredientsResponse,
                     ingredientsSet,
@@ -136,6 +135,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     //TODO:jwt to shared prefs
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -148,7 +148,6 @@ class MainActivity : ComponentActivity() {
         ingredientsInRecipe: MutableList<IngredientInProductModel>,
         outgoings: MutableList<OutgoingModel>,
         orders: MutableList<OrderModel>,
-        jwtToken: MutableState<String>,
         isDataReceivedIngredients: MutableState<Boolean>,
         ingredientsResponse: MutableList<IngredientResponseModel>,
         ingredientsSet: MutableSet<String>,
@@ -164,11 +163,11 @@ class MainActivity : ComponentActivity() {
             startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController, isLogged, retrofitAPI, jwtToken = jwtToken, userRole, isPro)
+                LoginScreen(navController, isLogged, retrofitAPI, userRole, isPro)
             }
 
             composable(route = "home") {
-                HomeScreen(navController, isLogged, jwtToken)
+                HomeScreen(navController, isLogged)
             }
 
             composable(route = "register") {
@@ -181,7 +180,6 @@ class MainActivity : ComponentActivity() {
                     ingredients,
                     isLogged,
                     retrofitAPI,
-                    jwtToken,
                     isDataReceivedIngredients,
                     ingredientsResponse,
                     ingredientsSet
@@ -195,7 +193,6 @@ class MainActivity : ComponentActivity() {
             composable(route = "products") {
                 ProductsScreen(navController, products, ingredients, isLogged,
                     retrofitAPI,
-                    jwtToken,
                     isDataReceivedProducts,
                     productsResponse,
                     ingredientsResponse,
@@ -214,7 +211,6 @@ class MainActivity : ComponentActivity() {
                     products,
                     outgoings,
                     retrofitAPI,
-                    jwtToken,
                     productsResponse,
                     ingredientsResponse
                 )
@@ -230,29 +226,50 @@ class MainActivity : ComponentActivity() {
                     product = products[backstackEntry.arguments?.getInt("id")!!],
                     ingredientsResponse,
                     retrofitAPI,
-                    jwtToken
                 )
             }
 
             composable(route = "outgoings") {
-                OutgoingsScreen(navController, outgoings, products, isLogged, retrofitAPI, jwtToken, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, isDataReceivedOutgoings)
+                OutgoingsScreen(navController, outgoings, products, isLogged, retrofitAPI, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, isDataReceivedOutgoings)
             }
 
             composable(route = "reports") {
-                ReportsScreen(navController, isLogged, isPro, retrofitAPI, jwtToken, userRole)
+                ReportsScreen(navController, isLogged, isPro, retrofitAPI, userRole)
             }
 
             composable(route = "groups") {
-                GroupsScreen(navController, isLogged, isPro, retrofitAPI, jwtToken, userRole)
+                GroupsScreen(navController, isLogged, isPro, retrofitAPI, userRole)
             }
 
             composable(route = "calculation") {
-                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, jwtToken, isDataReceivedProducts, productsResponse)
+                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, isDataReceivedProducts, productsResponse)
             }
 
             composable(route = "orders") {
-                OrdersScreen(navController, isLogged, orders, retrofitAPI, jwtToken, isDataReceivedOrders, products)
+                OrdersScreen(navController, isLogged, orders, retrofitAPI, isDataReceivedOrders, products)
             }
         }
     }
+}
+
+fun saveToken(token: String, ctx: Context) {
+    val prefs: SharedPreferences = ctx.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    val editor = prefs.edit()
+    editor.putString("auth_token", token)
+    editor.apply()
+}
+
+fun getToken(ctx: Context): String? {
+    val prefs: SharedPreferences = ctx.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    return prefs.getString("auth_token", null)
+}
+
+fun clearToken(ctx: Context) {
+    val prefs: SharedPreferences = ctx.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    val editor = prefs.edit()
+    editor.remove("auth_token")
+    editor.apply()
 }

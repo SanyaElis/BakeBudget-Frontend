@@ -77,8 +77,7 @@ fun ProductView(
     isLogged: MutableState<Boolean>,
     product: ProductModel,
     ingredientsResponse: MutableList<IngredientResponseModel>,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
+    retrofitAPI: RetrofitAPI
 ) {
     val mContext = LocalContext.current
 
@@ -105,7 +104,7 @@ fun ProductView(
 
 
     if (product.ingredients.isEmpty() && !productDataReceived.value) {
-        findAllIngredientsInProduct(mContext, retrofitAPI, jwtToken, product, ingredientsResponse)
+        findAllIngredientsInProduct(mContext, retrofitAPI, product, ingredientsResponse)
         productDataReceived.value = true
     }
 
@@ -138,8 +137,7 @@ fun ProductView(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -174,9 +172,9 @@ fun ProductView(
                                     } else {
                                         for (ingredient in product.ingredients) {
                                             ingredient.productId = product.id
-                                            addIngredientToProduct(mContext, retrofitAPI, jwtToken, ingredient)
+                                            addIngredientToProduct(mContext, retrofitAPI, ingredient)
                                         }
-                                        updateProduct(mContext, retrofitAPI, jwtToken, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id)
+                                        updateProduct(mContext, retrofitAPI, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id)
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
                                         if (selectedImageUri.value != null) {
@@ -218,7 +216,7 @@ fun ProductView(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(product.ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, jwtToken)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI)
                                 last = num
                             }
                             item {
