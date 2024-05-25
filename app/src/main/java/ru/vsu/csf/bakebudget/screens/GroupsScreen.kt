@@ -58,6 +58,10 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.services.changeRole
+import ru.vsu.csf.bakebudget.services.createCode
+import ru.vsu.csf.bakebudget.services.getCode
+import ru.vsu.csf.bakebudget.services.setCode
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.codeAlreadyGenerated
@@ -343,152 +347,6 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     Text(text = "ГРУППЫ", fontSize = 24.sp, color = Color.White)
                 }
             }
-        }
-    }
-}
-
-private fun mToast(context: Context) {
-    Toast.makeText(
-        context,
-        "Теперь вы входите в состав группы",
-        Toast.LENGTH_LONG
-    ).show()
-}
-
-private fun mToastWrong(context: Context) {
-    Toast.makeText(
-        context,
-        "Код не соответсвует ни одной группе",
-        Toast.LENGTH_LONG
-    ).show()
-}
-
-fun getRandomString(length: Int): String {
-    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
-    return (1..length)
-        .map { allowedChars.random() }
-        .joinToString("")
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun changeRole(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    isPro: MutableState<Boolean>,
-    userRole: MutableState<String>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.changeRole("Bearer ".plus(jwtToken.value))
-        onResultChangeRole(res, ctx, isPro, userRole)
-    }
-}
-
-private fun onResultChangeRole(
-    result: Response<Void>?,
-    context: Context,
-    isPro: MutableState<Boolean>,
-    userRole: MutableState<String>
-) {
-    if (result != null) {
-        if (result.isSuccessful) {
-            Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
-                Toast.LENGTH_SHORT
-            ).show()
-            isPro.value = userRole.value == "ROLE_ADVANCED_USER"
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun createCode(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    code : MutableState<String>,
-    userRole: MutableState<String>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.createCode("Bearer ".plus(jwtToken.value))
-        onResultCreateCode(res, ctx, code, userRole)
-    }
-}
-
-private fun onResultCreateCode(
-    result: Response<String>?,
-    context: Context,
-    code : MutableState<String>,
-    userRole: MutableState<String>
-) {
-    if (result != null) {
-        if (result.isSuccessful) {
-            Toast.makeText(context, "Code : " + result.body(),
-                Toast.LENGTH_SHORT
-            ).show()
-            code.value = result.body()!!
-            userRole.value = "ROLE_ADVANCED_USER"
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun getCode(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    code : MutableState<String>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.getCode("Bearer ".plus(jwtToken.value))
-        onResultGetCode(res, ctx, code)
-    }
-}
-
-private fun onResultGetCode(
-    result: Response<String>?,
-    context: Context,
-    code : MutableState<String>
-) {
-    if (result != null) {
-        if (result.isSuccessful) {
-            Toast.makeText(context, "Code : " + result.body(),
-                Toast.LENGTH_SHORT
-            ).show()
-            code.value = result.body()!!
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun setCode(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    code : MutableState<String>,
-    generatedCode : MutableState<String>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.setCode(code.value, "Bearer ".plus(jwtToken.value))
-        onResultSetCode(res, ctx, code, generatedCode)
-    }
-}
-
-private fun onResultSetCode(
-    result: Response<String>?,
-    context: Context,
-    code : MutableState<String>,
-    generatedCode : MutableState<String>
-) {
-    if (result != null) {
-        if (result.isSuccessful) {
-            Toast.makeText(context, "Code : " + result.body(),
-                Toast.LENGTH_SHORT
-            ).show()
-            generatedCode.value = result.body()!!
-        } else {
-            Toast.makeText(context, "Такой группы не существует или вы уже состоите в группе",
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 }
