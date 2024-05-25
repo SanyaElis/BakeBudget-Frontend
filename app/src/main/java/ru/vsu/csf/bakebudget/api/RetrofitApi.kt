@@ -125,4 +125,10 @@ interface RetrofitAPI {
     @POST("report/calculateByIncomeSelf")
     suspend fun reportIncomeSelf(@Body reportRequestModel: ReportRequestModel, @Header("Authorization") authorization: String): Response<ReportIncomeResponseModel?>?
 
+    @POST("report/calculateByOrderGroup")
+    suspend fun reportOrdersGroup(@Body reportRequestModel: ReportRequestModel, @Header("Authorization") authorization: String): Response<ReportOrdersResponseModel?>?
+
+    @POST("report/calculateByIncomeGroup")
+    suspend fun reportIncomeGroup(@Body reportRequestModel: ReportRequestModel, @Header("Authorization") authorization: String): Response<ReportIncomeResponseModel?>?
+
 }

@@ -39,7 +39,8 @@ fun BarGraph(
     roundType: BarType,
     barWidth: Dp,
     barColor: Color,
-    barArrangement: Arrangement.Horizontal
+    barArrangement: Arrangement.Horizontal,
+    type: Boolean
 ) {
 
     val barData by remember {
@@ -93,11 +94,19 @@ fun BarGraph(
             Canvas(modifier = Modifier
                 .padding(bottom = 10.dp)
                 .fillMaxSize()) {
-                val yAxisScaleText = (barData.max()) / 3f
+                var yAxisScaleText = (barData.max()) / 3f
+                if (type) {
+                    if (barData.max().toLong() % 3L == 1L) {
+                        yAxisScaleText = (barData.max() + 2) / 3f
+                    }
+                    if (barData.max().toLong() % 3L == 2L) {
+                        yAxisScaleText = (barData.max() + 1) / 3f
+                    }
+                }
                 (0..3).forEach { i ->
                     drawContext.canvas.nativeCanvas.apply {
                         drawText(
-                            String.format("%.2f", barData.min() + yAxisScaleText * i),
+                            if (type) (barData.min() + yAxisScaleText * i).toInt().toString() else String.format("%.2f", barData.min() + yAxisScaleText * i),
                             30f,
                             size.height - yAxisScaleSpacing - i * size.height / 3f,
                             textPaint

@@ -20,12 +20,12 @@ fun createReportOrders(
     retrofitAPI: RetrofitAPI,
     reportRequestModel: ReportRequestModel,
     dataListOrders : MutableList<Long>,
-    reportState: MutableState<Boolean>
+    reportState: MutableState<Boolean>,
+    isGroup: Boolean
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.reportOrdersSelf(reportRequestModel, "Bearer ".plus(getToken(ctx))
-            )
+            if (!isGroup) retrofitAPI.reportOrdersSelf(reportRequestModel, "Bearer ".plus(getToken(ctx))) else retrofitAPI.reportOrdersGroup(reportRequestModel, "Bearer ".plus(getToken(ctx)))
         onResultCreateReportOrders(res, ctx, dataListOrders, reportState)
     }
 }
@@ -58,12 +58,11 @@ fun createReportIncome(
     retrofitAPI: RetrofitAPI,
     reportRequestModel: ReportRequestModel,
     dataListIncome : MutableList<Long>,
-    reportState: MutableState<Boolean>
+    reportState: MutableState<Boolean>,
+    isGroup: Boolean
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.reportIncomeSelf(reportRequestModel, "Bearer ".plus(getToken(ctx))
-            )
+        val res = if (!isGroup) retrofitAPI.reportIncomeSelf(reportRequestModel, "Bearer ".plus(getToken(ctx))) else retrofitAPI.reportIncomeGroup(reportRequestModel, "Bearer ".plus(getToken(ctx)))
         onResultCreateReportIncome(res, ctx, dataListIncome, reportState)
     }
 }

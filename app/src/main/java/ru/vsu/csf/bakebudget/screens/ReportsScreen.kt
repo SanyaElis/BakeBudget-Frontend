@@ -101,6 +101,14 @@ fun ReportsScreen(
         mutableIntStateOf(0)
     }
 
+    val selectedIndexGroup = remember {
+        mutableIntStateOf(0)
+    }
+
+    val itemsGroup = remember {
+        listOf("Личный", "Групповой")
+    }
+
     val dataListOrders = remember {
         mutableStateListOf<Long>()
     }
@@ -149,8 +157,41 @@ fun ReportsScreen(
                                     )
                                 )
                                 AppMetrica.reportEvent("Report created", eventParameters1)
-                                createReportOrders(mContext, retrofitAPI, ReportRequestModel(date1, date2, date1, date2), dataListOrders, reportState)
-                                createReportIncome(mContext, retrofitAPI, ReportRequestModel(date1, date2, date1, date2), dataListIncome, reportState)
+                                if (selectedIndexGroup.intValue == 0) {
+                                    createReportOrders(
+                                        mContext,
+                                        retrofitAPI,
+                                        ReportRequestModel(date1, date2, date1, date2),
+                                        dataListOrders,
+                                        reportState,
+                                        false
+                                    )
+                                    createReportIncome(
+                                        mContext,
+                                        retrofitAPI,
+                                        ReportRequestModel(date1, date2, date1, date2),
+                                        dataListIncome,
+                                        reportState,
+                                        false
+                                    )
+                                } else {
+                                    createReportOrders(
+                                        mContext,
+                                        retrofitAPI,
+                                        ReportRequestModel(date1, date2, date1, date2),
+                                        dataListOrders,
+                                        reportState,
+                                        true
+                                    )
+                                    createReportIncome(
+                                        mContext,
+                                        retrofitAPI,
+                                        ReportRequestModel(date1, date2, date1, date2),
+                                        dataListIncome,
+                                        reportState,
+                                        true
+                                    )
+                                }
                             }
                         ) {
                             Image(
@@ -239,6 +280,15 @@ fun ReportsScreen(
                                     selectedIndex.intValue = it
                                 },
                             )
+                            if (isPro.value) {
+                                SwitchForm(
+                                    selectedIndex = selectedIndexGroup,
+                                    items = itemsGroup,
+                                    onSelectionChange = {
+                                        selectedIndexGroup.intValue = it
+                                    },
+                                )
+                            }
                             if (reportState.value) {
                                 if (selectedIndex.intValue == 0 && dataListOrders.isNotEmpty()) {
                                     val floatValue = mutableListOf<Float>()
@@ -246,9 +296,10 @@ fun ReportsScreen(
 
                                     dataListOrders.forEachIndexed { index, value ->
 
+                                        val max = if (dataListOrders.max()%3L == 0L) dataListOrders.max() else (if (dataListOrders.max()%3L == 1L) (dataListOrders.max()+2) else dataListOrders.max()+1)
                                         floatValue.add(
                                             index = index,
-                                            element = value.toFloat() / if (dataListOrders.max().toFloat() == 0f) 1f else dataListOrders.max().toFloat()
+                                            element = value.toFloat() / if (max.toFloat() == 0f) 1f else max.toFloat()
                                         )
 
                                     }
@@ -275,7 +326,8 @@ fun ReportsScreen(
                                                 roundType = BarType.TOP_CURVED,
                                                 barWidth = 30.dp,
                                                 barColor = PrimaryBack,
-                                                barArrangement = Arrangement.SpaceEvenly
+                                                barArrangement = Arrangement.SpaceEvenly,
+                                                true
                                             )
                                         }
                                     }
@@ -314,7 +366,8 @@ fun ReportsScreen(
                                                 roundType = BarType.TOP_CURVED,
                                                 barWidth = 40.dp,
                                                 barColor = PrimaryBack,
-                                                barArrangement = Arrangement.SpaceEvenly
+                                                barArrangement = Arrangement.SpaceEvenly,
+                                                false
                                             )
                                         }
                                     }
