@@ -47,8 +47,7 @@ fun Outgoing(
     color: Color,
     outgoings: MutableList<OutgoingModel>,
     productId: Int,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
+    retrofitAPI: RetrofitAPI
 ) {
     val mContext = LocalContext.current
 
@@ -68,7 +67,7 @@ fun Outgoing(
                 outgoings,
                 mContext,
                 productId,
-                retrofitAPI, jwtToken
+                retrofitAPI
             )
         }
     }
@@ -120,8 +119,7 @@ fun AlertDialog3(
     outgoings: MutableList<OutgoingModel>,
     context: Context,
     productId: Int,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
+    retrofitAPI: RetrofitAPI
 ) {
     val name = remember {
         mutableStateOf(outgoing.name)
@@ -155,7 +153,7 @@ fun AlertDialog3(
                         dataIncorrectToast(context = context)
                     } else {
                         updateOutgoing(
-                            context, retrofitAPI, jwtToken, OutgoingModel(
+                            context, retrofitAPI, OutgoingModel(
                                 outgoing.id,
                                 name.value,
                                 value.value.toInt()
@@ -179,7 +177,7 @@ fun AlertDialog3(
         dismissButton = {
             TextButton(
                 onClick = {
-                    deleteOutgoing(context, retrofitAPI, jwtToken, outgoing.id)
+                    deleteOutgoing(context, retrofitAPI, outgoing.id)
                     outgoings.remove(outgoing)
                     onDismissRequest()
                 }

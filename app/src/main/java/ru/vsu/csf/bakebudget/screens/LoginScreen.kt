@@ -39,7 +39,6 @@ fun LoginScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     userRole: MutableState<String>,
     isPro: MutableState<Boolean>
 ) {
@@ -77,7 +76,7 @@ fun LoginScreen(
             TextButton(
                 onClick = {
                     login(
-                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, jwtToken, userRole, isPro
+                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, isPro
                     )
                     navController.navigate("home")
                 }

@@ -55,6 +55,7 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.services.createIngredient
 import ru.vsu.csf.bakebudget.services.findAllIngredients
@@ -71,7 +72,6 @@ fun IngredientsScreen(
     ingredients: MutableList<IngredientModel>,
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     isDataReceivedIngredients: MutableState<Boolean>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
     ingredientsSet: MutableSet<String>
@@ -97,8 +97,8 @@ fun IngredientsScreen(
         mutableStateOf("")
     }
 
-    if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
-        findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+    if (getToken(mContext) != null && !isDataReceivedIngredients.value) {
+        findAllIngredients(mContext, retrofitAPI, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
     //TODO:подгружается все, даже чужого пользователя
@@ -123,8 +123,7 @@ fun IngredientsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -167,7 +166,7 @@ fun IngredientsScreen(
                                                 name.value
                                         )
                                         createIngredient(
-                                            mContext, retrofitAPI, jwtToken, IngredientRequestModel(
+                                            mContext, retrofitAPI, IngredientRequestModel(
                                                 name.value,
                                                 weight.value.toInt(),
                                                 cost.value.toInt()
@@ -221,7 +220,6 @@ fun IngredientsScreen(
                                         ingredients,
                                         ingredientsSet,
                                         retrofitAPI,
-                                        jwtToken,
                                         ingredientsResponse
                                     )
                                 } else {
@@ -231,7 +229,6 @@ fun IngredientsScreen(
                                         ingredients,
                                         ingredientsSet,
                                         retrofitAPI,
-                                        jwtToken,
                                         ingredientsResponse
                                     )
                                 }

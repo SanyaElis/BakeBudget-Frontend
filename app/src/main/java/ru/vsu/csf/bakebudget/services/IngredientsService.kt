@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 
@@ -17,11 +18,11 @@ import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 fun findAllIngredients(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.findAllIngredients("Bearer ".plus(jwtToken.value))
+        val token = getToken(ctx)
+        val res = retrofitAPI.findAllIngredients("Bearer ".plus(token))
         onResultFindAll(res, ingredientsResponse)
     }
 }
@@ -43,13 +44,12 @@ private fun onResultFindAll(
 fun createIngredient(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredientRequestModel: IngredientRequestModel,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(getToken(ctx)))
         onResultCreateIngredient(res, ctx, ingredientsResponse)
     }
 }
@@ -75,13 +75,12 @@ private fun onResultCreateIngredient(
 fun updateIngredient(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredient: IngredientResponseModel,
     ingredientRequestModel: IngredientRequestModel
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.updateIngredient(ingredient.id, ingredientRequestModel, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.updateIngredient(ingredient.id, ingredientRequestModel, "Bearer ".plus(getToken(ctx)))
         onResultUpdate(res, ctx)
     }
 }
@@ -106,12 +105,11 @@ private fun onResultUpdate(
 fun deleteIngredient(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredient: IngredientResponseModel
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.deleteIngredient(ingredient.id, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.deleteIngredient(ingredient.id, "Bearer ".plus(getToken(ctx)))
         onResultDelete(ingredient, ctx, res)
     }
 }

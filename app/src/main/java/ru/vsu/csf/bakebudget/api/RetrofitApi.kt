@@ -1,7 +1,5 @@
 package ru.vsu.csf.bakebudget.api
 
-import okhttp3.internal.http.hasBody
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -12,7 +10,6 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
-import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
@@ -118,4 +115,3 @@ interface RetrofitAPI {
     suspend fun setCode( @Query("groupCode") groupCode: String, @Header("Authorization") authorization: String): Response<String>?
 
 }
-//TODO: не разделить бы на отдельные классы?

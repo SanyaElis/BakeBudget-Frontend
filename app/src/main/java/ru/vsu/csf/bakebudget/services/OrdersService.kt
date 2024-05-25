@@ -10,6 +10,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
@@ -28,7 +29,6 @@ private val orderStateRev = mapOf("NOT_STARTED" to 0, "IN_PROCESS" to 1, "DONE" 
 fun calculate(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     calculationRequestModel: CalculationRequestModel,
     costPrice: MutableState<Long>,
     resultPrice: MutableState<Long>
@@ -37,7 +37,7 @@ fun calculate(
         val res =
             retrofitAPI.calculate(
                 calculationRequestModel,
-                "Bearer ".plus(jwtToken.value)
+                "Bearer ".plus(getToken(ctx))
             )
         onResultCalculate(res, ctx, costPrice, resultPrice)
     }
@@ -62,7 +62,6 @@ private fun onResultCalculate(
 fun createOrder(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     orderRequestModel: OrderRequestModel,
     orders : MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
@@ -73,7 +72,7 @@ fun createOrder(
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.createOrder(orderRequestModel, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.createOrder(orderRequestModel, "Bearer ".plus(getToken(ctx)))
         onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, costPrice, resultPrice, name)
     }
 }
@@ -117,12 +116,11 @@ private fun onResultCreateOrder(
 fun setStatusOrder(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     order: OrderModel,
     newStatus : Int
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.setStatus(order.id, orderState[newStatus]!!, "Bearer ".plus(jwtToken.value))
+        val res = retrofitAPI.setStatus(order.id, orderState[newStatus]!!, "Bearer ".plus(getToken(ctx)))
         onResultSetStatus(res, order, newStatus)
     }
 }
@@ -137,6 +135,20 @@ private fun onResultSetStatus(
         "Order status changed",
         eventParameters1
     )
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun findAllOrders(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    orders: MutableList<OrderModel>,
+    productsAll: MutableList<ProductModel>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.findAllOrders("Bearer ".plus(getToken(ctx)))
+        onResultFindAllOrders(res, orders, productsAll, orders0, orders1, orders2, orders3)
+    }
 }
 
 fun onResultFindAllOrders(

@@ -53,8 +53,7 @@ fun Order(order: OrderModel,
           orders1: MutableList<OrderModel>,
           orders2: MutableList<OrderModel>,
           orders3: MutableList<OrderModel>,
-          retrofitAPI: RetrofitAPI,
-          jwtToken: MutableState<String>) {
+          retrofitAPI: RetrofitAPI) {
     val mContext = LocalContext.current
 
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -81,7 +80,7 @@ fun Order(order: OrderModel,
                 orders2,
                 orders3,
                 mContext,
-                retrofitAPI, jwtToken
+                retrofitAPI
             )
         }
     }
@@ -133,7 +132,6 @@ fun AlertDialogOrder(
     orders3: MutableList<OrderModel>,
     context: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
 ) {
     androidx.compose.material3.AlertDialog(
         containerColor = SideBack,
@@ -157,7 +155,7 @@ fun AlertDialogOrder(
             TextButton(
                 onClick = {
                     order.status = selectedValue.value
-                    setStatusOrder(context, retrofitAPI, jwtToken, order, selectedValue.value)
+                    setStatusOrder(context, retrofitAPI, order, selectedValue.value)
                     sortByState(orders, orders0, orders1, orders2, orders3)
                     onConfirmation()
                 }

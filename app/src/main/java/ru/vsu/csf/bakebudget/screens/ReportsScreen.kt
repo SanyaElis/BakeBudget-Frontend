@@ -67,7 +67,6 @@ fun ReportsScreen(
     isLogged: MutableState<Boolean>,
     isPro: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     userRole: MutableState<String>
 ) {
     val item = listOf(MenuItemModel(R.drawable.reports, "Отчеты"))
@@ -106,8 +105,7 @@ fun ReportsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {

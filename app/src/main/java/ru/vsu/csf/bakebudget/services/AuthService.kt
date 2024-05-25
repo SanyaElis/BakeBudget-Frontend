@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.services
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
@@ -10,9 +11,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
+import ru.vsu.csf.bakebudget.saveToken
+
 
 @OptIn(DelicateCoroutinesApi::class)
 fun register(
@@ -54,19 +58,19 @@ fun onResultRegister(
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 fun login(
     ctx: Context,
     userEmail: MutableState<String>,
     userPassword: MutableState<String>,
     retrofitAPI: RetrofitAPI,
     isLogged: MutableState<Boolean>,
-    jwtToken: MutableState<String>,
     userRole: MutableState<String>,
     isPro: MutableState<Boolean>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.login(UserSignInRequestModel(userEmail.value, userPassword.value))
-        onResultLogin(res, ctx, isLogged, jwtToken, userRole, isPro)
+        onResultLogin(res, ctx, isLogged, userRole, isPro)
     }
 }
 
@@ -74,7 +78,6 @@ fun onResultLogin(
     result: Response<UserSignInResponseModel?>?,
     ctx: Context,
     isLogged: MutableState<Boolean>,
-    jwtToken: MutableState<String>,
     userRole: MutableState<String>,
     isPro: MutableState<Boolean>
 ) {
@@ -82,10 +85,10 @@ fun onResultLogin(
         if (result.isSuccessful) {
             isLogged.value = true
             val model: UserSignInResponseModel? = result.body()
-            jwtToken.value = model!!.token
+            saveToken(model!!.token, ctx)
             Toast.makeText(
                 ctx,
-                "Response Code : " + result.code() + "\n" + "User Name : " + model.username + "\n" + "Email : " + model.email + "\n" + "Token : " + jwtToken.value + "\n" + "ROLE : " + model.role,
+                "Response Code : " + result.code() + "\n" + "User Name : " + model.username + "\n" + "Email : " + model.email + "\n" + "Token : " + getToken(ctx) + "\n" + "ROLE : " + model.role,
                 Toast.LENGTH_SHORT
             ).show()
             userRole.value = model.role

@@ -92,7 +92,6 @@ fun ProductAddScreen(
     products: MutableList<ProductModel>,
     outgoings: MutableList<OutgoingModel>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
@@ -147,8 +146,7 @@ fun ProductAddScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -193,7 +191,6 @@ fun ProductAddScreen(
                                         createProduct(
                                             mContext,
                                             retrofitAPI,
-                                            jwtToken,
                                             ProductRequestModel(
                                                 name.value,
                                                 estimatedWeight.value.toInt()
@@ -266,8 +263,7 @@ fun ProductAddScreen(
                                     ingredientsAll,
                                     selectedItemIndex,
                                     ingredientsResponse,
-                                    retrofitAPI,
-                                    jwtToken
+                                    retrofitAPI
                                 )
                                 last = num
                             }

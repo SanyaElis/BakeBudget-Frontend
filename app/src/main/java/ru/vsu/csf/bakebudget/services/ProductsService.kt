@@ -3,12 +3,14 @@ package ru.vsu.csf.bakebudget.services
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
@@ -20,11 +22,10 @@ import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 fun findAllProducts(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     productsResponse: MutableList<ProductResponseModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.findAllProducts("Bearer ".plus(jwtToken.value))
+        val res = retrofitAPI.findAllProducts("Bearer ".plus(getToken(ctx)))
         onResultFindAll(res, productsResponse)
     }
 }
@@ -46,7 +47,6 @@ private fun onResultFindAll(
 fun createProduct(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     productRequestModel: ProductRequestModel,
     productId: MutableState<Int>,
     products: MutableList<ProductModel>,
@@ -54,8 +54,8 @@ fun createProduct(
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreateProduct(res, ctx, productId, products, product, retrofitAPI, jwtToken)
+            retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(getToken(ctx)))
+        onResultCreateProduct(res, ctx, productId, products, product, retrofitAPI)
     }
 }
 
@@ -66,7 +66,6 @@ private fun onResultCreateProduct(
     products: MutableList<ProductModel>,
     product: ProductModel,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
 ) {
     Toast.makeText(
         ctx,
@@ -84,7 +83,6 @@ private fun onResultCreateProduct(
             addIngredientToProduct(
                 ctx,
                 retrofitAPI,
-                jwtToken,
                 ingredient
             )
         }
@@ -95,7 +93,6 @@ private fun onResultCreateProduct(
 fun addIngredientToProduct(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     ingredientInProductModel: IngredientInProductModel
 ) {
     GlobalScope.launch(Dispatchers.Main) {
@@ -105,7 +102,7 @@ fun addIngredientToProduct(
                     ingredientInProductModel.ingredientId,
                     ingredientInProductModel.productId,
                     ingredientInProductModel.weight
-                ), "Bearer ".plus(jwtToken.value)
+                ), "Bearer ".plus(getToken(ctx))
             )
         onResultAddIngredientToProduct(res, ctx)
     }
@@ -127,13 +124,12 @@ fun onResultAddIngredientToProduct(
 fun findAllIngredientsInProduct(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     product: ProductModel,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.findAllIngredientsInProduct(product.id, "Bearer ".plus(jwtToken.value)
+            retrofitAPI.findAllIngredientsInProduct(product.id, "Bearer ".plus(getToken(ctx))
             )
         onResultFindAllIngredientsInProduct(res, ctx, product, ingredientsResponse)
     }
@@ -169,13 +165,12 @@ private fun onResultFindAllIngredientsInProduct(
 fun updateProduct(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     product: ProductRequestModel,
     productId : Int
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
-            retrofitAPI.updateProduct(productId, product, "Bearer ".plus(jwtToken.value))
+            retrofitAPI.updateProduct(productId, product, "Bearer ".plus(getToken(ctx)))
         onResultUpdateProduct(res, ctx)
     }
 }
@@ -189,4 +184,72 @@ private fun onResultUpdateProduct(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun updateIngredientInProduct(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    ingredientInProductModel: IngredientInProductModel
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.updateIngredientInProduct(
+                IngredientInProductRequestModel(
+                    ingredientInProductModel.ingredientId,
+                    ingredientInProductModel.productId,
+                    ingredientInProductModel.weight
+                ), "Bearer ".plus(getToken(ctx))
+            )
+        onResultUpdateIngredientInProduct(res, ctx)
+    }
+}
+
+private fun onResultUpdateIngredientInProduct(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    val eventParameters2 = "{\"button_clicked\":\"update ingredient in product\"}"
+    AppMetrica.reportEvent(
+        "Ingredient in product updated",
+        eventParameters2
+    )
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun deleteIngredientInProduct(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    ingredientInProductModel: IngredientInProductModel
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.deleteIngredientInProduct(
+                ingredientInProductModel.ingredientId,
+                ingredientInProductModel.productId,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultDeleteInProduct(res, ctx)
+    }
+}
+
+private fun onResultDeleteInProduct(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    val eventParameters1 = "{\"button_clicked\":\"delete ingredient in product\"}"
+    AppMetrica.reportEvent(
+        "Ingredient in product deleted",
+        eventParameters1
+    )
 }

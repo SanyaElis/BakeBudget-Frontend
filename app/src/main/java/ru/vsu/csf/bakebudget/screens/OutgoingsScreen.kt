@@ -52,6 +52,7 @@ import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.Outgoing
 import ru.vsu.csf.bakebudget.components.OutgoingAdd
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
@@ -83,7 +84,6 @@ fun OutgoingsScreen(
     productsAll: MutableList<ProductModel>,
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
@@ -101,12 +101,12 @@ fun OutgoingsScreen(
     }
 
 
-    if (jwtToken.value != "" && !isDataReceivedIngredients.value) {
-        findAllIngredients(mContext, retrofitAPI, jwtToken, ingredientsResponse)
+    if (getToken(mContext) != null && !isDataReceivedIngredients.value) {
+        findAllIngredients(mContext, retrofitAPI, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
-    if (jwtToken.value != "" && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, jwtToken, productsResponse)
+    if (getToken(mContext) != null && !isDataReceivedProducts.value) {
+        findAllProducts(mContext, retrofitAPI, productsResponse)
         isDataReceivedProducts.value = true
     }
 
@@ -131,9 +131,9 @@ fun OutgoingsScreen(
     }
 
     Timer().schedule(2000) {
-        if (jwtToken.value != "" && !isDataReceivedOutgoings.value) {
+        if (getToken(mContext) != null && !isDataReceivedOutgoings.value) {
             for (prod in productsAll) {
-                findAllOutgoingsInProduct(mContext, retrofitAPI, jwtToken, prod)
+                findAllOutgoingsInProduct(mContext, retrofitAPI, prod)
             }
             isDataReceivedOutgoings.value = true
         }
@@ -154,8 +154,7 @@ fun OutgoingsScreen(
                 drawerState = drawerState,
                 scope = scope,
                 selectedItem = selectedItem,
-                isLogged = isLogged,
-                jwtToken
+                isLogged = isLogged
             )
         },
         content = {
@@ -184,7 +183,7 @@ fun OutgoingsScreen(
                                             eventParameters2
                                         )
                                     } else {
-                                        createOutgoing(mContext, retrofitAPI, jwtToken, OutgoingRequestModel(name.value,
+                                        createOutgoing(mContext, retrofitAPI, OutgoingRequestModel(name.value,
                                             value.value.toInt()), productsAll[selectedItemIndex.intValue], productsAll)
                                         val eventParameters1 = "{\"button_clicked\":\"create outgoing\"}"
                                         AppMetrica.reportEvent(
@@ -250,7 +249,7 @@ fun OutgoingsScreen(
                                             SideBack,
                                             productsAll[selectedItemIndex.intValue].outgoings,
                                             productsAll[selectedItemIndex.intValue].id,
-                                            retrofitAPI, jwtToken
+                                            retrofitAPI
                                         )
                                     } else {
                                         Outgoing(
@@ -258,7 +257,7 @@ fun OutgoingsScreen(
                                             Back2,
                                             productsAll[selectedItemIndex.intValue].outgoings,
                                             productsAll[selectedItemIndex.intValue].id,
-                                            retrofitAPI, jwtToken
+                                            retrofitAPI
                                         )
                                     }
                                 }
