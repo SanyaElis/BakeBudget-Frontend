@@ -180,6 +180,7 @@ fun OrdersScreen(
                 }
             }
         })
+    //TODO:первый заказ 2 раза создается
 }
 
 @Composable

@@ -136,8 +136,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //TODO:jwt to shared prefs
-
     @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun NavGraph(
