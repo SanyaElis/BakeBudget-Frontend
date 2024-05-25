@@ -34,6 +34,8 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
+import ru.vsu.csf.bakebudget.services.deleteOutgoing
+import ru.vsu.csf.bakebudget.services.updateOutgoing
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
@@ -185,73 +187,5 @@ fun AlertDialog3(
                 Text("Удалить")
             }
         }
-    )
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun updateOutgoing(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    outgoing: OutgoingModel,
-    productId: Int
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.updateOutgoing(
-                outgoing.id,
-                OutgoingRequestModel(outgoing.name, outgoing.cost),
-                "Bearer ".plus(jwtToken.value)
-            )
-        onResultUpdateOutgoing(res, ctx)
-    }
-}
-
-private fun onResultUpdateOutgoing(
-    result: Response<Void>?,
-    ctx: Context
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    val eventParameters1 = "{\"button_clicked\":\"update outgoing\"}"
-    AppMetrica.reportEvent(
-        "Outgoing updated",
-        eventParameters1
-    )
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun deleteOutgoing(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    outgoingId: Int
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.deleteOutgoing(outgoingId, "Bearer ".plus(jwtToken.value))
-        onResultDeleteOutgoing(outgoingId, ctx, res)
-    }
-}
-
-//TODO: в отдельные классы положить бы это все..
-
-private fun onResultDeleteOutgoing(
-    outgoingId: Int,
-    ctx: Context,
-    result: Response<Void>?
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + "Deleted outgoing id: " + "\n" + outgoingId,
-        Toast.LENGTH_SHORT
-    ).show()
-    val eventParameters2 = "{\"button_clicked\":\"delete outgoing\"}"
-    AppMetrica.reportEvent(
-        "Outgoing deleted",
-        eventParameters2
     )
 }

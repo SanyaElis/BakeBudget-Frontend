@@ -56,6 +56,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
+import ru.vsu.csf.bakebudget.services.createIngredient
+import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
@@ -164,7 +166,7 @@ fun IngredientsScreen(
                                         ingredientsSet.add(
                                                 name.value
                                         )
-                                        create(
+                                        createIngredient(
                                             mContext, retrofitAPI, jwtToken, IngredientRequestModel(
                                                 name.value,
                                                 weight.value.toInt(),
@@ -292,106 +294,6 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                 Text(text = "КОЛИЧЕСТВО (гр.)", color = Color.White, fontSize = 12.sp)
                 Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
             }
-        }
-    }
-}
-@OptIn(DelicateCoroutinesApi::class)
-fun findAllIngredients(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    ingredientsResponse: MutableList<IngredientResponseModel>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.findAllIngredients("Bearer ".plus(jwtToken.value))
-        onResultFindAll(res, ingredientsResponse)
-    }
-//    var model: List<IngredientResponseModel>? = null
-//    call!!.enqueue(object : Callback<List<IngredientResponseModel>?> {
-//        override fun onResponse(
-//            call: Call<List<IngredientResponseModel>?>,
-//            response: Response<List<IngredientResponseModel>?>
-//        ) {
-//            if (response.isSuccessful) {
-//                model = response.body()
-//                for (ing in model!!) {
-//                    ingredientsResponse.add(ing)
-//                }
-//                Toast.makeText(ctx, "Response Code : " + response.code() + "\n", Toast.LENGTH_SHORT)
-//                    .show()
-//            } else {
-//                Toast.makeText(
-//                    ctx,
-//                    "Response Code : " + response.code() + "\n" + "Ошибка получения ингредиентов",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//        }
-//
-//        override fun onFailure(call: Call<List<IngredientResponseModel>?>, t: Throwable) {
-//        }
-//    })
-}
-
-private fun onResultFindAll(
-    result: Response<List<IngredientResponseModel>?>?,
-    ingredientsResponse: MutableList<IngredientResponseModel>
-) {
-    if (result!!.body() != null) {
-        if (result.body()!!.isNotEmpty()) {
-            for (ing in result.body()!!) {
-                ingredientsResponse.add(ing)
-            }
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun create(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    ingredientRequestModel: IngredientRequestModel,
-    ingredientsResponse: MutableList<IngredientResponseModel>
-) {
-//    CoroutineScope(Dispatchers.IO).launch {
-//        val response = retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
-//
-//        withContext(Dispatchers.Main) {
-//            if (response!!.isSuccessful) {
-//                onResultCreate(response, ctx)
-//
-//            } else {
-//
-//                Toast.makeText(
-//                    ctx,
-//                    "Response Code : " + response.code(),
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//
-//            }
-//        }
-//    }
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.createIngredient(ingredientRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreate(res, ctx, ingredientsResponse)
-    }
-}
-
-fun onResultCreate(
-    result: Response<IngredientResponseModel?>?,
-    ctx: Context,
-    ingredientsResponse: MutableList<IngredientResponseModel>
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.isSuccessful) {
-        if (result.body() != null) {
-            ingredientsResponse.add(result.body()!!)
         }
     }
 }

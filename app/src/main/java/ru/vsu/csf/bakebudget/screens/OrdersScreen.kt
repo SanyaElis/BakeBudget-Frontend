@@ -60,6 +60,7 @@ import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
+import ru.vsu.csf.bakebudget.services.onResultFindAllOrders
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
@@ -258,53 +259,5 @@ fun findAllOrders(
         onResultFindAllOrders(res, orders, productsAll, orders0, orders1, orders2, orders3)
     }
 }
-
-val orderState = mapOf("NOT_STARTED" to 0, "IN_PROCESS" to 1, "DONE" to 2, "CANCELLED" to 3)
-
-private fun onResultFindAllOrders(
-    result: Response<List<OrderResponseModel>?>?,
-    orders: MutableList<OrderModel>,
-    productsAll: MutableList<ProductModel>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
-) {
-    if (result!!.body() != null) {
-        if (result.body()!!.isNotEmpty()) {
-            for (order in result.body()!!) {
-                for (product in productsAll) {
-                    if (product.id == order.productId) {
-                        orders.add(OrderModel(order.id, order.name,
-                            orderState[order.status]!!, product, order.finalCost, order.finalWeight))
-                        break
-                    }
-                }
-            }
-        }
-        sortByState(orders, orders0, orders1, orders2, orders3)
-    }
-}
-
-//@OptIn(DelicateCoroutinesApi::class)
-//fun setStatusOrder(
-//    ctx: Context,
-//    retrofitAPI: RetrofitAPI,
-//    jwtToken: MutableState<String>,
-//    order: OrderModel,
-//    newStatus : Int
-//) {
-//    GlobalScope.launch(Dispatchers.Main) {
-//        val res = retrofitAPI.findAllOrders("Bearer ".plus(jwtToken.value))
-//        onResultSetStatus(res, order, newStatus)
-//    }
-//}
-//
-//private fun onResultSetStatus(
-//    result: Response<List<OrderResponseModel>?>?,
-//    order: OrderModel,
-//    newStatus : Int
-//) {
-//    if (result!!.body() != null) {
-//
-//    }
-//}
 
 //TODO:подгружать все в начале

@@ -62,6 +62,10 @@ import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.createOutgoing
+import ru.vsu.csf.bakebudget.services.findAllIngredients
+import ru.vsu.csf.bakebudget.services.findAllOutgoingsInProduct
+import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -199,6 +203,7 @@ fun OutgoingsScreen(
                     }
                 }
                     //TODO:выводить на какой вес
+                //TODO:все имена уникальные
             }) {
                 Surface(
                     modifier = Modifier
@@ -314,74 +319,6 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
             ) {
                 Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
                 Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
-            }
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun createOutgoing(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    outgoingModel: OutgoingRequestModel,
-    product: ProductModel,
-    productsAll: MutableList<ProductModel>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.createOutgoing(product.id, outgoingModel, "Bearer ".plus(jwtToken.value))
-        onResultCreateOutgoing(res, ctx, product, productsAll)
-    }
-}
-
-fun onResultCreateOutgoing(
-    result: Response<OutgoingModel?>?,
-    ctx: Context,
-    product: ProductModel,
-    productsAll: MutableList<ProductModel>
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.isSuccessful) {
-        if (result.body() != null) {
-            product.outgoings.add(result.body()!!)
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun findAllOutgoingsInProduct(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    product: ProductModel
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.findAllOutgoingsInProduct(product.id, "Bearer ".plus(jwtToken.value)
-            )
-        onResultFindAllOutgoingsInProduct(res, ctx, product)
-    }
-}
-
-private fun onResultFindAllOutgoingsInProduct(
-    result: Response<List<OutgoingModel>?>?,
-    ctx: Context,
-    product: ProductModel
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.body() != null) {
-        if (result.body()!!.isNotEmpty()) {
-            for (outgoing in result.body()!!) {
-                product.outgoings.add(outgoing)
             }
         }
     }

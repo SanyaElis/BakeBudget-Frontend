@@ -60,6 +60,9 @@ import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
 import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.calculate
+import ru.vsu.csf.bakebudget.services.createOrder
+import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
@@ -67,7 +70,6 @@ import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameName
-import java.util.Random
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -216,12 +218,11 @@ fun CalculationScreen(
 //                                            sameOrder(mContext)
 //                                            same.value = true
 //                                        } else {
-                                            create(
+                                            createOrder(
                                                 mContext,
                                                 retrofitAPI,
                                                 jwtToken,
                                                 OrderRequestModel(
-                                                    //TODO:ввод названия, чтобы одинаковые нельзя было создавать
                                                     name.value,
                                                     "",
                                                     extraCost.value.toInt(),
@@ -408,106 +409,5 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                 }
             }
         }
-    }
-}
-
-private fun mToast(context: Context) {
-    Toast.makeText(
-        context,
-        "Заказ создан",
-        Toast.LENGTH_LONG
-    ).show()
-}
-
-fun IntRange.random() = Random().nextInt((endInclusive + 1) - start) + start
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun calculate(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    calculationRequestModel: CalculationRequestModel,
-    costPrice: MutableState<Long>,
-    resultPrice: MutableState<Long>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.calculate(
-                calculationRequestModel,
-                "Bearer ".plus(jwtToken.value)
-            )
-        onResultCalculate(res, ctx, costPrice, resultPrice)
-    }
-}
-
-private fun onResultCalculate(
-    result: Response<CalculationResponseModel?>?,
-    ctx: Context,
-    costPrice: MutableState<Long>,
-    resultPrice: MutableState<Long>
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    costPrice.value = result.body()!!.costPrice.toLong()
-    resultPrice.value = result.body()!!.finalCost.toLong()
-}
-
-//TODO:разделить на классы
-@OptIn(DelicateCoroutinesApi::class)
-private fun create(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    orderRequestModel: OrderRequestModel,
-    orders : MutableList<OrderModel>,
-    productsAll: MutableList<ProductModel>,
-    selectedItemIndex : MutableState<Int>,
-    costPrice: MutableState<Long>,
-    resultPrice: MutableState<Long>,
-    name: MutableState<String>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.createOrder(orderRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreateOrder(res, ctx, orders, productsAll, selectedItemIndex, costPrice, resultPrice, name)
-    }
-}
-
-private fun onResultCreateOrder(
-    result: Response<OrderResponseModel?>?,
-    ctx: Context,
-    orders : MutableList<OrderModel>,
-    productsAll: MutableList<ProductModel>,
-    selectedItemIndex : MutableState<Int>,
-    costPrice: MutableState<Long>,
-    resultPrice: MutableState<Long>,
-    name: MutableState<String>
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.code() == 409) {
-        sameName(ctx)
-    }
-    //TODO:ограничение на суммарную стоимость
-    if (result.body()!=null) {
-        costPrice.value = result.body()!!.costPrice.toLong()
-        resultPrice.value = result.body()!!.finalCost.toLong()
-        orders.add(
-            OrderModel(
-                result.body()!!.id,
-                name.value,
-                0,
-                productsAll[selectedItemIndex.value],
-                resultPrice.value.toDouble(),
-                result.body()!!.finalWeight
-            )
-        )
-        mToast(ctx)
     }
 }

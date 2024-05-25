@@ -73,6 +73,7 @@ import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.createProduct
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -189,7 +190,7 @@ fun ProductAddScreen(
                                         for (ing in ingredients) {
                                             ings.add(ing)
                                         }
-                                        create(
+                                        createProduct(
                                             mContext,
                                             retrofitAPI,
                                             jwtToken,
@@ -466,85 +467,4 @@ fun DropdownMenuBox(
         }
     }
 }
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun create(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    productRequestModel: ProductRequestModel,
-    productId: MutableState<Int>,
-    products: MutableList<ProductModel>,
-    product: ProductModel
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(jwtToken.value))
-        onResultCreate(res, ctx, productId, products, product, retrofitAPI, jwtToken)
-    }
-}
-
-private fun onResultCreate(
-    result: Response<ProductResponseModel?>?,
-    ctx: Context,
-    productId: MutableState<Int>,
-    products: MutableList<ProductModel>,
-    product: ProductModel,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.body() != null) {
-        productId.value = result.body()!!.id
-        product.id = productId.value
-        products.add(
-            product
-        )
-        for (ingredient in product.ingredients) {
-            ingredient.productId = productId.value
-            addIngredient(
-                ctx,
-                retrofitAPI,
-                jwtToken,
-                ingredient
-            )
-        }
-    }
-}
-
 //TODO:делать все имена уникальными
-
-@OptIn(DelicateCoroutinesApi::class)
-fun addIngredient(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    ingredientInProductModel: IngredientInProductModel
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.addIngredientToProduct(
-                IngredientInProductRequestModel(
-                    ingredientInProductModel.ingredientId,
-                    ingredientInProductModel.productId,
-                    ingredientInProductModel.weight
-                ), "Bearer ".plus(jwtToken.value)
-            )
-        onResultAdd(res, ctx)
-    }
-}
-
-fun onResultAdd(
-    result: Response<Void>?,
-    ctx: Context,
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-}

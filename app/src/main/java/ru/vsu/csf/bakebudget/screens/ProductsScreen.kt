@@ -54,6 +54,8 @@ import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.findAllIngredients
+import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
@@ -240,32 +242,6 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                 ) {
                     Text(text = "ГОТОВЫЕ ИЗДЕЛИЯ", fontSize = 24.sp, color = Color.White)
                 }
-            }
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun findAllProducts(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    productsResponse: MutableList<ProductResponseModel>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.findAllProducts("Bearer ".plus(jwtToken.value))
-        onResultFindAll(res, productsResponse)
-    }
-}
-
-private fun onResultFindAll(
-    result: Response<List<ProductResponseModel>?>?,
-    productsResponse: MutableList<ProductResponseModel>
-) {
-    if (result!!.body() != null) {
-        if (result.body()!!.isNotEmpty()) {
-            for (prod in result.body()!!) {
-                productsResponse.add(prod)
             }
         }
     }

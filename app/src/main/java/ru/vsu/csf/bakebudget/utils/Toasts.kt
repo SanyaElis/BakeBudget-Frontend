@@ -43,6 +43,10 @@ fun codeCopied(context: Context) {
     ).show()
 }
 
-//TODO:same outgoing toast
-//TODO:same product toast
-//TODO:same order toast
+fun orderCreated(context: Context) {
+    Toast.makeText(
+        context,
+        "Заказ создан",
+        Toast.LENGTH_LONG
+    ).show()
+}

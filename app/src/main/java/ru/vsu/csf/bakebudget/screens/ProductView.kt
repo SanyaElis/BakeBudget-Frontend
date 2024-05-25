@@ -28,7 +28,6 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -57,9 +56,11 @@ import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
-import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.services.addIngredientToProduct
+import ru.vsu.csf.bakebudget.services.findAllIngredientsInProduct
+import ru.vsu.csf.bakebudget.services.updateProduct
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -67,8 +68,6 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import java.util.Locale
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -175,7 +174,7 @@ fun ProductView(
                                     } else {
                                         for (ingredient in product.ingredients) {
                                             ingredient.productId = product.id
-                                            addIngredient(mContext, retrofitAPI, jwtToken, ingredient)
+                                            addIngredientToProduct(mContext, retrofitAPI, jwtToken, ingredient)
                                         }
                                         updateProduct(mContext, retrofitAPI, jwtToken, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id)
                                         product.estWeight = estimatedWeight.value.toInt()
@@ -287,72 +286,4 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName:
             }
         }
     }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun findAllIngredientsInProduct(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    product: ProductModel,
-    ingredientsResponse: MutableList<IngredientResponseModel>
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.findAllIngredientsInProduct(product.id, "Bearer ".plus(jwtToken.value)
-            )
-        onResultFindAllIngredientsInProduct(res, ctx, product, ingredientsResponse)
-    }
-}
-
-private fun onResultFindAllIngredientsInProduct(
-    result: Response<List<IngredientInProductRequestModel>?>?,
-    ctx: Context,
-    product: ProductModel,
-    ingredientsResponse: MutableList<IngredientResponseModel>
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.body() != null) {
-        if (result.body()!!.isNotEmpty()) {
-            for (ing in result.body()!!) {
-                var ingName = ""
-                for (ingr in ingredientsResponse) {
-                    if (ingr.id == ing.ingredientId) {
-                        ingName = ingr.name
-                    }
-                }
-                product.ingredients.add(IngredientInProductModel(ing.ingredientId, product.id, ingName, ing.weight))
-            }
-        }
-    }
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-private fun updateProduct(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    product: ProductRequestModel,
-    productId : Int
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res =
-            retrofitAPI.updateProduct(productId, product, "Bearer ".plus(jwtToken.value))
-        onResultUpdateProduct(res, ctx)
-    }
-}
-
-private fun onResultUpdateProduct(
-    result: Response<Void>?,
-    ctx: Context
-) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
 }

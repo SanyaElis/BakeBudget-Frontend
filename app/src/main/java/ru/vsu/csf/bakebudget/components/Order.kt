@@ -42,6 +42,7 @@ import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.screens.sortByState
+import ru.vsu.csf.bakebudget.services.setStatusOrder
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 
@@ -117,8 +118,6 @@ fun Order(order: OrderModel,
     }
 }
 
-val orderState = mapOf(0 to "NOT_STARTED", 1 to "IN_PROCESS", 2 to "DONE", 3 to "CANCELLED")
-
 @Composable
 fun AlertDialogOrder(
     onDismissRequest: () -> Unit,
@@ -175,32 +174,6 @@ fun AlertDialogOrder(
                 Text("Отмена")
             }
         }
-    )
-}
-
-@OptIn(DelicateCoroutinesApi::class)
-fun setStatusOrder(
-    ctx: Context,
-    retrofitAPI: RetrofitAPI,
-    jwtToken: MutableState<String>,
-    order: OrderModel,
-    newStatus : Int
-) {
-    GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.setStatus(order.id, orderState[newStatus]!!, "Bearer ".plus(jwtToken.value))
-        onResultSetStatus(res, order, newStatus)
-    }
-}
-
-private fun onResultSetStatus(
-    result: Response<Void>?,
-    order: OrderModel,
-    newStatus : Int
-) {
-    val eventParameters1 = "{\"button_clicked\":\"change order status\"}"
-    AppMetrica.reportEvent(
-        "Order status changed",
-        eventParameters1
     )
 }
 
