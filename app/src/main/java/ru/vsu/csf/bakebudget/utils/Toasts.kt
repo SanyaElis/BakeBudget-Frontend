@@ -42,3 +42,11 @@ fun codeCopied(context: Context) {
         Toast.LENGTH_LONG
     ).show()
 }
+
+fun orderCreated(context: Context) {
+    Toast.makeText(
+        context,
+        "Заказ создан",
+        Toast.LENGTH_LONG
+    ).show()
+}
