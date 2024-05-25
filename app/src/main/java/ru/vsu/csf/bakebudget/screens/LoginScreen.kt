@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,21 +21,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.gson.GsonBuilder
 import io.appmetrica.analytics.AppMetrica
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
-import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
-import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.services.login
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
@@ -81,7 +76,7 @@ fun LoginScreen(
         ) {
             TextButton(
                 onClick = {
-                    postDataUsingRetrofitLogin(
+                    login(
                         ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, jwtToken, userRole, isPro
                     )
                     navController.navigate("home")
@@ -124,56 +119,4 @@ fun LoginScreen(
             }
         }
     }
-}
-
-private fun postDataUsingRetrofitLogin(
-    ctx: Context,
-    userEmail: MutableState<String>,
-    userPassword: MutableState<String>,
-    retrofitAPI: RetrofitAPI,
-    isLogged: MutableState<Boolean>,
-    jwtToken: MutableState<String>,
-    userRole: MutableState<String>,
-    isPro: MutableState<Boolean>
-) {
-    val dataModel = UserSignInRequestModel(userEmail.value, userPassword.value)
-    val call: Call<UserSignInResponseModel?>? = retrofitAPI.login(dataModel)
-    call!!.enqueue(object : Callback<UserSignInResponseModel?> {
-        override fun onResponse(
-            call: Call<UserSignInResponseModel?>,
-            response: Response<UserSignInResponseModel?>
-        ) {
-            if (response.isSuccessful) {
-                isLogged.value = true
-                val model: UserSignInResponseModel? = response.body()
-                jwtToken.value = model!!.token
-                Toast.makeText(
-                    ctx,
-                    "Response Code : " + response.code() + "\n" + "User Name : " + model.username + "\n" + "Email : " + model.email + "\n" + "Token : " + jwtToken.value + "\n" + "ROLE : " + model.role,
-                    Toast.LENGTH_SHORT
-                ).show()
-                userRole.value = model.role
-                isPro.value = userRole.value == "ROLE_ADVANCED_USER"
-                val eventParameters1 = "{\"button_clicked\":\"enter to account\"}"
-                AppMetrica.reportEvent(
-                    "User enter to account",
-                    eventParameters1
-                )
-            } else {
-                Toast.makeText(
-                    ctx,
-                    "Response Code : " + response.code() + "\n" + "Такого пользователя не существует или пароль неверный",
-                    Toast.LENGTH_SHORT
-                ).show()
-                val eventParameters2 = "{\"button_clicked\":\"enter to account failed\"}"
-                AppMetrica.reportEvent(
-                    "User enter wrong name or password",
-                    eventParameters2
-                )
-            }
-        }
-
-        override fun onFailure(call: Call<UserSignInResponseModel?>, t: Throwable) {
-        }
-    })
 }

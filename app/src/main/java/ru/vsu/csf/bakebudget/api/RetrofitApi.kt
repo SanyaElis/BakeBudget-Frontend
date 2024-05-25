@@ -30,10 +30,10 @@ import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 
 interface RetrofitAPI {
     @POST("auth/signup")
-    fun register(@Body userSignUpRequestModel: UserSignUpRequestModel?): Call<String?>?
+    suspend fun register(@Body userSignUpRequestModel: UserSignUpRequestModel?): Response<Void>?
 
     @POST("auth/signin")
-    fun login(@Body userModel: UserSignInRequestModel?): Call<UserSignInResponseModel?>?
+    suspend fun login(@Body userModel: UserSignInRequestModel?): Response<UserSignInResponseModel?>?
 
 //___________________________________________________________________________________________________________________________________
 

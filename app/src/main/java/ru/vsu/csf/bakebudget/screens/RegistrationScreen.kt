@@ -21,18 +21,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.google.gson.GsonBuilder
 import io.appmetrica.analytics.AppMetrica
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
+import ru.vsu.csf.bakebudget.services.register
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 
@@ -74,7 +72,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
         ) {
             TextButton(
                 onClick = {
-                    postDataUsingRetrofit(
+                    register(
                         ctx, userName, userEmail, userPassword, retrofitAPI = retrofitAPI
                     )
                     val eventParameters1 = "{\"button_clicked\":\"register\"}"
@@ -106,46 +104,4 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
             }
         }
     }
-}
-
-private fun postDataUsingRetrofit(
-    ctx: Context,
-    userName: MutableState<String>,
-    userEmail: MutableState<String>,
-    userPassword: MutableState<String>,
-    retrofitAPI: RetrofitAPI
-) {
-//    val eventParameters1 = "{\"button_clicked\":\"register\"}"
-//    AppMetrica.reportEvent(
-//        "User registered",
-//        eventParameters1
-//    )
-    val dataModel = UserSignUpRequestModel(userName.value, userEmail.value, userPassword.value)
-    val call: Call<String?>? = retrofitAPI.register(dataModel)
-    call!!.enqueue(object : Callback<String?> {
-        override fun onResponse(call: Call<String?>, response: Response<String?>) {
-            if (response.isSuccessful) {
-                Toast.makeText(
-                    ctx,
-                    "Response Code : " + response.code() + "\n" + "Пользователь успешно зарегистрирован",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    ctx,
-                    "Response Code : " + response.code() +  "\n" + "Регистрация невозможна, некорректные данные",
-                    Toast.LENGTH_SHORT
-                ).show()
-                val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
-                AppMetrica.reportEvent(
-                    "User registration failed",
-                    eventParameters2
-                )
-            }
-        }
-
-        override fun onFailure(call: Call<String?>, t: Throwable) {
-        }
-    })
-    //TODO:изменить коллы
 }
