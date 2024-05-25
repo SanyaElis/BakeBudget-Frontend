@@ -63,6 +63,7 @@ import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.findAllIngredients
+import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
