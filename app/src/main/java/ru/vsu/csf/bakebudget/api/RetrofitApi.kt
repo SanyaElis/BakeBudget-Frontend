@@ -17,6 +17,7 @@ import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
+import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
@@ -24,6 +25,8 @@ import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.models.response.ReportIncomeResponseModel
+import ru.vsu.csf.bakebudget.models.response.ReportOrdersResponseModel
 
 interface RetrofitAPI {
     @POST("auth/signup")
@@ -113,5 +116,13 @@ interface RetrofitAPI {
 
     @PUT("setGroupCode")
     suspend fun setCode( @Query("groupCode") groupCode: String, @Header("Authorization") authorization: String): Response<String>?
+
+    //___________________________________________________________________________________________________________________________________
+
+    @POST("report/calculateByOrderSelf")
+    suspend fun reportOrdersSelf(@Body reportRequestModel: ReportRequestModel, @Header("Authorization") authorization: String): Response<ReportOrdersResponseModel?>?
+
+    @POST("report/calculateByIncomeSelf")
+    suspend fun reportIncomeSelf(@Body reportRequestModel: ReportRequestModel, @Header("Authorization") authorization: String): Response<ReportIncomeResponseModel?>?
 
 }

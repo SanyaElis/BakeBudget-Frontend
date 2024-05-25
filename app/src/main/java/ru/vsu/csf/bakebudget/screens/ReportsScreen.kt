@@ -28,17 +28,18 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +54,9 @@ import ru.vsu.csf.bakebudget.components.BarType
 import ru.vsu.csf.bakebudget.components.DatePeriodField
 import ru.vsu.csf.bakebudget.components.SwitchForm
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
+import ru.vsu.csf.bakebudget.services.createReportIncome
+import ru.vsu.csf.bakebudget.services.createReportOrders
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
@@ -69,6 +73,8 @@ fun ReportsScreen(
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
+    val mContext = LocalContext.current
+
     val item = listOf(MenuItemModel(R.drawable.reports, "Отчеты"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -93,6 +99,13 @@ fun ReportsScreen(
 
     val selectedIndex = remember {
         mutableIntStateOf(0)
+    }
+
+    val dataListOrders = remember {
+        mutableStateListOf<Long>()
+    }
+    val dataListIncome = remember {
+        mutableStateListOf<Long>()
     }
 
     val reportState = remember { mutableStateOf(false) }
@@ -124,8 +137,20 @@ fun ReportsScreen(
                     ) {
                         TextButton(
                             onClick = {
+                                reportState.value = false
+                                val date1 = dateStart.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "yyyy-MM-dd"
+                                    )
+                                )
+                                val date2 = dateEnd.value.format(
+                                    DateTimeFormatter.ofPattern(
+                                        "yyyy-MM-dd"
+                                    )
+                                )
                                 AppMetrica.reportEvent("Report created", eventParameters1)
-                                reportState.value = true
+                                createReportOrders(mContext, retrofitAPI, ReportRequestModel(date1, date2, date1, date2), dataListOrders, reportState)
+                                createReportIncome(mContext, retrofitAPI, ReportRequestModel(date1, date2, date1, date2), dataListIncome, reportState)
                             }
                         ) {
                             Image(
@@ -215,16 +240,15 @@ fun ReportsScreen(
                                 },
                             )
                             if (reportState.value) {
-                                if (selectedIndex.intValue == 0) {
-                                    val dataList = mutableListOf(20, 16, 4)
+                                if (selectedIndex.intValue == 0 && dataListOrders.isNotEmpty()) {
                                     val floatValue = mutableListOf<Float>()
                                     val xList = mutableListOf("Принято", "Завершено", "Отменено")
 
-                                    dataList.forEachIndexed { index, value ->
+                                    dataListOrders.forEachIndexed { index, value ->
 
                                         floatValue.add(
                                             index = index,
-                                            element = value.toFloat() / dataList.max().toFloat()
+                                            element = value.toFloat() / if (dataListOrders.max().toFloat() == 0f) 1f else dataListOrders.max().toFloat()
                                         )
 
                                     }
@@ -233,7 +257,7 @@ fun ReportsScreen(
                                             Text(buildAnnotatedString {
                                                 append("Завершено заказов: ")
                                                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append(dataList[1].toString())
+                                                    append(dataListOrders[1].toString())
                                                 }
                                             })
                                         }
@@ -246,7 +270,7 @@ fun ReportsScreen(
                                             BarGraph(
                                                 graphBarData = floatValue,
                                                 xAxisScaleData = xList,
-                                                barData_ = dataList,
+                                                barData_ = dataListOrders,
                                                 height = 300.dp,
                                                 roundType = BarType.TOP_CURVED,
                                                 barWidth = 30.dp,
@@ -255,16 +279,15 @@ fun ReportsScreen(
                                             )
                                         }
                                     }
-                                } else {
-                                    val dataList = mutableListOf(23500, 56400)
+                                } else if (dataListIncome.isNotEmpty()){
                                     val floatValue = mutableListOf<Float>()
                                     val xList = mutableListOf("Расходы", "Доход")
 
-                                    dataList.forEachIndexed { index, value ->
+                                    dataListIncome.forEachIndexed { index, value ->
 
                                         floatValue.add(
                                             index = index,
-                                            element = value.toFloat() / dataList.max().toFloat()
+                                            element = value.toFloat() / if (dataListIncome.max().toFloat() == 0f) 1f else dataListIncome.max().toFloat()
                                         )
                                     }
                                     Column {
@@ -272,7 +295,7 @@ fun ReportsScreen(
                                             Text(buildAnnotatedString {
                                                 append("Прибыль составила ")
                                                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append((dataList[1] - dataList[0]).toString())
+                                                    append((dataListIncome[1] - dataListIncome[0]).toString())
                                                 }
                                                 append(" р.")
                                             })
@@ -286,7 +309,7 @@ fun ReportsScreen(
                                             BarGraph(
                                                 graphBarData = floatValue,
                                                 xAxisScaleData = xList,
-                                                barData_ = dataList,
+                                                barData_ = dataListIncome,
                                                 height = 300.dp,
                                                 roundType = BarType.TOP_CURVED,
                                                 barWidth = 40.dp,

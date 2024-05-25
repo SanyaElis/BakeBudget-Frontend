@@ -34,7 +34,7 @@ import kotlin.math.round
 fun BarGraph(
     graphBarData: List<Float>,
     xAxisScaleData: List<String>,
-    barData_: List<Int>,
+    barData_: List<Long>,
     height: Dp,
     roundType: BarType,
     barWidth: Dp,
@@ -90,16 +90,14 @@ fun BarGraph(
                 .fillMaxWidth(),
             horizontalAlignment = CenterHorizontally
         ) {
-
             Canvas(modifier = Modifier
                 .padding(bottom = 10.dp)
                 .fillMaxSize()) {
-
                 val yAxisScaleText = (barData.max()) / 3f
                 (0..3).forEach { i ->
                     drawContext.canvas.nativeCanvas.apply {
                         drawText(
-                            round(barData.min() + yAxisScaleText * i).toInt().toString(),
+                            String.format("%.2f", barData.min() + yAxisScaleText * i),
                             30f,
                             size.height - yAxisScaleSpacing - i * size.height / 3f,
                             textPaint
