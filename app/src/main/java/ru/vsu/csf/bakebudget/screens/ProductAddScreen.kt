@@ -199,13 +199,15 @@ fun ProductAddScreen(
                                             products,
                                             ProductModel(
                                                 0,
-                                                selectedImageUri.value,
+//                                                selectedImageUri.value,
+                                                null,
                                                 R.drawable.cake,
                                                 name.value,
                                                 ings,
                                                 outgoings,
                                                 estimatedWeight.value.toInt()
-                                            )
+                                            ),
+                                            selectedImageUri
                                         )
                                         val eventParameters1 = "{\"button_clicked\":\"create product\"}"
                                         AppMetrica.reportEvent(

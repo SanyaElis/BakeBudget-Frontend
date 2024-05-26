@@ -1,6 +1,10 @@
 package ru.vsu.csf.bakebudget.services
 
+import android.R.attr.data
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
@@ -8,6 +12,9 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
@@ -17,6 +24,8 @@ import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import java.io.File
+
 
 @OptIn(DelicateCoroutinesApi::class)
 fun findAllProducts(
@@ -50,12 +59,13 @@ fun createProduct(
     productRequestModel: ProductRequestModel,
     productId: MutableState<Int>,
     products: MutableList<ProductModel>,
-    product: ProductModel
+    product: ProductModel,
+    selectedImageUri: MutableState<Uri?>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(getToken(ctx)))
-        onResultCreateProduct(res, ctx, productId, products, product, retrofitAPI)
+        onResultCreateProduct(res, ctx, productId, products, product, retrofitAPI, selectedImageUri)
     }
 }
 
@@ -66,6 +76,7 @@ private fun onResultCreateProduct(
     products: MutableList<ProductModel>,
     product: ProductModel,
     retrofitAPI: RetrofitAPI,
+    selectedImageUri: MutableState<Uri?>
 ) {
     Toast.makeText(
         ctx,
@@ -85,6 +96,9 @@ private fun onResultCreateProduct(
                 retrofitAPI,
                 ingredient
             )
+        }
+        if (selectedImageUri.value != null) {
+//            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
         }
     }
 }

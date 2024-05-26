@@ -157,15 +157,7 @@ fun AlertDialog3(
                                 outgoing.id,
                                 name.value,
                                 value.value.toInt()
-                            ), productId
-                        )
-                        outgoings.remove(outgoing)
-                        outgoings.add(
-                            OutgoingModel(
-                                outgoing.id,
-                                name.value,
-                                value.value.toInt()
-                            )
+                            ), outgoing, outgoings, productId
                         )
                         onConfirmation()
                     }

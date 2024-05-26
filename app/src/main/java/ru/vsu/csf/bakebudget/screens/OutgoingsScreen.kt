@@ -138,6 +138,7 @@ fun OutgoingsScreen(
             isDataReceivedOutgoings.value = true
         }
     }
+        //TODO:файнды при поиске изделий сразу в onResult
 
     val name = remember {
         mutableStateOf("")
@@ -201,8 +202,6 @@ fun OutgoingsScreen(
                         }
                     }
                 }
-                    //TODO:выводить на какой вес
-                //TODO:все имена уникальные
             }) {
                 Surface(
                     modifier = Modifier
@@ -229,6 +228,11 @@ fun OutgoingsScreen(
                                         DropdownMenuProducts(
                                             productsAll,
                                             selectedItemIndex = selectedItemIndex
+                                        )
+                                        Text(
+                                            text = "(" + productsAll[selectedItemIndex.intValue].estWeight + " гр.)",
+                                            fontSize = 14.sp,
+                                            textAlign = TextAlign.Center
                                         )
                                     } else {
                                         Box(modifier = Modifier.padding(16.dp)) {

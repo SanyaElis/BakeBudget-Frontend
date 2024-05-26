@@ -1,13 +1,16 @@
 package ru.vsu.csf.bakebudget.api
 
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HTTP
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.vsu.csf.bakebudget.models.OutgoingModel
@@ -130,5 +133,8 @@ interface RetrofitAPI {
 
     @POST("report/calculateByIncomeGroup")
     suspend fun reportIncomeGroup(@Body reportRequestModel: ReportRequestModel, @Header("Authorization") authorization: String): Response<ReportIncomeResponseModel?>?
+
+    //___________________________________________________________________________________________________________________________________
+
 
 }

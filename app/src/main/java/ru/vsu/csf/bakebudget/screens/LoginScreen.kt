@@ -1,7 +1,5 @@
 package ru.vsu.csf.bakebudget.screens
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,16 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import io.appmetrica.analytics.AppMetrica
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
-import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
-import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
 import ru.vsu.csf.bakebudget.services.login
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
