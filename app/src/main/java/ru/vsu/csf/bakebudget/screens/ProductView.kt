@@ -125,7 +125,9 @@ fun ProductView(
                 product.ingredients,
                 mContext,
                 ingredientsResponse,
-                product.id
+                product.id,
+                mutableSetOf<String>(),
+                true
             )
         }
     }
@@ -216,7 +218,7 @@ fun ProductView(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(product.ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI)
+                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, mutableSetOf<String>())
                                 last = num
                             }
                             item {

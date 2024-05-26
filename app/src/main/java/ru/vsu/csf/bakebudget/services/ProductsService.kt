@@ -1,8 +1,8 @@
 package ru.vsu.csf.bakebudget.services
 
-import android.R.attr.data
 import android.content.Context
-import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
@@ -12,9 +12,8 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
@@ -24,7 +23,11 @@ import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
-import java.io.File
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import android.util.Base64
+import ru.vsu.csf.bakebudget.utils.sameName
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -98,7 +101,7 @@ private fun onResultCreateProduct(
             )
         }
         if (selectedImageUri.value != null) {
-//            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
+            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
         }
     }
 }
@@ -228,11 +231,15 @@ private fun onResultUpdateIngredientInProduct(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
-    val eventParameters2 = "{\"button_clicked\":\"update ingredient in product\"}"
-    AppMetrica.reportEvent(
-        "Ingredient in product updated",
-        eventParameters2
-    )
+    if (result.code() == 409) {
+        sameName(ctx)
+    } else {
+        val eventParameters2 = "{\"button_clicked\":\"update ingredient in product\"}"
+        AppMetrica.reportEvent(
+            "Ingredient in product updated",
+            eventParameters2
+        )
+    }
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -266,4 +273,72 @@ private fun onResultDeleteInProduct(
         "Ingredient in product deleted",
         eventParameters1
     )
+}
+
+
+fun bitmapToString(bitmap: Bitmap): String = runBlocking {
+    return@runBlocking withContext(Dispatchers.Default) {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+        val encodedString: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+        return@withContext encodedString
+    }
+}
+fun uriToString(context: Context, imageUri: Uri?): String? {
+    var inputStream: InputStream? = null
+    var bitmap: Bitmap? = null
+    var string: String? =null
+
+    try {
+        inputStream = imageUri?.let { context.contentResolver.openInputStream(it) }
+        bitmap = BitmapFactory.decodeStream(inputStream)
+        string = bitmapToString(bitmap)
+    } finally {
+        inputStream?.close()
+    }
+
+    return string
+}
+fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
+    val bytes = ByteArrayOutputStream()
+    inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+    val path =
+        MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
+    return Uri.parse(path)
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun uploadPicture(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    product: ProductModel,
+    uri: Uri
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+//        val imageBytes = Base64.decode(uriToString(ctx, uri)!!, 0)
+//        val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+//        product.uri = getImageUri(ctx, image)
+        val res =
+            retrofitAPI.uploadPicture(
+                product.id,
+                uriToString(ctx, uri)!!,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultUploadPicture(res, ctx, product, uri)
+    }
+}
+
+private fun onResultUploadPicture(
+    result: Response<Void>?,
+    ctx: Context,
+    product: ProductModel,
+    uri: Uri
+) {
+    Toast.makeText(
+        ctx,
+        "Response Code : " + result!!.code() + "\n" + result.body(),
+        Toast.LENGTH_SHORT
+    ).show()
+    product.uri = uri
 }

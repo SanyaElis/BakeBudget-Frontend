@@ -88,7 +88,7 @@ fun OutgoingsScreen(
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
     isDataReceivedIngredients: MutableState<Boolean>,
-    isDataReceivedOutgoings : MutableState<Boolean>
+    isDataReceivedOutgoings: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
@@ -130,15 +130,13 @@ fun OutgoingsScreen(
         }
     }
 
-    Timer().schedule(2000) {
-        if (getToken(mContext) != null && !isDataReceivedOutgoings.value) {
-            for (prod in productsAll) {
-                findAllOutgoingsInProduct(mContext, retrofitAPI, prod)
-            }
-            isDataReceivedOutgoings.value = true
+
+    if (getToken(mContext) != null && !isDataReceivedOutgoings.value && productsAll.isNotEmpty()) {
+        for (prod in productsAll) {
+            findAllOutgoingsInProduct(mContext, retrofitAPI, prod)
         }
+        isDataReceivedOutgoings.value = true
     }
-        //TODO:файнды при поиске изделий сразу в onResult
 
     val name = remember {
         mutableStateOf("")
@@ -178,15 +176,21 @@ fun OutgoingsScreen(
                                 onClick = {
                                     if (!(isNameValid(name.value) && isCostValid(value.value))) {
                                         dataIncorrectToast(context = mContext)
-                                        val eventParameters2 = "{\"button_clicked\":\"create outgoing\"}"
+                                        val eventParameters2 =
+                                            "{\"button_clicked\":\"create outgoing\"}"
                                         AppMetrica.reportEvent(
                                             "Outgoing add failed",
                                             eventParameters2
                                         )
                                     } else {
-                                        createOutgoing(mContext, retrofitAPI, OutgoingRequestModel(name.value,
-                                            value.value.toInt()), productsAll[selectedItemIndex.intValue], productsAll)
-                                        val eventParameters1 = "{\"button_clicked\":\"create outgoing\"}"
+                                        createOutgoing(
+                                            mContext, retrofitAPI, OutgoingRequestModel(
+                                                name.value,
+                                                value.value.toInt()
+                                            ), productsAll[selectedItemIndex.intValue], productsAll
+                                        )
+                                        val eventParameters1 =
+                                            "{\"button_clicked\":\"create outgoing\"}"
                                         AppMetrica.reportEvent(
                                             "Outgoing created",
                                             eventParameters1

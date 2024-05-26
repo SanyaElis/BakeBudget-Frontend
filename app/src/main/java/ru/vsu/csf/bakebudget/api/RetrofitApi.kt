@@ -136,5 +136,7 @@ interface RetrofitAPI {
 
     //___________________________________________________________________________________________________________________________________
 
+    @PUT("products/uploadPicture/{id}")
+    suspend fun uploadPicture(@Path("id") id: Int, @Body file: String, @Header("Authorization") authorization: String): Response<Void>?
 
 }

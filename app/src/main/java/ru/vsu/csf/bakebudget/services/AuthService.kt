@@ -12,8 +12,15 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
+import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.saveToken
 
@@ -66,11 +73,24 @@ fun login(
     retrofitAPI: RetrofitAPI,
     isLogged: MutableState<Boolean>,
     userRole: MutableState<String>,
-    isPro: MutableState<Boolean>
+    isPro: MutableState<Boolean>,
+    ingredients: MutableList<IngredientModel>,
+    products: MutableList<ProductModel>,
+    ingredientsInRecipe: MutableList<IngredientInProductModel>,
+    outgoings: MutableList<OutgoingModel>,
+    orders: MutableList<OrderModel>,
+    isDataReceivedIngredients: MutableState<Boolean>,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    ingredientsSet: MutableSet<String>,
+    isDataReceivedProducts: MutableState<Boolean>,
+    productsResponse: MutableList<ProductResponseModel>,
+    isDataReceivedOutgoings : MutableState<Boolean>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.login(UserSignInRequestModel(userEmail.value, userPassword.value))
-        onResultLogin(res, ctx, isLogged, userRole, isPro)
+        onResultLogin(res, ctx, isLogged, userRole, isPro, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
     }
 }
 
@@ -79,7 +99,20 @@ fun onResultLogin(
     ctx: Context,
     isLogged: MutableState<Boolean>,
     userRole: MutableState<String>,
-    isPro: MutableState<Boolean>
+    isPro: MutableState<Boolean>,
+    ingredients: MutableList<IngredientModel>,
+    products: MutableList<ProductModel>,
+    ingredientsInRecipe: MutableList<IngredientInProductModel>,
+    outgoings: MutableList<OutgoingModel>,
+    orders: MutableList<OrderModel>,
+    isDataReceivedIngredients: MutableState<Boolean>,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    ingredientsSet: MutableSet<String>,
+    isDataReceivedProducts: MutableState<Boolean>,
+    productsResponse: MutableList<ProductResponseModel>,
+    isDataReceivedOutgoings : MutableState<Boolean>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     if (result != null) {
         if (result.isSuccessful) {
@@ -98,6 +131,22 @@ fun onResultLogin(
                 "User enter to account",
                 eventParameters1
             )
+            ingredients.clear()
+            products.clear()
+            ingredientsInRecipe.clear()
+            outgoings.clear()
+            orders.clear()
+            isDataReceivedIngredients.value = false
+            ingredientsResponse.clear()
+            ingredientsSet.clear()
+            isDataReceivedProducts.value = false
+            productsResponse.clear()
+            isDataReceivedOutgoings.value = false
+            isDataReceivedOrders.value = false
+            orders0.clear()
+            orders1.clear()
+            orders2.clear()
+            orders3.clear()
         } else {
             Toast.makeText(
                 ctx,
