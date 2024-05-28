@@ -1,10 +1,9 @@
 package ru.vsu.csf.bakebudget.services
 
+import android.content.ContentResolver
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
@@ -12,8 +11,13 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okio.BufferedSink
+import okio.source
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
@@ -23,11 +27,8 @@ import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import android.util.Base64
 import ru.vsu.csf.bakebudget.utils.sameName
-import kotlin.io.encoding.ExperimentalEncodingApi
+import java.io.File
 
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -276,37 +277,37 @@ private fun onResultDeleteInProduct(
 }
 
 
-fun bitmapToString(bitmap: Bitmap): String = runBlocking {
-    return@runBlocking withContext(Dispatchers.Default) {
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-        val encodedString: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
-        return@withContext encodedString
-    }
-}
-fun uriToString(context: Context, imageUri: Uri?): String? {
-    var inputStream: InputStream? = null
-    var bitmap: Bitmap? = null
-    var string: String? =null
-
-    try {
-        inputStream = imageUri?.let { context.contentResolver.openInputStream(it) }
-        bitmap = BitmapFactory.decodeStream(inputStream)
-        string = bitmapToString(bitmap)
-    } finally {
-        inputStream?.close()
-    }
-
-    return string
-}
-fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
-    val bytes = ByteArrayOutputStream()
-    inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-    val path =
-        MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
-    return Uri.parse(path)
-}
+//fun bitmapToString(bitmap: Bitmap): String = runBlocking {
+//    return@runBlocking withContext(Dispatchers.Default) {
+//        val byteArrayOutputStream = ByteArrayOutputStream()
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+//        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+//        val encodedString: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+//        return@withContext encodedString
+//    }
+//}
+//fun uriToString(context: Context, imageUri: Uri?): String? {
+//    var inputStream: InputStream? = null
+//    var bitmap: Bitmap? = null
+//    var string: String? =null
+//
+//    try {
+//        inputStream = imageUri?.let { context.contentResolver.openInputStream(it) }
+//        bitmap = BitmapFactory.decodeStream(inputStream)
+//        string = bitmapToString(bitmap)
+//    } finally {
+//        inputStream?.close()
+//    }
+//
+//    return string
+//}
+//fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
+//    val bytes = ByteArrayOutputStream()
+//    inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+//    val path =
+//        MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
+//    return Uri.parse(path)
+//}
 
 @OptIn(DelicateCoroutinesApi::class)
 fun uploadPicture(
@@ -319,14 +320,41 @@ fun uploadPicture(
 //        val imageBytes = Base64.decode(uriToString(ctx, uri)!!, 0)
 //        val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
 //        product.uri = getImageUri(ctx, image)
+        val file = File(uri.path!!)
+//        val ext =  uri.toString().substring(uri.toString().lastIndexOf(".") + 1)
+        val requestBody = InputStreamRequestBody(ctx.contentResolver, uri)
+        val filePart = MultipartBody.Part.createFormData("file", "jpg", requestBody)
         val res =
             retrofitAPI.uploadPicture(
                 product.id,
-                uriToString(ctx, uri)!!,
+                filePart
+                ,
+//                uriToString(ctx, uri)!!,
                 "Bearer ".plus(getToken(ctx))
             )
         onResultUploadPicture(res, ctx, product, uri)
     }
+}
+
+class InputStreamRequestBody(
+    private val contentResolver: ContentResolver,
+    private val uri: Uri
+): RequestBody() {
+
+    override fun contentType(): MediaType? =
+        contentResolver.getType(uri)?.toMediaTypeOrNull()
+
+    override fun writeTo(sink: BufferedSink) {
+        contentResolver.openInputStream(uri)?.source()?.use(sink::writeAll)
+    }
+
+    override fun contentLength(): Long =
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val sizeColumnIndex: Int = cursor.getColumnIndex(OpenableColumns.SIZE)
+            cursor.moveToFirst()
+            cursor.getLong(sizeColumnIndex)
+        } ?: super.contentLength()
+
 }
 
 private fun onResultUploadPicture(

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -213,162 +214,190 @@ fun ReportsScreen(
                     ) {
                         DatePeriodField(dateStart, openDatePicker1)
                         DatePeriodField(dateEnd, openDatePicker2)
-                        Column(
+                        LazyColumn(
                             modifier = Modifier
                                 .fillMaxHeight(0.8f)
                                 .background(SideBack)
                                 .padding(start = 8.dp)
                         ) {
-                            Box(modifier = Modifier.padding(start = 8.dp)) {
-                                Text(
-                                    text = "Выберите период",
-                                    fontSize = 24.sp
-                                )
+                            item {
+                                Box(modifier = Modifier.padding(start = 8.dp)) {
+                                    Text(
+                                        text = "Выберите период",
+                                        fontSize = 24.sp
+                                    )
+                                }
                             }
-                            Row(modifier = Modifier.background(SideBack)) {
-                                TextButton(onClick = { openDatePicker1.value = true }) {
-                                    Row {
-                                        Icon(
-                                            modifier = Modifier.padding(end = 3.dp),
-                                            imageVector = Icons.Default.DateRange,
-                                            contentDescription = "date"
-                                        )
-                                        Text(
-                                            text = dateStart.value.format(
-                                                DateTimeFormatter.ofPattern(
-                                                    "d MMM YYYY"
-                                                )
-                                            ), fontSize = 20.sp,
-                                            color = TextPrimary
-                                        )
+                            item {
+                                Row(modifier = Modifier.background(SideBack)) {
+                                    TextButton(onClick = { openDatePicker1.value = true }) {
+                                        Row {
+                                            Icon(
+                                                modifier = Modifier.padding(end = 3.dp),
+                                                imageVector = Icons.Default.DateRange,
+                                                contentDescription = "date"
+                                            )
+                                            Text(
+                                                text = dateStart.value.format(
+                                                    DateTimeFormatter.ofPattern(
+                                                        "d MMM YYYY"
+                                                    )
+                                                ), fontSize = 20.sp,
+                                                color = TextPrimary
+                                            )
+                                        }
+                                    }
+                                    Box(
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(text = "—", fontSize = 30.sp)
+                                    }
+                                    TextButton(onClick = { openDatePicker2.value = true }) {
+                                        Row {
+                                            Icon(
+                                                modifier = Modifier.padding(end = 3.dp),
+                                                imageVector = Icons.Default.DateRange,
+                                                contentDescription = "date"
+                                            )
+                                            Text(
+                                                text = dateEnd.value.format(
+                                                    DateTimeFormatter.ofPattern(
+                                                        "d MMM YYYY"
+                                                    )
+                                                ), fontSize = 20.sp,
+                                                color = TextPrimary
+                                            )
+                                        }
                                     }
                                 }
-                                Box(
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(text = "—", fontSize = 30.sp)
-                                }
-                                TextButton(onClick = { openDatePicker2.value = true }) {
-                                    Row {
-                                        Icon(
-                                            modifier = Modifier.padding(end = 3.dp),
-                                            imageVector = Icons.Default.DateRange,
-                                            contentDescription = "date"
-                                        )
-                                        Text(
-                                            text = dateEnd.value.format(
-                                                DateTimeFormatter.ofPattern(
-                                                    "d MMM YYYY"
-                                                )
-                                            ), fontSize = 20.sp,
-                                            color = TextPrimary
-                                        )
-                                    }
+                            }
+                            item {
+                                Spacer(modifier = Modifier.padding(12.dp))
+                                Box(modifier = Modifier.padding(start = 8.dp)) {
+                                    Text(
+                                        text = "Выберите тип отчета",
+                                        fontSize = 24.sp
+                                    )
                                 }
                             }
-                            Spacer(modifier = Modifier.padding(12.dp))
-                            Box(modifier = Modifier.padding(start = 8.dp)) {
-                                Text(
-                                    text = "Выберите тип отчета",
-                                    fontSize = 24.sp
-                                )
-                            }
-                            SwitchForm(
-                                selectedIndex = selectedIndex,
-                                items = items,
-                                onSelectionChange = {
-                                    selectedIndex.intValue = it
-                                },
-                            )
-                            if (isPro.value) {
+                            item {
                                 SwitchForm(
-                                    selectedIndex = selectedIndexGroup,
-                                    items = itemsGroup,
+                                    selectedIndex = selectedIndex,
+                                    items = items,
                                     onSelectionChange = {
-                                        selectedIndexGroup.intValue = it
+                                        selectedIndex.intValue = it
                                     },
                                 )
                             }
-                            if (reportState.value) {
-                                if (selectedIndex.intValue == 0 && dataListOrders.isNotEmpty()) {
-                                    val floatValue = mutableListOf<Float>()
-                                    val xList = mutableListOf("Принято", "Завершено", "Отменено")
+                            item {
+                                if (isPro.value) {
+                                    SwitchForm(
+                                        selectedIndex = selectedIndexGroup,
+                                        items = itemsGroup,
+                                        onSelectionChange = {
+                                            selectedIndexGroup.intValue = it
+                                        },
+                                    )
+                                }
+                            }
+                            item {
+                                if (reportState.value) {
+                                    if (selectedIndex.intValue == 0 && dataListOrders.isNotEmpty()) {
+                                        val floatValue = mutableListOf<Float>()
+                                        val xList =
+                                            mutableListOf("Принято", "Завершено", "Отменено")
 
-                                    dataListOrders.forEachIndexed { index, value ->
+                                        dataListOrders.forEachIndexed { index, value ->
 
-                                        val max = if (dataListOrders.max()%3L == 0L) dataListOrders.max() else (if (dataListOrders.max()%3L == 1L) (dataListOrders.max()+2) else dataListOrders.max()+1)
-                                        floatValue.add(
-                                            index = index,
-                                            element = value.toFloat() / if (max.toFloat() == 0f) 1f else max.toFloat()
-                                        )
+                                            val max =
+                                                if (dataListOrders.max() % 3L == 0L) dataListOrders.max() else (if (dataListOrders.max() % 3L == 1L) (dataListOrders.max() + 2) else dataListOrders.max() + 1)
+                                            floatValue.add(
+                                                index = index,
+                                                element = value.toFloat() / if (max.toFloat() == 0f) 1f else max.toFloat()
+                                            )
 
-                                    }
-                                    Column {
-                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                            Text(buildAnnotatedString {
-                                                append("Завершено заказов: ")
-                                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append(dataListOrders[1].toString())
-                                                }
-                                            })
                                         }
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .fillMaxHeight(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            BarGraph(
-                                                graphBarData = floatValue,
-                                                xAxisScaleData = xList,
-                                                barData_ = dataListOrders,
-                                                height = 300.dp,
-                                                roundType = BarType.TOP_CURVED,
-                                                barWidth = 30.dp,
-                                                barColor = PrimaryBack,
-                                                barArrangement = Arrangement.SpaceEvenly,
-                                                true
+                                        Column {
+                                            Spacer(modifier = Modifier.padding(12.dp))
+                                            Box(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(buildAnnotatedString {
+                                                    append("Завершено заказов: ")
+                                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                        append(dataListOrders[1].toString())
+                                                    }
+                                                })
+                                            }
+                                            Spacer(modifier = Modifier.padding(12.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .fillMaxHeight()
+                                                    .padding(start = 8.dp, end = 8.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                BarGraph(
+                                                    graphBarData = floatValue,
+                                                    xAxisScaleData = xList,
+                                                    barData_ = dataListOrders,
+                                                    height = 250.dp,
+                                                    roundType = BarType.TOP_CURVED,
+                                                    barWidth = 30.dp,
+                                                    barColor = PrimaryBack,
+                                                    barArrangement = Arrangement.SpaceEvenly,
+                                                    true
+                                                )
+                                            }
+                                        }
+                                    } else if (dataListIncome.isNotEmpty()) {
+                                        val floatValue = mutableListOf<Float>()
+                                        val xList = mutableListOf("Расходы", "Доход")
+
+                                        dataListIncome.forEachIndexed { index, value ->
+
+                                            floatValue.add(
+                                                index = index,
+                                                element = value.toFloat() / if (dataListIncome.max()
+                                                        .toFloat() == 0f
+                                                ) 1f else dataListIncome.max().toFloat()
                                             )
                                         }
-                                    }
-                                } else if (dataListIncome.isNotEmpty()){
-                                    val floatValue = mutableListOf<Float>()
-                                    val xList = mutableListOf("Расходы", "Доход")
-
-                                    dataListIncome.forEachIndexed { index, value ->
-
-                                        floatValue.add(
-                                            index = index,
-                                            element = value.toFloat() / if (dataListIncome.max().toFloat() == 0f) 1f else dataListIncome.max().toFloat()
-                                        )
-                                    }
-                                    Column {
-                                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                            Text(buildAnnotatedString {
-                                                append("Прибыль составила ")
-                                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append((dataListIncome[1] - dataListIncome[0]).toString())
-                                                }
-                                                append(" р.")
-                                            })
-                                        }
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .fillMaxHeight(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            BarGraph(
-                                                graphBarData = floatValue,
-                                                xAxisScaleData = xList,
-                                                barData_ = dataListIncome,
-                                                height = 300.dp,
-                                                roundType = BarType.TOP_CURVED,
-                                                barWidth = 40.dp,
-                                                barColor = PrimaryBack,
-                                                barArrangement = Arrangement.SpaceEvenly,
-                                                false
-                                            )
+                                        Column {
+                                            Spacer(modifier = Modifier.padding(12.dp))
+                                            Box(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(buildAnnotatedString {
+                                                    append("Прибыль составила ")
+                                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                        append((dataListIncome[1] - dataListIncome[0]).toString())
+                                                    }
+                                                    append(" р.")
+                                                })
+                                            }
+                                            Spacer(modifier = Modifier.padding(12.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .fillMaxHeight()
+                                                    .padding(start = 8.dp, end = 8.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                BarGraph(
+                                                    graphBarData = floatValue,
+                                                    xAxisScaleData = xList,
+                                                    barData_ = dataListIncome,
+                                                    height = 250.dp,
+                                                    roundType = BarType.TOP_CURVED,
+                                                    barWidth = 40.dp,
+                                                    barColor = PrimaryBack,
+                                                    barArrangement = Arrangement.SpaceEvenly,
+                                                    false
+                                                )
+                                            }
                                         }
                                     }
                                 }

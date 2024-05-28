@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.api
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -136,7 +137,8 @@ interface RetrofitAPI {
 
     //___________________________________________________________________________________________________________________________________
 
-    @PUT("products/uploadPicture/{id}")
-    suspend fun uploadPicture(@Path("id") id: Int, @Body file: String, @Header("Authorization") authorization: String): Response<Void>?
+    @Multipart
+    @POST("products/uploadPicture/{id}")
+    suspend fun uploadPicture(@Path("id") id: Int, @Part file : MultipartBody.Part, @Header("Authorization") authorization: String): Response<Void>?
 
 }
