@@ -3,7 +3,6 @@ package ru.vsu.csf.bakebudget.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -81,6 +80,7 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameName
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -117,6 +117,10 @@ fun ProductAddScreen(
         mutableStateOf<Uri?>(null)
     }
 
+    val currentSet = remember {
+        mutableSetOf<String>()
+    }
+
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
@@ -134,7 +138,9 @@ fun ProductAddScreen(
                 ingredients,
                 context = mContext,
                 ingredientsResponse,
-                productId.intValue
+                productId.intValue,
+                currentSet,
+                false
             )
         }
     }
@@ -199,13 +205,15 @@ fun ProductAddScreen(
                                             products,
                                             ProductModel(
                                                 0,
-                                                selectedImageUri.value,
+//                                                selectedImageUri.value,
+                                                null,
                                                 R.drawable.cake,
                                                 name.value,
                                                 ings,
                                                 outgoings,
                                                 estimatedWeight.value.toInt()
-                                            )
+                                            ),
+                                            selectedImageUri
                                         )
                                         val eventParameters1 = "{\"button_clicked\":\"create product\"}"
                                         AppMetrica.reportEvent(
@@ -263,7 +271,8 @@ fun ProductAddScreen(
                                     ingredientsAll,
                                     selectedItemIndex,
                                     ingredientsResponse,
-                                    retrofitAPI
+                                    retrofitAPI,
+                                    currentSet
                                 )
                                 last = num
                             }
@@ -349,7 +358,9 @@ fun AlertDialog2(
     ingredients: MutableList<IngredientInProductModel>,
     context: Context,
     ingredientsResponse: MutableList<IngredientResponseModel>,
-    productId: Int
+    productId: Int,
+    currentSet: MutableSet<String>,
+    isView : Boolean
 ) {
     val weight = remember {
         mutableStateOf("")
@@ -382,14 +393,24 @@ fun AlertDialog2(
             TextButton(
                 onClick = {
                     if (isWeightValid(weight.value)) {
-                        ingredients.add(
-                            IngredientInProductModel(
-                                ingredientsResponse[selectedItemIndex.intValue].id,
-                                productId,
-                                ingredientsAll[selectedItemIndex.intValue].name,
-                                weight = weight.value.toInt()
+                        if (isView) {
+                            for (ingredient in ingredients) {
+                                currentSet.add(ingredient.name)
+                            }
+                        }
+                        if (currentSet.contains(ingredientsAll[selectedItemIndex.intValue].name)) {
+                            sameName(context)
+                        } else {
+                            currentSet.add(ingredientsAll[selectedItemIndex.intValue].name)
+                            ingredients.add(
+                                IngredientInProductModel(
+                                    ingredientsResponse[selectedItemIndex.intValue].id,
+                                    productId,
+                                    ingredientsAll[selectedItemIndex.intValue].name,
+                                    weight = weight.value.toInt()
+                                )
                             )
-                        )
+                        }
                         onConfirmation()
                     } else {
                         dataIncorrectToast(context)
@@ -463,4 +484,3 @@ fun DropdownMenuBox(
         }
     }
 }
-//TODO:делать все имена уникальными

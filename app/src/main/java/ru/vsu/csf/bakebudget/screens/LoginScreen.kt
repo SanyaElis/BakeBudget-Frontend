@@ -1,7 +1,5 @@
 package ru.vsu.csf.bakebudget.screens
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,16 +19,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import io.appmetrica.analytics.AppMetrica
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
-import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
-import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
+import ru.vsu.csf.bakebudget.models.IngredientModel
+import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.login
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
@@ -40,7 +39,20 @@ fun LoginScreen(
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>,
-    isPro: MutableState<Boolean>
+    isPro: MutableState<Boolean>,
+    ingredients: MutableList<IngredientModel>,
+    products: MutableList<ProductModel>,
+    ingredientsInRecipe: MutableList<IngredientInProductModel>,
+    outgoings: MutableList<OutgoingModel>,
+    orders: MutableList<OrderModel>,
+    isDataReceivedIngredients: MutableState<Boolean>,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    ingredientsSet: MutableSet<String>,
+    isDataReceivedProducts: MutableState<Boolean>,
+    productsResponse: MutableList<ProductResponseModel>,
+    isDataReceivedOutgoings : MutableState<Boolean>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     val ctx = LocalContext.current
     val userEmail = remember {
@@ -76,7 +88,7 @@ fun LoginScreen(
             TextButton(
                 onClick = {
                     login(
-                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, isPro
+                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, isPro, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3
                     )
                     navController.navigate("home")
                 }

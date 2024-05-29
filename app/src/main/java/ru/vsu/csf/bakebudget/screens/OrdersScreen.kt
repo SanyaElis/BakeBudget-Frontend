@@ -75,7 +75,8 @@ fun OrdersScreen(
     orders: MutableList<OrderModel>,
     retrofitAPI: RetrofitAPI,
     isDataReceivedOrders : MutableState<Boolean>,
-    productsAll: MutableList<ProductModel>
+    productsAll: MutableList<ProductModel>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     val mContext = LocalContext.current
 
@@ -85,20 +86,6 @@ fun OrdersScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
-
-    val orders0 = remember {
-        mutableStateListOf<OrderModel>()
-    }
-
-    val orders1 = remember {
-        mutableStateListOf<OrderModel>()
-    }
-    val orders2 = remember {
-        mutableStateListOf<OrderModel>()
-    }
-    val orders3 = remember {
-        mutableStateListOf<OrderModel>()
-    }
     //TODO: подгружать все, а то заказы не грузятся
 
     val state1 = remember { mutableStateOf(true) }
@@ -106,13 +93,10 @@ fun OrdersScreen(
     val state3 = remember { mutableStateOf(true) }
     val state4 = remember { mutableStateOf(true) }
 
-
     if (getToken(mContext) != null && !isDataReceivedOrders.value) {
         findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3)
         isDataReceivedOrders.value = true
     }
-
-
 
     sortByState(orders, orders0, orders1, orders2, orders3)
 
@@ -180,7 +164,6 @@ fun OrdersScreen(
                 }
             }
         })
-    //TODO:первый заказ 2 раза создается
 }
 
 @Composable

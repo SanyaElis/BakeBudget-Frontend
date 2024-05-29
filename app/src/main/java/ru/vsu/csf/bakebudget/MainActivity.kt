@@ -114,6 +114,19 @@ class MainActivity : ComponentActivity() {
                 val userRole = remember {
                     mutableStateOf("")
                 }
+                val orders0 = remember {
+                    mutableStateListOf<OrderModel>()
+                }
+
+                val orders1 = remember {
+                    mutableStateListOf<OrderModel>()
+                }
+                val orders2 = remember {
+                    mutableStateListOf<OrderModel>()
+                }
+                val orders3 = remember {
+                    mutableStateListOf<OrderModel>()
+                }
                 NavGraph(
                     navController = navController,
                     ingredients,
@@ -130,7 +143,11 @@ class MainActivity : ComponentActivity() {
                     isDataReceivedOutgoings,
                     isDataReceivedOrders,
                     isPro,
-                    userRole
+                    userRole,
+                    orders0,
+                    orders1,
+                    orders2,
+                    orders3
                 )
             }
         }
@@ -154,14 +171,15 @@ class MainActivity : ComponentActivity() {
         isDataReceivedOutgoings : MutableState<Boolean>,
         isDataReceivedOrders : MutableState<Boolean>,
         isPro : MutableState<Boolean>,
-        userRole : MutableState<String>
+        userRole : MutableState<String>,
+        orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
     ) {
         NavHost(
             navController = navController,
             startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController, isLogged, retrofitAPI, userRole, isPro)
+                LoginScreen(navController, isLogged, retrofitAPI, userRole, isPro, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
             }
 
             composable(route = "home") {
@@ -240,11 +258,11 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "calculation") {
-                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, isDataReceivedProducts, productsResponse)
+                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, isDataReceivedProducts, productsResponse, isDataReceivedOrders, orders0, orders1, orders2, orders3)
             }
 
             composable(route = "orders") {
-                OrdersScreen(navController, isLogged, orders, retrofitAPI, isDataReceivedOrders, products)
+                OrdersScreen(navController, isLogged, orders, retrofitAPI, isDataReceivedOrders, products, orders0, orders1, orders2, orders3)
             }
         }
     }

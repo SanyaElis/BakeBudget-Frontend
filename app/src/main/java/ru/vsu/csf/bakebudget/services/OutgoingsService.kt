@@ -14,6 +14,7 @@ import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
+import ru.vsu.csf.bakebudget.utils.sameName
 
 @OptIn(DelicateCoroutinesApi::class)
 fun createOutgoing(
@@ -41,10 +42,11 @@ fun onResultCreateOutgoing(
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
-    if (result.isSuccessful) {
-        if (result.body() != null) {
+    if (result.code() == 409) {
+        sameName(ctx)
+    }
+    if (result.isSuccessful && result.body() != null) {
             product.outgoings.add(result.body()!!)
-        }
     }
 }
 
@@ -86,6 +88,8 @@ fun updateOutgoing(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     outgoing: OutgoingModel,
+    outgoingBefore: OutgoingModel,
+    outgoings: MutableList<OutgoingModel>,
     productId: Int
 ) {
     GlobalScope.launch(Dispatchers.Main) {
@@ -95,24 +99,35 @@ fun updateOutgoing(
                 OutgoingRequestModel(outgoing.name, outgoing.cost),
                 "Bearer ".plus(getToken(ctx))
             )
-        onResultUpdateOutgoing(res, ctx)
+        onResultUpdateOutgoing(res, ctx, outgoingBefore, outgoing, outgoings)
     }
 }
 
 private fun onResultUpdateOutgoing(
     result: Response<Void>?,
-    ctx: Context
-) {
+    ctx: Context,
+    outgoingBefore: OutgoingModel,
+    outgoing: OutgoingModel,
+    outgoings: MutableList<OutgoingModel>
+    ) {
     Toast.makeText(
         ctx,
         "Response Code : " + result!!.code() + "\n" + result.body(),
         Toast.LENGTH_SHORT
     ).show()
-    val eventParameters1 = "{\"button_clicked\":\"update outgoing\"}"
-    AppMetrica.reportEvent(
-        "Outgoing updated",
-        eventParameters1
-    )
+    if (result.code() == 409) {
+        sameName(ctx)
+    } else {
+        val eventParameters1 = "{\"button_clicked\":\"update outgoing\"}"
+        AppMetrica.reportEvent(
+            "Outgoing updated",
+            eventParameters1
+        )
+        outgoings.remove(outgoingBefore)
+        outgoings.add(
+            outgoing
+        )
+    }
 }
 
 @OptIn(DelicateCoroutinesApi::class)

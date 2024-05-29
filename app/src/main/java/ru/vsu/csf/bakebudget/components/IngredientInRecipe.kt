@@ -55,7 +55,8 @@ fun IngredientInRecipe(
     ingredientsAll: MutableList<IngredientModel>,
     selectedItemIndex: MutableIntState,
     ingredientsResponse: MutableList<IngredientResponseModel>,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    currentSet: MutableSet<String>
 ) {
     val mContext = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
@@ -77,7 +78,8 @@ fun IngredientInRecipe(
                 selectedItemIndex,
                 mContext,
                 ingredientsResponse,
-                retrofitAPI
+                retrofitAPI,
+                currentSet
             )
         }
     }
@@ -133,6 +135,7 @@ fun AlertDialog1(
     context: Context,
     ingredientsResponse: MutableList<IngredientResponseModel>,
     retrofitAPI: RetrofitAPI,
+    currentSet: MutableSet<String>
 ) {
     val weight = remember {
         mutableStateOf(ingredient.weight.toString())
@@ -197,6 +200,7 @@ fun AlertDialog1(
                             )
                         )
                     }
+                    currentSet.remove(ingredient.name)
                     ingredients.remove(ingredient)
                     onDismissRequest()
                 }

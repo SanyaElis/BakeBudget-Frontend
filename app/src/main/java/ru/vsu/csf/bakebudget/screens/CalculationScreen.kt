@@ -63,6 +63,7 @@ import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.calculate
 import ru.vsu.csf.bakebudget.services.createOrder
+import ru.vsu.csf.bakebudget.services.findAllOrders
 import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -81,9 +82,10 @@ fun CalculationScreen(
     orders: MutableList<OrderModel>,
     retrofitAPI: RetrofitAPI,
     isDataReceivedProducts: MutableState<Boolean>,
-    productsResponse: MutableList<ProductResponseModel>
-
-    ) {
+    productsResponse: MutableList<ProductResponseModel>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.calculation, "Расчет стоимости"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -91,6 +93,7 @@ fun CalculationScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+
     val selectedItemIndex = remember { mutableIntStateOf(0) }
     val name = remember {
         mutableStateOf("")
@@ -143,6 +146,11 @@ fun CalculationScreen(
                 )
             )
         }
+    }
+
+    if (getToken(mContext) != null && !isDataReceivedOrders.value && productsAll.isNotEmpty()) {
+        findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3)
+        isDataReceivedOrders.value = true
     }
 
     ModalNavigationDrawer(

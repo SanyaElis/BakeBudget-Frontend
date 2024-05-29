@@ -101,7 +101,6 @@ fun IngredientsScreen(
         findAllIngredients(mContext, retrofitAPI, ingredientsResponse)
         isDataReceivedIngredients.value = true
     }
-    //TODO:подгружается все, даже чужого пользователя
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {
             ingredients.add(
