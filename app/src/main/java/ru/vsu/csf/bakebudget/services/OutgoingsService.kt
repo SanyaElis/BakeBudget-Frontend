@@ -37,12 +37,12 @@ fun onResultCreateOutgoing(
     product: ProductModel,
     productsAll: MutableList<ProductModel>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.code() == 409) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.code() == 409) {
         sameName(ctx)
     }
     if (result.isSuccessful && result.body() != null) {
@@ -69,12 +69,12 @@ private fun onResultFindAllOutgoingsInProduct(
     ctx: Context,
     product: ProductModel
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.body() != null) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
             for (outgoing in result.body()!!) {
                 product.outgoings.add(outgoing)
@@ -110,12 +110,12 @@ private fun onResultUpdateOutgoing(
     outgoing: OutgoingModel,
     outgoings: MutableList<OutgoingModel>
     ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.code() == 409) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.code() == 409) {
         sameName(ctx)
     } else {
         val eventParameters1 = "{\"button_clicked\":\"update outgoing\"}"
@@ -148,11 +148,11 @@ private fun onResultDeleteOutgoing(
     ctx: Context,
     result: Response<Void>?
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + "Deleted outgoing id: " + "\n" + outgoingId,
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + "Deleted outgoing id: " + "\n" + outgoingId,
+//        Toast.LENGTH_SHORT
+//    ).show()
     val eventParameters2 = "{\"button_clicked\":\"delete outgoing\"}"
     AppMetrica.reportEvent(
         "Outgoing deleted",

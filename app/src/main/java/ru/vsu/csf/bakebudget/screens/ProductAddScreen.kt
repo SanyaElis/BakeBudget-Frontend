@@ -81,6 +81,8 @@ import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameName
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -191,8 +193,12 @@ fun ProductAddScreen(
                                         )
                                     } else {
                                         val ings = mutableStateListOf<IngredientInProductModel>()
+                                        val outs = mutableStateListOf<OutgoingModel>()
                                         for (ing in ingredients) {
                                             ings.add(ing)
+                                        }
+                                        for (out in outgoings) {
+                                            outs.add(out)
                                         }
                                         createProduct(
                                             mContext,
@@ -210,7 +216,7 @@ fun ProductAddScreen(
                                                 R.drawable.cake,
                                                 name.value,
                                                 ings,
-                                                outgoings,
+                                                outs,
                                                 estimatedWeight.value.toInt()
                                             ),
                                             selectedImageUri
@@ -221,6 +227,9 @@ fun ProductAddScreen(
                                             eventParameters1
                                         )
                                         //TODO:удаляет со 2 раза
+                                        Timer().schedule(1000) {
+                                            //TODO:не делать так(
+                                        }
                                         navController.navigate("products")
                                         ingredients.clear()
                                     }

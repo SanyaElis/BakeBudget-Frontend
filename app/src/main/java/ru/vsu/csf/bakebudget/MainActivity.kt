@@ -127,6 +127,11 @@ class MainActivity : ComponentActivity() {
                 val orders3 = remember {
                     mutableStateListOf<OrderModel>()
                 }
+
+                if (getToken(ctx) != null) {
+                    isLoggedIn.value = true
+                }
+
                 NavGraph(
                     navController = navController,
                     ingredients,

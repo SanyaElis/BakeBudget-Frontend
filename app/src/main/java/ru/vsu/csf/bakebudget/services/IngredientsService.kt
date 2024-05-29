@@ -59,12 +59,12 @@ private fun onResultCreateIngredient(
     ctx: Context,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.isSuccessful) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.isSuccessful) {
         if (result.body() != null) {
             ingredientsResponse.add(result.body()!!)
         }
@@ -89,11 +89,11 @@ private fun onResultUpdate(
     result: Response<IngredientResponseModel?>?,
     ctx: Context
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
     val eventParameters2 = "{\"button_clicked\":\"uodate ingredient\"}"
     AppMetrica.reportEvent(
         "ingredient updated",
@@ -119,11 +119,11 @@ private fun onResultDelete(
     ctx: Context,
     result: Response<Void>?
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + "Deleted ingredient: " + "\n" + ingredient,
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + "Deleted ingredient: " + "\n" + ingredient,
+//        Toast.LENGTH_SHORT
+//    ).show()
     val eventParameters1 = "{\"button_clicked\":\"delete ingredient\"}"
     AppMetrica.reportEvent(
         "Ingredient deleted",

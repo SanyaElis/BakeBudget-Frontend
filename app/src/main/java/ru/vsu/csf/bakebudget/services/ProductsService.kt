@@ -82,12 +82,12 @@ private fun onResultCreateProduct(
     retrofitAPI: RetrofitAPI,
     selectedImageUri: MutableState<Uri?>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.body() != null) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.body() != null) {
         productId.value = result.body()!!.id
         product.id = productId.value
         products.add(
@@ -130,11 +130,11 @@ fun onResultAddIngredientToProduct(
     result: Response<Void>?,
     ctx: Context,
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
 }
 
 
@@ -159,12 +159,12 @@ private fun onResultFindAllIngredientsInProduct(
     product: ProductModel,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.body() != null) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
             for (ing in result.body()!!) {
                 var ingName = ""
@@ -197,11 +197,11 @@ private fun onResultUpdateProduct(
     result: Response<Void>?,
     ctx: Context
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -227,12 +227,12 @@ private fun onResultUpdateIngredientInProduct(
     result: Response<Void>?,
     ctx: Context,
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.code() == 409) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.code() == 409) {
         sameName(ctx)
     } else {
         val eventParameters2 = "{\"button_clicked\":\"update ingredient in product\"}"
@@ -264,11 +264,11 @@ private fun onResultDeleteInProduct(
     result: Response<Void>?,
     ctx: Context,
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
     val eventParameters1 = "{\"button_clicked\":\"delete ingredient in product\"}"
     AppMetrica.reportEvent(
         "Ingredient in product deleted",
@@ -363,10 +363,10 @@ private fun onResultUploadPicture(
     product: ProductModel,
     uri: Uri
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
     product.uri = uri
 }
