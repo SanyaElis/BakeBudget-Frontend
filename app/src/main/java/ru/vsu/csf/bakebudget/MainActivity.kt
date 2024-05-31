@@ -239,7 +239,11 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "products/{id}", arguments = listOf(navArgument(name = "id") {
                 type = NavType.IntType
-            })) { backstackEntry ->
+            })) {
+                backstackEntry ->
+                val load = remember {
+                    mutableStateOf(false)
+                }
                 ProductView(
                     navController = navController,
                     ingredientsAll = ingredients,
@@ -247,6 +251,7 @@ class MainActivity : ComponentActivity() {
                     product = products[backstackEntry.arguments?.getInt("id")!!],
                     ingredientsResponse,
                     retrofitAPI,
+                    load
                 )
             }
 
