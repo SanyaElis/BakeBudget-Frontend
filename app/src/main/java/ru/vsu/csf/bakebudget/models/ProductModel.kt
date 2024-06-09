@@ -9,5 +9,6 @@ data class ProductModel(
     var name : String,
     val ingredients: MutableList<IngredientInProductModel>,
     val outgoings: MutableList<OutgoingModel>,
-    var estWeight: Int
+    var estWeight: Int,
+    var url: String?
 )

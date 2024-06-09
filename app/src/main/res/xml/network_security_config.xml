@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">185.251.89.195</domain>
+        <domain includeSubdomains="true">bakebudget.ru</domain>
+        <trust-anchors>
+            <certificates src = "@raw/certificate" />
+        </trust-anchors>
     </domain-config>
 </network-security-config>

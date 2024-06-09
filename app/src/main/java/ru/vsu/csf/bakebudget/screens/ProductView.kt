@@ -77,7 +77,8 @@ fun ProductView(
     isLogged: MutableState<Boolean>,
     product: ProductModel,
     ingredientsResponse: MutableList<IngredientResponseModel>,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    load: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
 
@@ -99,13 +100,18 @@ fun ProductView(
         mutableStateOf<Uri?>(null)
     }
     val productDataReceived = remember {
-        mutableStateOf(false);
+        mutableStateOf(false)
     }
 
 
-    if (product.ingredients.isEmpty() && !productDataReceived.value) {
+//    if (product.ingredients.isEmpty() && !productDataReceived.value) {
+//        findAllIngredientsInProduct(mContext, retrofitAPI, product, ingredientsResponse)
+//        productDataReceived.value = true
+//    }
+    if (!load.value) {
+        product.ingredients.clear()
         findAllIngredientsInProduct(mContext, retrofitAPI, product, ingredientsResponse)
-        productDataReceived.value = true
+        load.value = true
     }
 
 

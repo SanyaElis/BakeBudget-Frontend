@@ -32,7 +32,10 @@ private fun onResultChangeRole(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
+//            Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
+//                Toast.LENGTH_SHORT
+//            ).show()
+            Toast.makeText(context, "Теперь вы пользуетесь продвинутой версией!",
                 Toast.LENGTH_SHORT
             ).show()
             isPro.value = userRole.value == "ROLE_ADVANCED_USER"

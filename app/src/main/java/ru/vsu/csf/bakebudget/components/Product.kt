@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -39,25 +40,38 @@ fun Product(
             .background(SideBack)
             .padding(8.dp)
     ) {
-        if (product.uri != null) {
-            AsyncImage(
+        if (product.url != null) {
+            Image(
+                painter = rememberAsyncImagePainter(product.url),
+                contentDescription = null,
                 modifier = Modifier
-                    .height((screenWidth-32.dp)/2)
+                    .height((screenWidth - 32.dp) / 2)
                     .clip(RoundedCornerShape(14.dp))
                     .clickable(onClick = { navController.navigate("products/$productId") }),
-                model = product.uri,
-                contentDescription = null,
                 contentScale = ContentScale.Crop
             )
         } else {
-            Image(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
-                    .clickable(onClick = { navController.navigate("products/$productId") }),
-                contentScale = ContentScale.Fit,
-                painter = painterResource(id = product.iconId), contentDescription = product.name
-            )
+            if (product.uri != null) {
+                AsyncImage(
+                    modifier = Modifier
+                        .height((screenWidth - 32.dp) / 2)
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable(onClick = { navController.navigate("products/$productId") }),
+                    model = product.uri,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable(onClick = { navController.navigate("products/$productId") }),
+                    contentScale = ContentScale.Fit,
+                    painter = painterResource(id = product.iconId),
+                    contentDescription = product.name
+                )
+            }
+            Text(text = product.name, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp)
         }
-        Text(text = product.name, modifier = Modifier.padding(start = 8.dp), fontSize = 16.sp)
     }
 }

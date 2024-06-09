@@ -13,6 +13,8 @@ import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
 import ru.vsu.csf.bakebudget.models.response.ReportIncomeResponseModel
 import ru.vsu.csf.bakebudget.models.response.ReportOrdersResponseModel
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @OptIn(DelicateCoroutinesApi::class)
 fun createReportOrders(
@@ -36,13 +38,13 @@ private fun onResultCreateReportOrders(
     dataListOrders : MutableList<Long>,
     reportState: MutableState<Boolean>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
     dataListOrders.clear()
-    val cancelled = result.body()!!.CANCELLED
+    val cancelled = result!!.body()!!.CANCELLED
     val done = result.body()!!.DONE
     val inProcess = result.body()!!.IN_PROCESS
     val notStarted = result.body()!!.NOT_STARTED
@@ -73,13 +75,15 @@ private fun onResultCreateReportIncome(
     dataListIncome : MutableList<Long>,
     reportState: MutableState<Boolean>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
     dataListIncome.clear()
-    dataListIncome.add(result.body()!!.cost.toLong())
+    dataListIncome.add(result!!.body()!!.cost.toLong())
     dataListIncome.add(result.body()!!.income.toLong())
-    reportState.value = true
+    Timer().schedule(1000) {
+        reportState.value = true
+    }
 }

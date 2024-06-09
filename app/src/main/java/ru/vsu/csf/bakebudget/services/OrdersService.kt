@@ -49,12 +49,12 @@ private fun onResultCalculate(
     costPrice: MutableState<Long>,
     resultPrice: MutableState<Long>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    costPrice.value = result.body()!!.costPrice.toLong()
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    costPrice.value = result!!.body()!!.costPrice.toLong()
     resultPrice.value = result.body()!!.finalCost.toLong()
 }
 
@@ -87,12 +87,12 @@ private fun onResultCreateOrder(
     resultPrice: MutableState<Long>,
     name: MutableState<String>
 ) {
-    Toast.makeText(
-        ctx,
-        "Response Code : " + result!!.code() + "\n" + result.body(),
-        Toast.LENGTH_SHORT
-    ).show()
-    if (result.code() == 409) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.code() == 409) {
         sameName(ctx)
     }
     if (result.body()!=null) {

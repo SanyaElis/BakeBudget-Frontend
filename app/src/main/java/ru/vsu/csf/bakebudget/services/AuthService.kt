@@ -47,13 +47,13 @@ fun onResultRegister(
         if (result.isSuccessful) {
             Toast.makeText(
                 ctx,
-                "Response Code : " + result.code() + "\n" + "Пользователь успешно зарегистрирован",
+                "Пользователь успешно зарегистрирован",
                 Toast.LENGTH_SHORT
             ).show()
         } else {
             Toast.makeText(
                 ctx,
-                "Response Code : " + result.code() + "\n" + "Регистрация невозможна, некорректные данные",
+                "Регистрация невозможна, некорректные данные",
                 Toast.LENGTH_SHORT
             ).show()
             val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
@@ -119,11 +119,11 @@ fun onResultLogin(
             isLogged.value = true
             val model: UserSignInResponseModel? = result.body()
             saveToken(model!!.token, ctx)
-            Toast.makeText(
-                ctx,
-                "Response Code : " + result.code() + "\n" + "User Name : " + model.username + "\n" + "Email : " + model.email + "\n" + "Token : " + getToken(ctx) + "\n" + "ROLE : " + model.role,
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(
+//                ctx,
+//                "Response Code : " + result.code() + "\n" + "User Name : " + model.username + "\n" + "Email : " + model.email + "\n" + "Token : " + getToken(ctx) + "\n" + "ROLE : " + model.role,
+//                Toast.LENGTH_SHORT
+//            ).show()
             userRole.value = model.role
             isPro.value = userRole.value == "ROLE_ADVANCED_USER"
             val eventParameters1 = "{\"button_clicked\":\"enter to account\"}"

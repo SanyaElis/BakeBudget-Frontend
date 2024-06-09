@@ -2,6 +2,7 @@
 accompanistSystemuicontrollerVersion = "0.27.0"
 agp = "8.3.1"
 analyticsVersion = "6.5.0"
+coilCompose = "2.0.0-rc01"
 coilComposeVersion = "2.4.0"
 converterGsonVersion = "2.5.0"
 kotlin = "1.9.0"
@@ -25,6 +26,7 @@ androidx-material-icons-extended = { module = "androidx.compose.material:materia
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
+coil-compose-v200rc01 = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGsonVersion" }
 google-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontrollerVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

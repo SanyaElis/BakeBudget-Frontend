@@ -124,7 +124,8 @@ fun OutgoingsScreen(
                     remember {
                         mutableStateListOf<OutgoingModel>()
                     },
-                    product.weight
+                    product.weight,
+                    null
                 )
             )
         }
@@ -229,15 +230,17 @@ fun OutgoingsScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (productsAll.isNotEmpty()) {
-                                        DropdownMenuProducts(
-                                            productsAll,
-                                            selectedItemIndex = selectedItemIndex
-                                        )
-                                        Text(
-                                            text = "(" + productsAll[selectedItemIndex.intValue].estWeight + " гр.)",
-                                            fontSize = 14.sp,
-                                            textAlign = TextAlign.Center
-                                        )
+                                        Column {
+                                            DropdownMenuProducts(
+                                                productsAll,
+                                                selectedItemIndex = selectedItemIndex
+                                            )
+                                            Text(
+                                                text = "(" + productsAll[selectedItemIndex.intValue].estWeight + " гр.)",
+                                                fontSize = 14.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
                                     } else {
                                         Box(modifier = Modifier.padding(16.dp)) {
                                             Text(

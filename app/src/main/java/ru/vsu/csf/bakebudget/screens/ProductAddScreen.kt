@@ -55,7 +55,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
@@ -81,6 +83,8 @@ import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameName
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -191,8 +195,12 @@ fun ProductAddScreen(
                                         )
                                     } else {
                                         val ings = mutableStateListOf<IngredientInProductModel>()
+                                        val outs = mutableStateListOf<OutgoingModel>()
                                         for (ing in ingredients) {
                                             ings.add(ing)
+                                        }
+                                        for (out in outgoings) {
+                                            outs.add(out)
                                         }
                                         createProduct(
                                             mContext,
@@ -210,8 +218,9 @@ fun ProductAddScreen(
                                                 R.drawable.cake,
                                                 name.value,
                                                 ings,
-                                                outgoings,
-                                                estimatedWeight.value.toInt()
+                                                outs,
+                                                estimatedWeight.value.toInt(),
+                                                null
                                             ),
                                             selectedImageUri
                                         )
@@ -220,9 +229,12 @@ fun ProductAddScreen(
                                             "Product created",
                                             eventParameters1
                                         )
+                                        runBlocking {
+                                            delay(100)
+                                            navController.navigate("products")
+                                            ingredients.clear()
+                                        }
                                         //TODO:удаляет со 2 раза
-                                        navController.navigate("products")
-                                        ingredients.clear()
                                     }
                                 }
                             ) {

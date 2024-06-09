@@ -23,6 +23,8 @@ import androidx.navigation.navArgument
 import com.google.gson.GsonBuilder
 import io.appmetrica.analytics.AppMetrica
 import io.appmetrica.analytics.AppMetricaConfig
+import okhttp3.CertificatePinner
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
@@ -47,16 +49,29 @@ import ru.vsu.csf.bakebudget.screens.ProductView
 import ru.vsu.csf.bakebudget.screens.RegistrationScreen
 import ru.vsu.csf.bakebudget.screens.ReportsScreen
 import ru.vsu.csf.bakebudget.ui.theme.BakeBudgetTheme
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     private val API_KEY = "a6d5ee67-5fc9-4adf-bab5-17730828b9b5"
-    private val url = "http://185.251.89.195:80/api/"
+    private val url = "https://bakebudget.ru/api/"
     private val gson = GsonBuilder()
         .setLenient()
         .create()
+
+    private val certificatePinner = CertificatePinner.Builder()
+        .add("bakebudget.ru", "sha256/"  + "AKTn7mPMXBbfMM+QiM5ck9vT71KNeH7gQS9HH77u1Qg=")
+        .build()
+
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .certificatePinner(certificatePinner)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
     private val retrofit = Retrofit.Builder()
         .baseUrl(url)
         .addConverterFactory(GsonConverterFactory.create(gson))
+        .client(okHttpClient)
         .build()
     private val retrofitAPI: RetrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
@@ -127,6 +142,11 @@ class MainActivity : ComponentActivity() {
                 val orders3 = remember {
                     mutableStateListOf<OrderModel>()
                 }
+
+                if (getToken(ctx) != null) {
+                    isLoggedIn.value = true
+                }
+
                 NavGraph(
                     navController = navController,
                     ingredients,
@@ -234,7 +254,11 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "products/{id}", arguments = listOf(navArgument(name = "id") {
                 type = NavType.IntType
-            })) { backstackEntry ->
+            })) {
+                backstackEntry ->
+                val load = remember {
+                    mutableStateOf(false)
+                }
                 ProductView(
                     navController = navController,
                     ingredientsAll = ingredients,
@@ -242,6 +266,7 @@ class MainActivity : ComponentActivity() {
                     product = products[backstackEntry.arguments?.getInt("id")!!],
                     ingredientsResponse,
                     retrofitAPI,
+                    load
                 )
             }
 
