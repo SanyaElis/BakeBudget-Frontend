@@ -13,6 +13,8 @@ import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
 import ru.vsu.csf.bakebudget.models.response.ReportIncomeResponseModel
 import ru.vsu.csf.bakebudget.models.response.ReportOrdersResponseModel
+import java.util.Timer
+import kotlin.concurrent.schedule
 
 @OptIn(DelicateCoroutinesApi::class)
 fun createReportOrders(
@@ -81,5 +83,7 @@ private fun onResultCreateReportIncome(
     dataListIncome.clear()
     dataListIncome.add(result!!.body()!!.cost.toLong())
     dataListIncome.add(result.body()!!.income.toLong())
-    reportState.value = true
+    Timer().schedule(1000) {
+        reportState.value = true
+    }
 }

@@ -55,7 +55,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
@@ -217,7 +219,8 @@ fun ProductAddScreen(
                                                 name.value,
                                                 ings,
                                                 outs,
-                                                estimatedWeight.value.toInt()
+                                                estimatedWeight.value.toInt(),
+                                                null
                                             ),
                                             selectedImageUri
                                         )
@@ -226,12 +229,12 @@ fun ProductAddScreen(
                                             "Product created",
                                             eventParameters1
                                         )
-                                        //TODO:удаляет со 2 раза
-                                        Timer().schedule(1000) {
-                                            //TODO:не делать так(
+                                        runBlocking {
+                                            delay(100)
+                                            navController.navigate("products")
+                                            ingredients.clear()
                                         }
-                                        navController.navigate("products")
-                                        ingredients.clear()
+                                        //TODO:удаляет со 2 раза
                                     }
                                 }
                             ) {

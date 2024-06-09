@@ -141,4 +141,7 @@ interface RetrofitAPI {
     @POST("products/uploadPicture/{id}")
     suspend fun uploadPicture(@Path("id") id: Int, @Part file : MultipartBody.Part, @Header("Authorization") authorization: String): Response<Void>?
 
+    @GET("products/getPicture/{id}")
+    suspend fun getPicture(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<String>?
+
 }

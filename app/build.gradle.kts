@@ -52,6 +52,7 @@ android {
 dependencies {
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.coil.compose.v200rc01)
     implementation(libs.analytics)
     implementation(libs.google.accompanist.systemuicontroller)
     implementation(libs.retrofit)

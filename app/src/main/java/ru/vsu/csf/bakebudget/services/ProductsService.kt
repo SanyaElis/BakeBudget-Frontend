@@ -39,13 +39,15 @@ fun findAllProducts(
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.findAllProducts("Bearer ".plus(getToken(ctx)))
-        onResultFindAll(res, productsResponse)
+        onResultFindAll(res, productsResponse, ctx, retrofitAPI)
     }
 }
 
 private fun onResultFindAll(
     result: Response<List<ProductResponseModel>?>?,
-    productsResponse: MutableList<ProductResponseModel>
+    productsResponse: MutableList<ProductResponseModel>,
+    ctx: Context,
+    retrofitAPI: RetrofitAPI
 ) {
     if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
@@ -370,3 +372,35 @@ private fun onResultUploadPicture(
 //    ).show()
     product.uri = uri
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun getPicture(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    product: ProductModel
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.getPicture(
+                product.id,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultGetPicture(res, ctx, product)
+    }
+}
+
+private fun onResultGetPicture(
+    result: Response<String>?,
+    ctx: Context,
+    product: ProductModel
+) {
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    if (result!!.body() != null) {
+        product.url = result.body()
+    }
+}
+

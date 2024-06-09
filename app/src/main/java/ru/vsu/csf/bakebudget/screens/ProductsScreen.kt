@@ -57,6 +57,7 @@ import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.services.findAllProducts
+import ru.vsu.csf.bakebudget.services.getPicture
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 
@@ -106,10 +107,14 @@ fun ProductsScreen(
                     remember {
                         mutableStateListOf<OutgoingModel>()
                     },
-                    product.weight
+                    product.weight,
+                    null
                 )
             )
         }
+//        for (product in products) {
+//            getPicture(mContext, retrofitAPI, product)
+//        }
     }
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {

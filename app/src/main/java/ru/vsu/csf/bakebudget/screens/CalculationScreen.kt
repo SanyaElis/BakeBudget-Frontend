@@ -142,7 +142,8 @@ fun CalculationScreen(
                     remember {
                         mutableStateListOf<OutgoingModel>()
                     },
-                    product.weight
+                    product.weight,
+                    null
                 )
             )
         }

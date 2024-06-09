@@ -124,7 +124,8 @@ fun OutgoingsScreen(
                     remember {
                         mutableStateListOf<OutgoingModel>()
                     },
-                    product.weight
+                    product.weight,
+                    null
                 )
             )
         }
