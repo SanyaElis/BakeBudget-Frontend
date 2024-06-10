@@ -39,6 +39,8 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.services.deleteIngredientInProduct
+import ru.vsu.csf.bakebudget.services.forgotPassword
+import ru.vsu.csf.bakebudget.services.resetPassword
 import ru.vsu.csf.bakebudget.services.updateIngredientInProduct
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -99,7 +101,6 @@ fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState
         ) {
             TextButton(
                 onClick = {
-                    navController.navigate("login")
                     mToast(mContext)
                     val eventParameters1 = "{\"button_clicked\":\"reset password\"}"
                     AppMetrica.reportEvent(
@@ -107,6 +108,7 @@ fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState
                         eventParameters1
                     )
                     openAlertDialog.value = true
+                    forgotPassword(mContext, retrofitAPI, userEmail.value)
                 }
             ) {
                 Image(
@@ -155,6 +157,7 @@ fun AlertDialogResetPassword(
         confirmButton = {
             TextButton(
                 onClick = {
+                    resetPassword(context, retrofitAPI, email.value, password.value)
                     onConfirmation()
                 }
             ) {
