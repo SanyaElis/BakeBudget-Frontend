@@ -223,7 +223,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "passwordReset") {
-                PasswordResetScreen(navController, isLogged)
+                PasswordResetScreen(navController, isLogged, retrofitAPI)
             }
 
             composable(route = "products") {
