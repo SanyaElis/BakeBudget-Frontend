@@ -234,7 +234,11 @@ class MainActivity : ComponentActivity() {
                     ingredientsResponse,
                     isDataReceivedIngredients,
                     ingredients,
-                    ingredientsSet
+                    ingredientsSet,
+                    orders,
+                    isDataReceivedOrders,
+                    products,
+                    orders0, orders1, orders2, orders3
                 )
             }
 
@@ -271,7 +275,9 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "outgoings") {
-                OutgoingsScreen(navController, outgoings, products, isLogged, retrofitAPI, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, isDataReceivedOutgoings)
+                OutgoingsScreen(navController, outgoings, products, isLogged, retrofitAPI, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, isDataReceivedOutgoings,                    orders,
+                    isDataReceivedOrders,
+                    orders0, orders1, orders2, orders3)
             }
 
             composable(route = "reports") {
@@ -287,7 +293,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "orders") {
-                OrdersScreen(navController, isLogged, orders, retrofitAPI, isDataReceivedOrders, products, orders0, orders1, orders2, orders3)
+                OrdersScreen(navController, isLogged, orders, retrofitAPI, isDataReceivedOrders, products, orders0, orders1, orders2, orders3, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, ingredients, ingredientsSet, products)
             }
         }
     }

@@ -48,15 +48,26 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 
 @Composable
-fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState<Boolean>, retrofitAPI: RetrofitAPI) {
+fun PasswordResetScreen(
+    navController: NavHostController,
+    isLogged: MutableState<Boolean>,
+    retrofitAPI: RetrofitAPI
+) {
     val userEmail = remember {
         mutableStateOf("")
     }
     val userPassword = remember {
         mutableStateOf("")
     }
+    val changed = remember {
+        mutableStateOf(false)
+    }
     val mContext = LocalContext.current
     val openAlertDialog = remember { mutableStateOf(false) }
+    if (changed.value) {
+        navController.navigate("login")
+        changed.value = false
+    }
     when {
         openAlertDialog.value -> {
             AlertDialogResetPassword(
@@ -67,11 +78,12 @@ fun PasswordResetScreen(navController: NavHostController, isLogged: MutableState
                     openAlertDialog.value = false
                 },
                 dialogTitle = "Смена пароля",
-                dialogText = "После перехода по ссылке в письме нажмите «ОК»",
+                dialogText = "После перехода по ссылке в письме нажмите «Изменить пароль»",
                 userEmail,
                 userPassword,
                 mContext,
-                retrofitAPI
+                retrofitAPI,
+                changed
             )
         }
     }
@@ -137,7 +149,8 @@ fun AlertDialogResetPassword(
     email: MutableState<String>,
     password: MutableState<String>,
     context: Context,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    changed: MutableState<Boolean>
 ) {
     AlertDialog(
         containerColor = SideBack,
@@ -157,7 +170,7 @@ fun AlertDialogResetPassword(
         confirmButton = {
             TextButton(
                 onClick = {
-                    resetPassword(context, retrofitAPI, email.value, password.value)
+                    resetPassword(context, retrofitAPI, email.value, password.value, changed)
                     onConfirmation()
                 }
             ) {

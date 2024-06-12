@@ -22,6 +22,7 @@ import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
+import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
@@ -35,11 +36,15 @@ import java.io.File
 fun findAllProducts(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    productsResponse: MutableList<ProductResponseModel>
+    productsResponse: MutableList<ProductResponseModel>,
+    orders: MutableList<OrderModel>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    productsAll: MutableList<ProductModel>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.findAllProducts("Bearer ".plus(getToken(ctx)))
-        onResultFindAll(res, productsResponse, ctx, retrofitAPI)
+        onResultFindAll(res, productsResponse, ctx, retrofitAPI, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
     }
 }
 
@@ -47,7 +52,11 @@ private fun onResultFindAll(
     result: Response<List<ProductResponseModel>?>?,
     productsResponse: MutableList<ProductResponseModel>,
     ctx: Context,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    orders: MutableList<OrderModel>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    productsAll: MutableList<ProductModel>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
     if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
@@ -55,6 +64,7 @@ private fun onResultFindAll(
                 productsResponse.add(prod)
             }
         }
+        findAllOrders(ctx, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3, isDataReceivedOrders)
     }
 }
 

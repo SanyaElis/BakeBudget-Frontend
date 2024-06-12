@@ -57,6 +57,7 @@ import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
@@ -88,7 +89,10 @@ fun OutgoingsScreen(
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>,
     isDataReceivedIngredients: MutableState<Boolean>,
-    isDataReceivedOutgoings: MutableState<Boolean>
+    isDataReceivedOutgoings: MutableState<Boolean>,
+    orders: MutableList<OrderModel>,
+    isDataReceivedOrders : MutableState<Boolean>,
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
 ) {
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
@@ -106,7 +110,7 @@ fun OutgoingsScreen(
         isDataReceivedIngredients.value = true
     }
     if (getToken(mContext) != null && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, productsResponse)
+        findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
         isDataReceivedProducts.value = true
     }
 
