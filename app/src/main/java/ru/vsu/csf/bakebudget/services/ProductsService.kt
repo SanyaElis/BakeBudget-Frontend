@@ -26,6 +26,7 @@ import ru.vsu.csf.bakebudget.models.OrderModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
+import ru.vsu.csf.bakebudget.models.response.ImageResponseModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.utils.sameName
@@ -400,7 +401,7 @@ fun getPicture(
 }
 
 private fun onResultGetPicture(
-    result: Response<String>?,
+    result: Response<ImageResponseModel>?,
     ctx: Context,
     product: ProductModel
 ) {
@@ -410,7 +411,7 @@ private fun onResultGetPicture(
 //        Toast.LENGTH_SHORT
 //    ).show()
     if (result!!.body() != null) {
-        product.url = result.body()
+        product.url = result.body()!!.link
     }
 }
 

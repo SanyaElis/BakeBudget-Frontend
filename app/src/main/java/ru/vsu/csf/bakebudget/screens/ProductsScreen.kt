@@ -117,9 +117,9 @@ fun ProductsScreen(
                 )
             )
         }
-//        for (product in products) {
-//            getPicture(mContext, retrofitAPI, product)
-//        }
+        for (product in products) {
+            getPicture(mContext, retrofitAPI, product)
+        }
     }
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
         for (ingredient in ingredientsResponse) {
