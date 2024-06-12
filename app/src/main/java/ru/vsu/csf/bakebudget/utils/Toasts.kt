@@ -35,6 +35,14 @@ fun codeAlreadyGenerated(context: Context) {
     ).show()
 }
 
+fun linkApproveFailed(context: Context) {
+    Toast.makeText(
+        context,
+        "Вы не перешли по ссылке на почте!",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
 fun codeCopied(context: Context) {
     Toast.makeText(
         context,

@@ -20,6 +20,7 @@ import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
+import ru.vsu.csf.bakebudget.models.request.PasswordResetRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
@@ -144,4 +145,11 @@ interface RetrofitAPI {
     @GET("products/getPicture/{id}")
     suspend fun getPicture(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<String>?
 
+    //___________________________________________________________________________________________________________________________________
+
+    @POST("auth/forgotPassword")
+    suspend fun forgotPassword(@Query("email") email: String): Response<Void>?
+
+    @POST("auth/resetPassword")
+    suspend fun resetPassword(@Body passwordResetModel: PasswordResetRequestModel): Response<Void>?
 }
