@@ -182,7 +182,7 @@ fun ProductView(
                                             ingredient.productId = product.id
                                             addIngredientToProduct(mContext, retrofitAPI, ingredient)
                                         }
-                                        updateProduct(mContext, retrofitAPI, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id)
+                                        updateProduct(mContext, retrofitAPI, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id, selectedImageUri, product)
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
                                         if (selectedImageUri.value != null) {
@@ -231,7 +231,7 @@ fun ProductView(
                                 EstimatedWeightName(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight, name = name)
                             }
                             item {
-                                ImagePicker(selectedImageUri, product.uri)
+                                ImagePicker(selectedImageUri, product.uri, product.url)
                             }
                         }
                     }

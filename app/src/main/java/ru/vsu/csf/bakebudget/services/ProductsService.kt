@@ -197,25 +197,39 @@ fun updateProduct(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     product: ProductRequestModel,
-    productId : Int
+    productId : Int,
+    selectedImageUri: MutableState<Uri?>,
+    product1: ProductModel
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.updateProduct(productId, product, "Bearer ".plus(getToken(ctx)))
-        onResultUpdateProduct(res, ctx)
+        onResultUpdateProduct(res, ctx, selectedImageUri, retrofitAPI, product1)
     }
 }
 
 private fun onResultUpdateProduct(
     result: Response<Void>?,
-    ctx: Context
+    ctx: Context,
+    selectedImageUri: MutableState<Uri?>,
+    retrofitAPI: RetrofitAPI,
+    product: ProductModel
 ) {
+    if (selectedImageUri.value != null) {
+        if (product.url != null) {
+            updatePicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
+        } else {
+            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
+        }
+    }
 //    Toast.makeText(
 //        ctx,
 //        "Response Code : " + result!!.code() + "\n" + result.body(),
 //        Toast.LENGTH_SHORT
 //    ).show()
 }
+
+//TODO:same product add message
 
 @OptIn(DelicateCoroutinesApi::class)
 fun updateIngredientInProduct(
@@ -345,7 +359,7 @@ fun uploadPicture(
 //                uriToString(ctx, uri)!!,
                 "Bearer ".plus(getToken(ctx))
             )
-        onResultUploadPicture(res, ctx, product, uri)
+        onResultUploadPicture(res, ctx, product, uri, retrofitAPI)
     }
 }
 
@@ -374,8 +388,10 @@ private fun onResultUploadPicture(
     result: Response<Void>?,
     ctx: Context,
     product: ProductModel,
-    uri: Uri
+    uri: Uri,
+    retrofitAPI: RetrofitAPI
 ) {
+    getPicture(ctx, retrofitAPI, product)
 //    Toast.makeText(
 //        ctx,
 //        "Response Code : " + result!!.code() + "\n" + result.body(),
@@ -413,5 +429,73 @@ private fun onResultGetPicture(
     if (result!!.body() != null) {
         product.url = result.body()!!.link
     }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun reloadPicture(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    product: ProductModel,
+    uri: Uri
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+//        val imageBytes = Base64.decode(uriToString(ctx, uri)!!, 0)
+//        val image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+//        product.uri = getImageUri(ctx, image)
+        val file = File(uri.path!!)
+//        val ext =  uri.toString().substring(uri.toString().lastIndexOf(".") + 1)
+        val requestBody = InputStreamRequestBody(ctx.contentResolver, uri)
+        val filePart = MultipartBody.Part.createFormData("file", "jpg", requestBody)
+        val res =
+            retrofitAPI.reloadPicture(
+                product.id,
+                filePart
+                ,
+//                uriToString(ctx, uri)!!,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultReloadPicture(res, ctx, product, uri, retrofitAPI)
+    }
+}
+private fun onResultReloadPicture(
+    result: Response<Void>?,
+    ctx: Context,
+    product: ProductModel,
+    uri: Uri,
+    retrofitAPI: RetrofitAPI
+) {
+    getPicture(ctx, retrofitAPI, product)
+//    Toast.makeText(
+//        ctx,
+//        "Response Code : " + result!!.code() + "\n" + result.body(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+    product.uri = uri
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun updatePicture(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    product: ProductModel,
+    uri: Uri
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.deletePicture(
+                product.id,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultUpdatePicture(res, ctx, product, uri, retrofitAPI)
+    }
+}
+private fun onResultUpdatePicture(
+    result: Response<Void>?,
+    ctx: Context,
+    product: ProductModel,
+    uri: Uri,
+    retrofitAPI: RetrofitAPI
+) {
+    uploadPicture(ctx, retrofitAPI, product, uri)
 }
 

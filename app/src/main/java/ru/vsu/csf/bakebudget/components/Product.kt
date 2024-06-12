@@ -69,7 +69,8 @@ fun Product(
                     .clip(RoundedCornerShape(14.dp))
                     .clickable(onClick = { navController.navigate("products/$productId") }),
                 model = product.url,
-//                placeholder = painterResource(id = R.drawable.loading),
+                error = painterResource(R.drawable.error),
+                placeholder = painterResource(id = R.drawable.loading),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )

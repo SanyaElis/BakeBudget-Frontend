@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
@@ -90,24 +92,41 @@ fun Order(order: OrderModel,
             .background(SideBack)
             .padding(8.dp)
     ) {
-        if (order.product.uri != null) {
+        if (order.product.url != null) {
             AsyncImage(
                 modifier = Modifier
                     .height((screenWidth-32.dp)/2)
                     .clip(RoundedCornerShape(14.dp))
                     .clickable(onClick = { openAlertDialog.value = true }),
-                model = order.product.uri,
+                model = order.product.url,
+                error = painterResource(R.drawable.error),
+                placeholder = painterResource(id = R.drawable.loading),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
         } else {
-            Image(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
-                    .clickable(onClick = { openAlertDialog.value = true }),
-                contentScale = ContentScale.Fit,
-                painter = painterResource(id = order.product.iconId), contentDescription = order.product.name
-            )
+            if (order.product.uri != null) {
+                AsyncImage(
+                    modifier = Modifier
+                        .height((screenWidth-32.dp)/2)
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable(onClick = { openAlertDialog.value = true }),
+                    model = order.product.uri,
+//                        placeholder = painterResource(id = R.drawable.loading),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Image(
+                    modifier = Modifier
+                        .height((screenWidth-32.dp)/2)
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable(onClick = { openAlertDialog.value = true }),
+                    contentScale = ContentScale.Fit,
+                    painter = painterResource(id = order.product.iconId),
+                    contentDescription = order.product.name
+                )
+            }
         }
         Column {
             Text(modifier = Modifier.padding(start = 8.dp, bottom = 6.dp), text = order.name, color = TextPrimary, fontSize = 16.sp)

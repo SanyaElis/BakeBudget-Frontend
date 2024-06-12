@@ -203,7 +203,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "home") {
-                HomeScreen(navController, isLogged)
+                HomeScreen(navController, isLogged, products, retrofitAPI, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, ingredients, ingredientsSet, orders, isDataReceivedOrders, products, orders0, orders1, orders2, orders3)
             }
 
             composable(route = "register") {
