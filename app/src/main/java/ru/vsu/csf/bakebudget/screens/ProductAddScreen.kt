@@ -296,7 +296,7 @@ fun ProductAddScreen(
                                 )
                             }
                             item {
-                                ImagePicker(selectedImageUri, null)
+                                ImagePicker(selectedImageUri, null, null)
                             }
                         }
                     }

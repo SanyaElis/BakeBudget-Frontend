@@ -27,6 +27,7 @@ import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
 import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
+import ru.vsu.csf.bakebudget.models.response.ImageResponseModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
@@ -142,8 +143,15 @@ interface RetrofitAPI {
     @POST("products/uploadPicture/{id}")
     suspend fun uploadPicture(@Path("id") id: Int, @Part file : MultipartBody.Part, @Header("Authorization") authorization: String): Response<Void>?
 
+    @Multipart
+    @PUT("products/reloadPicture/{id}")
+    suspend fun reloadPicture(@Path("id") id: Int, @Part file : MultipartBody.Part, @Header("Authorization") authorization: String): Response<Void>?
+
     @GET("products/getPicture/{id}")
-    suspend fun getPicture(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<String>?
+    suspend fun getPicture(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<ImageResponseModel>?
+
+    @DELETE("products/deletePicture/{id}")
+    suspend fun deletePicture(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
 
     //___________________________________________________________________________________________________________________________________
 

@@ -143,11 +143,11 @@ fun findAllOrders(
     retrofitAPI: RetrofitAPI,
     orders: MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>, isDataReceivedOrders : MutableState<Boolean>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.findAllOrders("Bearer ".plus(getToken(ctx)))
-        onResultFindAllOrders(res, orders, productsAll, orders0, orders1, orders2, orders3)
+        onResultFindAllOrders(res, orders, productsAll, orders0, orders1, orders2, orders3, isDataReceivedOrders)
     }
 }
 
@@ -155,7 +155,7 @@ fun onResultFindAllOrders(
     result: Response<List<OrderResponseModel>?>?,
     orders: MutableList<OrderModel>,
     productsAll: MutableList<ProductModel>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>, isDataReceivedOrders: MutableState<Boolean>
 ) {
     if (result!!.body() != null) {
         if (result.body()!!.isNotEmpty()) {
@@ -170,5 +170,6 @@ fun onResultFindAllOrders(
             }
         }
         sortByState(orders, orders0, orders1, orders2, orders3)
+        isDataReceivedOrders.value = true
     }
 }

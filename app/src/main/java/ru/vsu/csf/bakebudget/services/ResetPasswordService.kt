@@ -2,6 +2,7 @@ package ru.vsu.csf.bakebudget.services
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -48,18 +49,20 @@ fun resetPassword(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     email: String,
-    password: String
+    password: String,
+    changed: MutableState<Boolean>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.resetPassword(PasswordResetRequestModel(email, password))
-        onResultResetPassword(ctx, res)
+        onResultResetPassword(ctx, res, changed)
     }
 }
 
 private fun onResultResetPassword(
     ctx: Context,
-    result: Response<Void>?
+    result: Response<Void>?,
+    changed: MutableState<Boolean>
 ) {
 //    Toast.makeText(
 //        ctx,
@@ -79,5 +82,6 @@ private fun onResultResetPassword(
         "Пароль успешно изменен",
         Toast.LENGTH_SHORT
     ).show()
+        changed.value = true
     }
 }

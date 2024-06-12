@@ -39,11 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
-fun ImagePicker(selectedImageUri: MutableState<Uri?>, uri: Uri?) {
+fun ImagePicker(selectedImageUri: MutableState<Uri?>, uri: Uri?, url: String?) {
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -109,15 +110,29 @@ fun ImagePicker(selectedImageUri: MutableState<Uri?>, uri: Uri?) {
         Spacer(modifier = Modifier.size(20.dp))
 
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            AsyncImage(
-                modifier = Modifier
-                    .height((screenWidth-32.dp)/2)
-                    .width((screenWidth-32.dp)/2)
-                    .clip(RoundedCornerShape(14.dp)),
-                model = if (uri != null && selectedImageUri.value == null) uri else selectedImageUri.value,
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
+            if (url != null) {
+                AsyncImage(
+                    modifier = Modifier
+                        .height((screenWidth-32.dp)/2)
+                        .width((screenWidth-32.dp)/2)
+                        .clip(RoundedCornerShape(14.dp)),
+                    model = if (selectedImageUri.value == null) url else selectedImageUri.value,
+                    error = painterResource(R.drawable.error),
+                    placeholder = painterResource(id = R.drawable.loading),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                AsyncImage(
+                    modifier = Modifier
+                        .height((screenWidth - 32.dp) / 2)
+                        .width((screenWidth - 32.dp) / 2)
+                        .clip(RoundedCornerShape(14.dp)),
+                    model = if (uri != null && selectedImageUri.value == null) uri else selectedImageUri.value,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
     }

@@ -125,7 +125,7 @@ fun CalculationScreen(
     val eventParameters1 = "{\"button_clicked\":\"order_created\"}"
 
     if (getToken(mContext) != null && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, productsResponse)
+        findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
         isDataReceivedProducts.value = true
     }
     if (productsAll.isEmpty() && productsResponse.isNotEmpty()) {
@@ -150,7 +150,7 @@ fun CalculationScreen(
     }
 
     if (getToken(mContext) != null && !isDataReceivedOrders.value && productsAll.isNotEmpty()) {
-        findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3)
+        findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3, isDataReceivedOrders)
         isDataReceivedOrders.value = true
     }
 

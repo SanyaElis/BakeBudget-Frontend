@@ -32,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,10 +51,21 @@ import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.AlertDialog
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.getToken
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
+import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.findAllIngredients
+import ru.vsu.csf.bakebudget.services.findAllProducts
+import ru.vsu.csf.bakebudget.services.getPicture
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -61,13 +73,27 @@ import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>) {
+fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>,
+               products: MutableList<ProductModel>,
+               retrofitAPI: RetrofitAPI,
+               isDataReceivedProducts: MutableState<Boolean>,
+               productsResponse: MutableList<ProductResponseModel>,
+               ingredientsResponse: MutableList<IngredientResponseModel>,
+               isDataReceivedIngredients: MutableState<Boolean>,
+               ingredients: MutableList<IngredientModel>,
+               ingredientsSet: MutableSet<String>,
+               orders: MutableList<OrderModel>,
+               isDataReceivedOrders : MutableState<Boolean>,
+               productsAll: MutableList<ProductModel>,
+               orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>) {
     val item = listOf(MenuItemModel(R.drawable.home, "Главная"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+    val mContext = LocalContext.current
+
 
     //TODO: добавить кнопку типа начать, чтобы открылось выпадающее меню или придумать другой вариант
 
@@ -82,6 +108,35 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                     openAlertDialog.value = false
                 }
             )
+        }
+    }
+    if (isLogged.value) {
+        if (getToken(mContext) != null && !isDataReceivedProducts.value) {
+            findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
+            isDataReceivedProducts.value = true
+        }
+        if (products.isEmpty() && productsResponse.isNotEmpty()) {
+            for (product in productsResponse) {
+                products.add(
+                    ProductModel(
+                        product.id,
+                        null,
+                        R.drawable.cake,
+                        product.name,
+                        remember {
+                            mutableStateListOf<IngredientInProductModel>()
+                        },
+                        remember {
+                            mutableStateListOf<OutgoingModel>()
+                        },
+                        product.weight,
+                        null
+                    )
+                )
+            }
+            for (product in products) {
+                getPicture(mContext, retrofitAPI, product)
+            }
         }
     }
 
@@ -200,7 +255,9 @@ fun AlertDialogHome(
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         ),
-        modifier = Modifier.fillMaxWidth(0.9f).fillMaxHeight(0.9f),
+        modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .fillMaxHeight(0.9f),
         title = {
             Text(text = "Добро пожаловать в BAKEBUDGET", textAlign = TextAlign.Center)
         },

@@ -55,13 +55,18 @@ import ru.vsu.csf.bakebudget.components.Order
 import ru.vsu.csf.bakebudget.components.OrderStateRow
 import ru.vsu.csf.bakebudget.components.Product
 import ru.vsu.csf.bakebudget.getToken
+import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.services.findAllOrders
+import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.services.onResultFindAllOrders
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
@@ -76,7 +81,14 @@ fun OrdersScreen(
     retrofitAPI: RetrofitAPI,
     isDataReceivedOrders : MutableState<Boolean>,
     productsAll: MutableList<ProductModel>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedProducts: MutableState<Boolean>,
+    productsResponse: MutableList<ProductResponseModel>,
+    ingredientsResponse: MutableList<IngredientResponseModel>,
+    isDataReceivedIngredients: MutableState<Boolean>,
+    ingredients: MutableList<IngredientModel>,
+    ingredientsSet: MutableSet<String>,
+    products: MutableList<ProductModel>
 ) {
     val mContext = LocalContext.current
 
@@ -86,15 +98,60 @@ fun OrdersScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
-    //TODO: подгружать все, а то заказы не грузятся
 
     val state1 = remember { mutableStateOf(true) }
     val state2 = remember { mutableStateOf(true) }
     val state3 = remember { mutableStateOf(true) }
     val state4 = remember { mutableStateOf(true) }
 
+    if (getToken(mContext) != null && !isDataReceivedIngredients.value) {
+        findAllIngredients(mContext, retrofitAPI, ingredientsResponse)
+        isDataReceivedIngredients.value = true
+    }
+    if (getToken(mContext) != null && !isDataReceivedProducts.value) {
+        findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
+        isDataReceivedProducts.value = true
+    }
+    if (products.isEmpty() && productsResponse.isNotEmpty()) {
+        for (product in productsResponse) {
+            products.add(
+                ProductModel(
+                    product.id,
+                    null,
+                    R.drawable.cake,
+                    product.name,
+                    remember {
+                        mutableStateListOf<IngredientInProductModel>()
+                    },
+                    remember {
+                        mutableStateListOf<OutgoingModel>()
+                    },
+                    product.weight,
+                    null
+                )
+            )
+        }
+//        for (product in products) {
+//            getPicture(mContext, retrofitAPI, product)
+//        }
+    }
+    if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
+        for (ingredient in ingredientsResponse) {
+            ingredients.add(
+                IngredientModel(
+                    ingredient.name,
+                    ingredient.weight,
+                    ingredient.cost
+                )
+            )
+            ingredientsSet.add(
+                ingredient.name
+            )
+        }
+    }
+
     if (getToken(mContext) != null && !isDataReceivedOrders.value) {
-        findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3)
+        findAllOrders(mContext, retrofitAPI, orders, productsAll, orders0, orders1, orders2, orders3, isDataReceivedOrders)
         isDataReceivedOrders.value = true
     }
 
