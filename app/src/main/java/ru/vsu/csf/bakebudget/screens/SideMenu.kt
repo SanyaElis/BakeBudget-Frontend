@@ -30,6 +30,7 @@ import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
+import ru.vsu.csf.bakebudget.clearIsProUser
 import ru.vsu.csf.bakebudget.clearToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
@@ -179,6 +180,7 @@ fun SideMenu(
                     onClick = {
                         isLogged.value = false
                         clearToken(mContext)
+                        clearIsProUser(mContext)
                         navController.navigate("login")
                     }
                 ) {

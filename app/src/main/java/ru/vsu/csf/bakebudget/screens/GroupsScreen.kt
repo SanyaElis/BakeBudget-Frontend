@@ -56,9 +56,12 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.clearIsProUser
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.getIsProUser
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.services.changeRole
 import ru.vsu.csf.bakebudget.services.createCode
 import ru.vsu.csf.bakebudget.services.getCode
@@ -75,7 +78,6 @@ import kotlin.concurrent.schedule
 fun GroupsScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    isPro: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
@@ -98,6 +100,10 @@ fun GroupsScreen(
     }
 
     val codeExists = remember {
+        mutableStateOf(false)
+    }
+
+    val isPro = remember {
         mutableStateOf(false)
     }
 
@@ -133,7 +139,7 @@ fun GroupsScreen(
                     ) {
                         TextButton(
                             onClick = {
-                                if (isPro.value) {
+                                if (getIsProUser(mContext).equals("y")) {
                                     if (generatedCode.value == "") {
                                         createCode(
                                             mContext,
@@ -160,7 +166,7 @@ fun GroupsScreen(
                                 }
                             }
                         ) {
-                            if (isPro.value) {
+                            if (getIsProUser(mContext).equals("y") || isPro.value) {
                                 Image(
                                     painter = painterResource(id = R.drawable.button_generate),
                                     contentDescription = "generate"
@@ -196,7 +202,7 @@ fun GroupsScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center
                             ) {
-                                if (isPro.value) {
+                                if (getIsProUser(mContext).equals("y")) {
                                     if (generatedCode.value == "") {
                                         Box(
                                             modifier = Modifier.padding(8.dp),
@@ -275,15 +281,18 @@ fun GroupsScreen(
                                         )
                                     }
                                     IconButton(onClick = {
-                                        changeRole(mContext, retrofitAPI, isPro, userRole)
+                                        changeRole(mContext, retrofitAPI, userRole)
                                         val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
                                         AppMetrica.reportEvent(
                                             "User enter advanced mode",
                                             eventParameters3
                                         )
                                         Timer().schedule(2000) {
-                                            isPro.value = true
+                                            clearIsProUser(mContext)
+                                            saveIsProUser("y", mContext)
+                                            generatedCode.value = " "
                                             generatedCode.value = ""
+                                            isPro.value = true
                                         }
                                     }) {
                                         Icon(

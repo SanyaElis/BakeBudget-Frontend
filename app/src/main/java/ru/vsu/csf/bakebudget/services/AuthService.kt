@@ -22,6 +22,7 @@ import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
+import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.saveToken
 
 
@@ -73,7 +74,6 @@ fun login(
     retrofitAPI: RetrofitAPI,
     isLogged: MutableState<Boolean>,
     userRole: MutableState<String>,
-    isPro: MutableState<Boolean>,
     ingredients: MutableList<IngredientModel>,
     products: MutableList<ProductModel>,
     ingredientsInRecipe: MutableList<IngredientInProductModel>,
@@ -90,7 +90,7 @@ fun login(
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.login(UserSignInRequestModel(userEmail.value, userPassword.value))
-        onResultLogin(res, ctx, isLogged, userRole, isPro, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
+        onResultLogin(res, ctx, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
     }
 }
 
@@ -99,7 +99,6 @@ fun onResultLogin(
     ctx: Context,
     isLogged: MutableState<Boolean>,
     userRole: MutableState<String>,
-    isPro: MutableState<Boolean>,
     ingredients: MutableList<IngredientModel>,
     products: MutableList<ProductModel>,
     ingredientsInRecipe: MutableList<IngredientInProductModel>,
@@ -125,7 +124,11 @@ fun onResultLogin(
 //                Toast.LENGTH_SHORT
 //            ).show()
             userRole.value = model.role
-            isPro.value = userRole.value == "ROLE_ADVANCED_USER"
+            if (userRole.value == "ROLE_ADVANCED_USER") {
+                saveIsProUser("y", ctx)
+            } else {
+                saveIsProUser("n", ctx)
+            }
             val eventParameters1 = "{\"button_clicked\":\"enter to account\"}"
             AppMetrica.reportEvent(
                 "User enter to account",
@@ -150,7 +153,7 @@ fun onResultLogin(
         } else {
             Toast.makeText(
                 ctx,
-                "Response Code : " + result.code() + "\n" + "Такого пользователя не существует или пароль неверный",
+                "Такого пользователя не существует или пароль неверный",
                 Toast.LENGTH_SHORT
             ).show()
             val eventParameters2 = "{\"button_clicked\":\"enter to account failed\"}"

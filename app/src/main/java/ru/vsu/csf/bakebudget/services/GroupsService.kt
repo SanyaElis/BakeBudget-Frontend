@@ -9,25 +9,25 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
+import ru.vsu.csf.bakebudget.clearIsProUser
 import ru.vsu.csf.bakebudget.getToken
+import ru.vsu.csf.bakebudget.saveIsProUser
 
 @OptIn(DelicateCoroutinesApi::class)
 fun changeRole(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    isPro: MutableState<Boolean>,
     userRole: MutableState<String>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.changeRole("Bearer ".plus(getToken(ctx)))
-        onResultChangeRole(res, ctx, isPro, userRole)
+        onResultChangeRole(res, ctx, userRole)
     }
 }
 
 private fun onResultChangeRole(
     result: Response<Void>?,
     context: Context,
-    isPro: MutableState<Boolean>,
     userRole: MutableState<String>
 ) {
     if (result != null) {
@@ -38,7 +38,13 @@ private fun onResultChangeRole(
             Toast.makeText(context, "Теперь вы пользуетесь продвинутой версией!",
                 Toast.LENGTH_SHORT
             ).show()
-            isPro.value = userRole.value == "ROLE_ADVANCED_USER"
+            if (userRole.value == "ROLE_ADVANCED_USER") {
+                clearIsProUser(context)
+                saveIsProUser("y", context)
+            } else {
+                clearIsProUser(context)
+                saveIsProUser("n", context)
+            }
         }
     }
 }
@@ -64,9 +70,9 @@ private fun onResultCreateCode(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(context, "Code : " + result.body(),
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(context, "Code : " + result.body(),
+//                Toast.LENGTH_SHORT
+//            ).show()
             code.value = result.body()!!
             userRole.value = "ROLE_ADVANCED_USER"
         }
@@ -92,9 +98,9 @@ private fun onResultGetCode(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(context, "Code : " + result.body(),
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(context, "Code : " + result.body(),
+//                Toast.LENGTH_SHORT
+//            ).show()
             code.value = result.body()!!
         }
     }
@@ -121,9 +127,9 @@ private fun onResultSetCode(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(context, "Code : " + result.body(),
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(context, "Code : " + result.body(),
+//                Toast.LENGTH_SHORT
+//            ).show()
             generatedCode.value = result.body()!!
         } else {
             Toast.makeText(context, "Такой группы не существует или вы уже состоите в группе",

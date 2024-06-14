@@ -39,7 +39,6 @@ fun LoginScreen(
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>,
-    isPro: MutableState<Boolean>,
     ingredients: MutableList<IngredientModel>,
     products: MutableList<ProductModel>,
     ingredientsInRecipe: MutableList<IngredientInProductModel>,
@@ -88,7 +87,7 @@ fun LoginScreen(
             TextButton(
                 onClick = {
                     login(
-                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, isPro, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3
+                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3
                     )
                     navController.navigate("home")
                 }

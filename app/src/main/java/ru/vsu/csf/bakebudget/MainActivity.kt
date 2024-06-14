@@ -101,10 +101,6 @@ class MainActivity : ComponentActivity() {
                         mutableStateListOf<OutgoingModel>()
                 }
 
-                val isPro = remember {
-                    mutableStateOf(false)
-                }
-
                 val ingredientsInRecipe = remember {
                     mutableStateListOf<IngredientInProductModel>()
                 }
@@ -162,7 +158,6 @@ class MainActivity : ComponentActivity() {
                     productsResponse,
                     isDataReceivedOutgoings,
                     isDataReceivedOrders,
-                    isPro,
                     userRole,
                     orders0,
                     orders1,
@@ -190,7 +185,6 @@ class MainActivity : ComponentActivity() {
         productsResponse: MutableList<ProductResponseModel>,
         isDataReceivedOutgoings : MutableState<Boolean>,
         isDataReceivedOrders : MutableState<Boolean>,
-        isPro : MutableState<Boolean>,
         userRole : MutableState<String>,
         orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
     ) {
@@ -199,7 +193,7 @@ class MainActivity : ComponentActivity() {
             startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController, isLogged, retrofitAPI, userRole, isPro, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
+                LoginScreen(navController, isLogged, retrofitAPI, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
             }
 
             composable(route = "home") {
@@ -281,11 +275,11 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "reports") {
-                ReportsScreen(navController, isLogged, isPro, retrofitAPI, userRole)
+                ReportsScreen(navController, isLogged, retrofitAPI, userRole)
             }
 
             composable(route = "groups") {
-                GroupsScreen(navController, isLogged, isPro, retrofitAPI, userRole)
+                GroupsScreen(navController, isLogged, retrofitAPI, userRole)
             }
 
             composable(route = "calculation") {
@@ -318,5 +312,27 @@ fun clearToken(ctx: Context) {
 
     val editor = prefs.edit()
     editor.remove("auth_token")
+    editor.apply()
+}
+
+fun saveIsProUser(isPro: String, ctx: Context) {
+    val prefs: SharedPreferences = ctx.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    val editor = prefs.edit()
+    editor.putString("is_pro", isPro)
+    editor.apply()
+}
+
+fun getIsProUser(ctx: Context): String? {
+    val prefs: SharedPreferences = ctx.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    return prefs.getString("is_pro", null)
+}
+
+fun clearIsProUser(ctx: Context) {
+    val prefs: SharedPreferences = ctx.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+
+    val editor = prefs.edit()
+    editor.remove("is_pro")
     editor.apply()
 }
