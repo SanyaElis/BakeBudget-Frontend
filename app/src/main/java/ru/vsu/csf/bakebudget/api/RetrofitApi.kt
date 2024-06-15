@@ -79,6 +79,9 @@ interface RetrofitAPI {
     @HTTP(method = "DELETE", path = "products/deleteIngredient/{ingredientId}/{productId}", hasBody = true)
     suspend fun deleteIngredientInProduct(@Path("ingredientId") ingredientId: Int, @Path("productId") productId: Int, @Header("Authorization") authorization: String): Response<Void>?
 
+    @DELETE("products/delete/{id}")
+    suspend fun deleteProduct(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
+
     //___________________________________________________________________________________________________________________________________
 
     @GET("outgoings/findAll/{productId}")

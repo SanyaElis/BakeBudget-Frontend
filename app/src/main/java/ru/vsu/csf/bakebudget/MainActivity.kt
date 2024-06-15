@@ -271,7 +271,9 @@ class MainActivity : ComponentActivity() {
                     product = products[backstackEntry.arguments?.getInt("id")!!],
                     ingredientsResponse,
                     retrofitAPI,
-                    load
+                    load,
+                    products,
+                    productsResponse
                 )
             }
 

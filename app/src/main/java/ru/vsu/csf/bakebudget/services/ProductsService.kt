@@ -512,3 +512,35 @@ private fun onResultUpdatePicture(
     uploadPicture(ctx, retrofitAPI, product, uri, retryHash)
 }
 
+@OptIn(DelicateCoroutinesApi::class)
+fun deleteProduct(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    productId: Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.deleteProduct(
+                productId,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultDeleteProduct(res, ctx)
+    }
+}
+
+private fun onResultDeleteProduct(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Продукт успешно удален",
+        Toast.LENGTH_SHORT
+    ).show()
+    val eventParameters1 = "{\"button_clicked\":\"delete product\"}"
+    AppMetrica.reportEvent(
+        "product deleted",
+        eventParameters1
+    )
+}
+
