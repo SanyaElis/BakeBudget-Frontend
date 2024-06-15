@@ -397,13 +397,14 @@ private fun onResultUploadPicture(
     retrofitAPI: RetrofitAPI,
     retryHash: MutableState<Long>
 ) {
+    product.uri = uri
+    retryHash.value++
     getPicture(ctx, retrofitAPI, product, retryHash)
 //    Toast.makeText(
 //        ctx,
 //        "Response Code : " + result!!.code() + "\n" + result.body(),
 //        Toast.LENGTH_SHORT
 //    ).show()
-    product.uri = uri
 }
 
 @OptIn(DelicateCoroutinesApi::class)

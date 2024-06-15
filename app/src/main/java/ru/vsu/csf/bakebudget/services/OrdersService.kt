@@ -173,3 +173,35 @@ fun onResultFindAllOrders(
         isDataReceivedOrders.value = true
     }
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun deleteOrder(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    orderId: Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.deleteProduct(
+                orderId,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultDeleteOrder(res, ctx)
+    }
+}
+
+private fun onResultDeleteOrder(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Заказ успешно удален",
+        Toast.LENGTH_SHORT
+    ).show()
+    val eventParameters1 = "{\"button_clicked\":\"delete order\"}"
+    AppMetrica.reportEvent(
+        "order deleted",
+        eventParameters1
+    )
+}

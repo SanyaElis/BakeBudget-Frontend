@@ -86,11 +86,12 @@ fun login(
     productsResponse: MutableList<ProductResponseModel>,
     isDataReceivedOutgoings : MutableState<Boolean>,
     isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    firstTryPr: MutableState<Boolean>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.login(UserSignInRequestModel(userEmail.value, userPassword.value))
-        onResultLogin(res, ctx, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
+        onResultLogin(res, ctx, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3, firstTryPr)
     }
 }
 
@@ -111,7 +112,8 @@ fun onResultLogin(
     productsResponse: MutableList<ProductResponseModel>,
     isDataReceivedOutgoings : MutableState<Boolean>,
     isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    firstTryPr: MutableState<Boolean>
 ) {
     if (result != null) {
         if (result.isSuccessful) {
@@ -146,6 +148,7 @@ fun onResultLogin(
             productsResponse.clear()
             isDataReceivedOutgoings.value = false
             isDataReceivedOrders.value = false
+            firstTryPr.value = true
             orders0.clear()
             orders1.clear()
             orders2.clear()

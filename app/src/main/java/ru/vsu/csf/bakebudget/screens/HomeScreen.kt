@@ -86,7 +86,8 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                orders: MutableList<OrderModel>,
                isDataReceivedOrders : MutableState<Boolean>,
                productsAll: MutableList<ProductModel>,
-               orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>) {
+               orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+               firstTimePr: MutableState<Boolean>) {
     val item = listOf(MenuItemModel(R.drawable.home, "Главная"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -120,7 +121,8 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
             findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
             isDataReceivedProducts.value = true
         }
-        if (products.isEmpty() && productsResponse.isNotEmpty()) {
+        if (products.isEmpty() && productsResponse.isNotEmpty() && firstTimePr.value) {
+            firstTimePr.value = false
             for (product in productsResponse) {
                 products.add(
                     ProductModel(

@@ -88,7 +88,8 @@ fun OrdersScreen(
     isDataReceivedIngredients: MutableState<Boolean>,
     ingredients: MutableList<IngredientModel>,
     ingredientsSet: MutableSet<String>,
-    products: MutableList<ProductModel>
+    products: MutableList<ProductModel>,
+    firstTimePr: MutableState<Boolean>
 ) {
     val mContext = LocalContext.current
 
@@ -112,7 +113,8 @@ fun OrdersScreen(
         findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
         isDataReceivedProducts.value = true
     }
-    if (products.isEmpty() && productsResponse.isNotEmpty()) {
+    if (products.isEmpty() && productsResponse.isNotEmpty() && firstTimePr.value) {
+        firstTimePr.value = false
         for (product in productsResponse) {
             products.add(
                 ProductModel(

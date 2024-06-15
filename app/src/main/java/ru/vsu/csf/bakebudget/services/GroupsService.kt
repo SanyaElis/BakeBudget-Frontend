@@ -138,3 +138,27 @@ private fun onResultSetCode(
         }
     }
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+fun leaveGroup(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res = retrofitAPI.leaveGroup("Bearer ".plus(getToken(ctx)))
+        onResultLeaveGroup(res, ctx)
+    }
+}
+
+private fun onResultLeaveGroup(
+    result: Response<Void>?,
+    context: Context
+) {
+    if (result != null) {
+        if (result.isSuccessful) {
+            Toast.makeText(context, "Вы покинули группу",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+}

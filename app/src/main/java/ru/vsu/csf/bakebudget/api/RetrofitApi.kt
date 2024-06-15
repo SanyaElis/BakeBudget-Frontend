@@ -110,6 +110,9 @@ interface RetrofitAPI {
     @PUT("orders/setStatus/{id}")
     suspend fun setStatus(@Path("id") id: Int, @Query("status") status: String, @Header("Authorization") authorization: String): Response<Void>?
 
+    @DELETE("orders/delete/{id}")
+    suspend fun deleteOrder(@Path("id") id: Int, @Header("Authorization") authorization: String): Response<Void>?
+
     //___________________________________________________________________________________________________________________________________
 
     @GET("getGroupCode")
@@ -120,6 +123,9 @@ interface RetrofitAPI {
 
     @PUT("createGroupCode")
     suspend fun createCode(@Header("Authorization") authorization: String): Response<String>?
+
+    @PUT("leaveGroup")
+    suspend fun leaveGroup(@Header("Authorization") authorization: String): Response<Void>?
 
     //_______
 

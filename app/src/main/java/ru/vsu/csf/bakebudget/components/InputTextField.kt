@@ -87,3 +87,28 @@ fun InputTextField(
             .fillMaxWidth()
     )
 }
+
+@Composable
+fun InputTextFieldGroup(
+    placeholder: String,
+    text: MutableState<String>, max: Int,
+    width: Boolean
+) {
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp)
+            .fillMaxWidth()
+    )
+}

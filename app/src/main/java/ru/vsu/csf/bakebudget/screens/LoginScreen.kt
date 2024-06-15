@@ -51,7 +51,8 @@ fun LoginScreen(
     productsResponse: MutableList<ProductResponseModel>,
     isDataReceivedOutgoings : MutableState<Boolean>,
     isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    firstTryPr: MutableState<Boolean>
 ) {
     val ctx = LocalContext.current
     val userEmail = remember {
@@ -87,7 +88,7 @@ fun LoginScreen(
             TextButton(
                 onClick = {
                     login(
-                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3
+                        ctx, userEmail, userPassword, retrofitAPI = retrofitAPI, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3, firstTryPr
                     )
                     navController.navigate("home")
                 }
