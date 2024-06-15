@@ -54,6 +54,7 @@ import ru.vsu.csf.bakebudget.components.BarGraph
 import ru.vsu.csf.bakebudget.components.BarType
 import ru.vsu.csf.bakebudget.components.DatePeriodField
 import ru.vsu.csf.bakebudget.components.SwitchForm
+import ru.vsu.csf.bakebudget.getIsProUser
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
 import ru.vsu.csf.bakebudget.services.createReportIncome
@@ -72,7 +73,6 @@ import kotlin.concurrent.schedule
 fun ReportsScreen(
     navController: NavHostController,
     isLogged: MutableState<Boolean>,
-    isPro: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
@@ -292,7 +292,7 @@ fun ReportsScreen(
                                 )
                             }
                             item {
-                                if (isPro.value) {
+                                if (getIsProUser(mContext).equals("y")) {
                                     SwitchForm(
                                         selectedIndex = selectedIndexGroup,
                                         items = itemsGroup,
