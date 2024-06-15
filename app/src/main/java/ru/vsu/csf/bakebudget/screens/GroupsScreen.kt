@@ -56,6 +56,7 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.clearIsProUser
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.components.InputTextFieldGroup
 import ru.vsu.csf.bakebudget.getIsProUser
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -274,11 +275,11 @@ fun GroupsScreen(
                                         }
                                     }
                                     //TODO:выйти из группы
-                                    InputTextField(
+                                    InputTextFieldGroup(
                                         placeholder = "Введите код группы",
                                         text = code,
                                         max = 50,
-                                        300
+                                        true
                                     )
                                     Box(
                                         modifier = Modifier.padding(8.dp),
