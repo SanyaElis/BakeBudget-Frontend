@@ -34,6 +34,7 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -112,6 +113,11 @@ fun ProductAddScreen(
     val estimatedWeight = remember {
         mutableStateOf("")
     }
+
+    val retryHash = remember {
+        mutableLongStateOf(0)
+    }
+
     val name = remember {
         mutableStateOf("")
     }
@@ -222,7 +228,8 @@ fun ProductAddScreen(
                                                 estimatedWeight.value.toInt(),
                                                 null
                                             ),
-                                            selectedImageUri
+                                            selectedImageUri,
+                                            retryHash
                                         )
                                         val eventParameters1 = "{\"button_clicked\":\"create product\"}"
                                         AppMetrica.reportEvent(
@@ -232,8 +239,18 @@ fun ProductAddScreen(
                                         runBlocking {
                                             delay(100)
                                             navController.navigate("products")
+//                                            navController.navigate("home")
                                             ingredients.clear()
                                         }
+//                                        runBlocking {
+//                                            delay(300)
+//                                            navController.navigate("home")
+//                                            runBlocking {
+//                                                delay(1000)
+//                                                navController.navigate("products")
+//                                                ingredients.clear()
+//                                            }
+//                                        }
                                         //TODO:удаляет со 2 раза
                                     }
                                 }

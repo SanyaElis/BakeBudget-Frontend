@@ -77,12 +77,13 @@ fun createProduct(
     productId: MutableState<Int>,
     products: MutableList<ProductModel>,
     product: ProductModel,
-    selectedImageUri: MutableState<Uri?>
+    selectedImageUri: MutableState<Uri?>,
+    retryHash: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.createProduct(productRequestModel, "Bearer ".plus(getToken(ctx)))
-        onResultCreateProduct(res, ctx, productId, products, product, retrofitAPI, selectedImageUri)
+        onResultCreateProduct(res, ctx, productId, products, product, retrofitAPI, selectedImageUri, retryHash)
     }
 }
 
@@ -93,7 +94,8 @@ private fun onResultCreateProduct(
     products: MutableList<ProductModel>,
     product: ProductModel,
     retrofitAPI: RetrofitAPI,
-    selectedImageUri: MutableState<Uri?>
+    selectedImageUri: MutableState<Uri?>,
+    retryHash: MutableState<Long>
 ) {
 //    Toast.makeText(
 //        ctx,
@@ -115,7 +117,7 @@ private fun onResultCreateProduct(
             )
         }
         if (selectedImageUri.value != null) {
-            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
+            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!, retryHash)
         }
     }
 }
@@ -199,12 +201,13 @@ fun updateProduct(
     product: ProductRequestModel,
     productId : Int,
     selectedImageUri: MutableState<Uri?>,
-    product1: ProductModel
+    product1: ProductModel,
+    retryHash: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
             retrofitAPI.updateProduct(productId, product, "Bearer ".plus(getToken(ctx)))
-        onResultUpdateProduct(res, ctx, selectedImageUri, retrofitAPI, product1)
+        onResultUpdateProduct(res, ctx, selectedImageUri, retrofitAPI, product1, retryHash)
     }
 }
 
@@ -213,13 +216,14 @@ private fun onResultUpdateProduct(
     ctx: Context,
     selectedImageUri: MutableState<Uri?>,
     retrofitAPI: RetrofitAPI,
-    product: ProductModel
+    product: ProductModel,
+    retryHash: MutableState<Long>
 ) {
     if (selectedImageUri.value != null) {
         if (product.url != null) {
-            updatePicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
+            updatePicture(ctx, retrofitAPI, product, selectedImageUri.value!!, retryHash)
         } else {
-            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!)
+            uploadPicture(ctx, retrofitAPI, product, selectedImageUri.value!!, retryHash)
         }
     }
 //    Toast.makeText(
@@ -341,7 +345,8 @@ fun uploadPicture(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     product: ProductModel,
-    uri: Uri
+    uri: Uri,
+    retryHash: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
 //        val imageBytes = Base64.decode(uriToString(ctx, uri)!!, 0)
@@ -359,7 +364,7 @@ fun uploadPicture(
 //                uriToString(ctx, uri)!!,
                 "Bearer ".plus(getToken(ctx))
             )
-        onResultUploadPicture(res, ctx, product, uri, retrofitAPI)
+        onResultUploadPicture(res, ctx, product, uri, retrofitAPI, retryHash)
     }
 }
 
@@ -389,9 +394,10 @@ private fun onResultUploadPicture(
     ctx: Context,
     product: ProductModel,
     uri: Uri,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    retryHash: MutableState<Long>
 ) {
-    getPicture(ctx, retrofitAPI, product)
+    getPicture(ctx, retrofitAPI, product, retryHash)
 //    Toast.makeText(
 //        ctx,
 //        "Response Code : " + result!!.code() + "\n" + result.body(),
@@ -404,7 +410,8 @@ private fun onResultUploadPicture(
 fun getPicture(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
-    product: ProductModel
+    product: ProductModel,
+    retryHash: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
@@ -412,14 +419,15 @@ fun getPicture(
                 product.id,
                 "Bearer ".plus(getToken(ctx))
             )
-        onResultGetPicture(res, ctx, product)
+        onResultGetPicture(res, ctx, product, retryHash)
     }
 }
 
 private fun onResultGetPicture(
     result: Response<ImageResponseModel>?,
     ctx: Context,
-    product: ProductModel
+    product: ProductModel,
+    retryHash: MutableState<Long>
 ) {
 //    Toast.makeText(
 //        ctx,
@@ -428,6 +436,7 @@ private fun onResultGetPicture(
 //    ).show()
     if (result!!.body() != null) {
         product.url = result.body()!!.link
+        retryHash.value++
     }
 }
 
@@ -436,7 +445,8 @@ fun reloadPicture(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     product: ProductModel,
-    uri: Uri
+    uri: Uri,
+    retryHash: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
 //        val imageBytes = Base64.decode(uriToString(ctx, uri)!!, 0)
@@ -454,7 +464,7 @@ fun reloadPicture(
 //                uriToString(ctx, uri)!!,
                 "Bearer ".plus(getToken(ctx))
             )
-        onResultReloadPicture(res, ctx, product, uri, retrofitAPI)
+        onResultReloadPicture(res, ctx, product, uri, retrofitAPI, retryHash)
     }
 }
 private fun onResultReloadPicture(
@@ -462,9 +472,10 @@ private fun onResultReloadPicture(
     ctx: Context,
     product: ProductModel,
     uri: Uri,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    retryHash: MutableState<Long>
 ) {
-    getPicture(ctx, retrofitAPI, product)
+    getPicture(ctx, retrofitAPI, product, retryHash)
 //    Toast.makeText(
 //        ctx,
 //        "Response Code : " + result!!.code() + "\n" + result.body(),
@@ -478,7 +489,8 @@ fun updatePicture(
     ctx: Context,
     retrofitAPI: RetrofitAPI,
     product: ProductModel,
-    uri: Uri
+    uri: Uri,
+    retryHash: MutableState<Long>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res =
@@ -486,7 +498,7 @@ fun updatePicture(
                 product.id,
                 "Bearer ".plus(getToken(ctx))
             )
-        onResultUpdatePicture(res, ctx, product, uri, retrofitAPI)
+        onResultUpdatePicture(res, ctx, product, uri, retrofitAPI, retryHash)
     }
 }
 private fun onResultUpdatePicture(
@@ -494,8 +506,41 @@ private fun onResultUpdatePicture(
     ctx: Context,
     product: ProductModel,
     uri: Uri,
-    retrofitAPI: RetrofitAPI
+    retrofitAPI: RetrofitAPI,
+    retryHash: MutableState<Long>
 ) {
-    uploadPicture(ctx, retrofitAPI, product, uri)
+    uploadPicture(ctx, retrofitAPI, product, uri, retryHash)
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun deleteProduct(
+    ctx: Context,
+    retrofitAPI: RetrofitAPI,
+    productId: Int
+) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val res =
+            retrofitAPI.deleteProduct(
+                productId,
+                "Bearer ".plus(getToken(ctx))
+            )
+        onResultDeleteProduct(res, ctx)
+    }
+}
+
+private fun onResultDeleteProduct(
+    result: Response<Void>?,
+    ctx: Context,
+) {
+    Toast.makeText(
+        ctx,
+        "Продукт успешно удален",
+        Toast.LENGTH_SHORT
+    ).show()
+    val eventParameters1 = "{\"button_clicked\":\"delete product\"}"
+    AppMetrica.reportEvent(
+        "product deleted",
+        eventParameters1
+    )
 }
 

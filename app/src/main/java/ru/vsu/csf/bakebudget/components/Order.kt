@@ -100,7 +100,7 @@ fun Order(order: OrderModel,
                     .clickable(onClick = { openAlertDialog.value = true }),
                 model = order.product.url,
                 error = painterResource(R.drawable.error),
-                placeholder = painterResource(id = R.drawable.loading),
+                placeholder = painterResource(id = R.drawable.loading2),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,6 +33,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
@@ -51,20 +58,27 @@ import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
+import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.addIngredientToProduct
+import ru.vsu.csf.bakebudget.services.deleteOutgoing
+import ru.vsu.csf.bakebudget.services.deleteProduct
 import ru.vsu.csf.bakebudget.services.findAllIngredientsInProduct
+import ru.vsu.csf.bakebudget.services.updateOutgoing
 import ru.vsu.csf.bakebudget.services.updateProduct
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import java.util.Locale
@@ -78,7 +92,9 @@ fun ProductView(
     product: ProductModel,
     ingredientsResponse: MutableList<IngredientResponseModel>,
     retrofitAPI: RetrofitAPI,
-    load: MutableState<Boolean>
+    load: MutableState<Boolean>,
+    products: MutableList<ProductModel>,
+    productsResponse: MutableList<ProductResponseModel>
 ) {
     val mContext = LocalContext.current
 
@@ -114,13 +130,44 @@ fun ProductView(
         load.value = true
     }
 
+    val openAlertDialogDelete = remember { mutableStateOf(false) }
+
+    when {
+        openAlertDialogDelete.value -> {
+            DeleteAlert(
+                onDismissRequest = {
+                    openAlertDialogDelete.value = false
+                },
+                onConfirmation = {
+                    navController.navigate("products")
+                    openAlertDialogDelete.value = false
+                },
+                "Удалить изделие",
+                "Вы уверены, что хотите удалить изделие?",
+                mContext,
+                products,
+                productsResponse,
+                product.id,
+                retrofitAPI,
+                product
+            )
+        }
+    }
+
+    val retryHash = remember {
+        mutableLongStateOf(0)
+    }
+
+    val productId: Int = product.id
+
 
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
         openAlertDialog.value -> {
             AlertDialog2(
                 onDismissRequest = {
-                    openAlertDialog.value = false },
+                    openAlertDialog.value = false
+                },
                 onConfirmation = {
                     openAlertDialog.value = false
                 },
@@ -131,7 +178,7 @@ fun ProductView(
                 product.ingredients,
                 mContext,
                 ingredientsResponse,
-                product.id,
+                productId,
                 mutableSetOf<String>(),
                 true
             )
@@ -180,20 +227,41 @@ fun ProductView(
                                     } else {
                                         for (ingredient in product.ingredients) {
                                             ingredient.productId = product.id
-                                            addIngredientToProduct(mContext, retrofitAPI, ingredient)
+                                            addIngredientToProduct(
+                                                mContext,
+                                                retrofitAPI,
+                                                ingredient
+                                            )
                                         }
-                                        updateProduct(mContext, retrofitAPI, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id, selectedImageUri, product)
+                                        updateProduct(
+                                            mContext,
+                                            retrofitAPI,
+                                            ProductRequestModel(
+                                                name.value,
+                                                estimatedWeight.value.toInt()
+                                            ),
+                                            product.id,
+                                            selectedImageUri,
+                                            product,
+                                            retryHash
+                                        )
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
                                         if (selectedImageUri.value != null) {
+                                            product.url = null
+                                        }
+                                        //TODO:Если что убрать
+                                        if (selectedImageUri.value != null) {
                                             product.uri = selectedImageUri.value
                                         }
-                                        val eventParameters1 = "{\"button_clicked\":\"save product\"}"
+                                        val eventParameters1 =
+                                            "{\"button_clicked\":\"save product\"}"
                                         AppMetrica.reportEvent(
                                             "Existing product saved",
                                             eventParameters1
                                         )
                                         navController.navigate("products")
+//                                        navController.navigate("home")
                                     }
                                 }
                             ) {
@@ -215,7 +283,7 @@ fun ProductView(
                 ) {
                     Column {
                         var last = 0
-                        Header(scope = scope, drawerState = drawerState, product.name)
+                        Header(scope = scope, drawerState = drawerState, product.name, openAlertDialogDelete)
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -224,11 +292,24 @@ fun ProductView(
                                 .padding(top = 20.dp)
                         ) {
                             itemsIndexed(product.ingredients) { num, ingredient ->
-                                IngredientInRecipe(ingredient = ingredient, if (num % 2 == 0) SideBack else Back2, product.ingredients, ingredientsAll, selectedItemIndex, ingredientsResponse, retrofitAPI, mutableSetOf<String>())
+                                IngredientInRecipe(
+                                    ingredient = ingredient,
+                                    if (num % 2 == 0) SideBack else Back2,
+                                    product.ingredients,
+                                    ingredientsAll,
+                                    selectedItemIndex,
+                                    ingredientsResponse,
+                                    retrofitAPI,
+                                    mutableSetOf<String>()
+                                )
                                 last = num
                             }
                             item {
-                                EstimatedWeightName(color = if (last % 2 != 0) SideBack else SideBack, estimatedWeight = estimatedWeight, name = name)
+                                EstimatedWeightName(
+                                    color = if (last % 2 != 0) SideBack else SideBack,
+                                    estimatedWeight = estimatedWeight,
+                                    name = name
+                                )
                             }
                             item {
                                 ImagePicker(selectedImageUri, product.uri, product.url)
@@ -241,7 +322,7 @@ fun ProductView(
 }
 
 @Composable
-private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName: String) {
+private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName: String, openAlertDialogDelete: MutableState<Boolean>) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -275,7 +356,21 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName:
                         .padding(top = 8.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = productName.uppercase(Locale.ROOT), fontSize = 24.sp, color = Color.White)
+                    Row {
+                        Text(
+                            text = productName.uppercase(Locale.ROOT),
+                            fontSize = 24.sp,
+                            color = Color.White
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .clickable(onClick = { openAlertDialogDelete.value = true }),
+                            imageVector = Icons.Default.Delete,
+                            tint = Color.White,
+                            contentDescription = "delete",
+                            )
+                    }
                 }
             }
             Row(
@@ -292,4 +387,63 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName:
             }
         }
     }
+}
+
+@Composable
+fun DeleteAlert(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    context: Context,
+    products: MutableList<ProductModel>,
+    productsResponse: MutableList<ProductResponseModel>,
+    productId: Int,
+    retrofitAPI: RetrofitAPI,
+    product: ProductModel
+) {
+    androidx.compose.material3.AlertDialog(
+        containerColor = SideBack,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier.fillMaxWidth(0.9f),
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Text(text = dialogText)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    deleteProduct(context, retrofitAPI, productId)
+                    for (ingredient in product.ingredients) {
+                        product.ingredients.remove(ingredient)
+                    }
+                    for (outgoing in product.outgoings) {
+                        product.outgoings.remove(outgoing)
+                    }
+                    if (products.contains(product)) {
+                        products.remove(product)
+                    }
+                    onConfirmation()
+                }
+            ) {
+                Text("Удалить")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
 }

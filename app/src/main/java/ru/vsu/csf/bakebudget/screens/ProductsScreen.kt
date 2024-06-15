@@ -24,6 +24,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,6 +89,10 @@ fun ProductsScreen(
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+
+    val retryHash = remember {
+        mutableLongStateOf(0)
+    }
     val eventParameters1 = "{\"button_clicked\":\"product_add\"}"
 
     if (getToken(mContext) != null && !isDataReceivedIngredients.value) {
@@ -118,7 +123,7 @@ fun ProductsScreen(
             )
         }
         for (product in products) {
-            getPicture(mContext, retrofitAPI, product)
+            getPicture(mContext, retrofitAPI, product, retryHash)
         }
     }
     if (ingredients.isEmpty() && ingredientsResponse.isNotEmpty()) {
@@ -205,7 +210,7 @@ fun ProductsScreen(
                             columns = GridCells.Fixed(2)
                         ) {
                             itemsIndexed(products) { num, product ->
-                                Product(navController, product = product, num)
+                                Product(navController, product = product, num, retryHash)
                             }
                         }
                     }
