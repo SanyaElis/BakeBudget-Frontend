@@ -139,8 +139,8 @@ fun ProductView(
                     openAlertDialogDelete.value = false
                 },
                 onConfirmation = {
-                    navController.navigate("products")
                     openAlertDialogDelete.value = false
+                    navController.navigate("products")
                 },
                 "Удалить изделие",
                 "Вы уверены, что хотите удалить изделие?",

@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
         .create()
 
     private val certificatePinner = CertificatePinner.Builder()
-        .add("bakebudget.ru", "sha256/"  + "AKTn7mPMXBbfMM+QiM5ck9vT71KNeH7gQS9HH77u1Qg=")
+        .add("bakebudget.ru", "sha256/" + "AKTn7mPMXBbfMM+QiM5ck9vT71KNeH7gQS9HH77u1Qg=")
         .build()
 
 
@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val outgoings = remember {
-                        mutableStateListOf<OutgoingModel>()
+                    mutableStateListOf<OutgoingModel>()
                 }
 
                 val ingredientsInRecipe = remember {
@@ -119,6 +119,9 @@ class MainActivity : ComponentActivity() {
                 }
                 val isDataReceivedOrders = remember {
                     mutableStateOf(false)
+                }
+                val firstTimePr = remember {
+                    mutableStateOf(true)
                 }
                 val orders = remember {
                     mutableStateListOf<OrderModel>()
@@ -168,7 +171,8 @@ class MainActivity : ComponentActivity() {
                     orders1,
                     orders2,
                     orders3,
-                    retryHash
+                    retryHash,
+                    firstTimePr
                 )
             }
         }
@@ -189,22 +193,67 @@ class MainActivity : ComponentActivity() {
         ingredientsSet: MutableSet<String>,
         isDataReceivedProducts: MutableState<Boolean>,
         productsResponse: MutableList<ProductResponseModel>,
-        isDataReceivedOutgoings : MutableState<Boolean>,
-        isDataReceivedOrders : MutableState<Boolean>,
-        userRole : MutableState<String>,
-        orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
-        retryHash: MutableState<Long>
+        isDataReceivedOutgoings: MutableState<Boolean>,
+        isDataReceivedOrders: MutableState<Boolean>,
+        userRole: MutableState<String>,
+        orders0: MutableList<OrderModel>,
+        orders1: MutableList<OrderModel>,
+        orders2: MutableList<OrderModel>,
+        orders3: MutableList<OrderModel>,
+        retryHash: MutableState<Long>,
+        firstTryPr: MutableState<Boolean>
     ) {
         NavHost(
             navController = navController,
             startDestination = "home"
         ) {
             composable(route = "login") {
-                LoginScreen(navController, isLogged, retrofitAPI, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3)
+                LoginScreen(
+                    navController,
+                    isLogged,
+                    retrofitAPI,
+                    userRole,
+                    ingredients,
+                    products,
+                    ingredientsInRecipe,
+                    outgoings,
+                    orders,
+                    isDataReceivedIngredients,
+                    ingredientsResponse,
+                    ingredientsSet,
+                    isDataReceivedProducts,
+                    productsResponse,
+                    isDataReceivedOutgoings,
+                    isDataReceivedOrders,
+                    orders0,
+                    orders1,
+                    orders2,
+                    orders3,
+                    firstTryPr
+                )
             }
 
             composable(route = "home") {
-                HomeScreen(navController, isLogged, products, retrofitAPI, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, ingredients, ingredientsSet, orders, isDataReceivedOrders, products, orders0, orders1, orders2, orders3)
+                HomeScreen(
+                    navController,
+                    isLogged,
+                    products,
+                    retrofitAPI,
+                    isDataReceivedProducts,
+                    productsResponse,
+                    ingredientsResponse,
+                    isDataReceivedIngredients,
+                    ingredients,
+                    ingredientsSet,
+                    orders,
+                    isDataReceivedOrders,
+                    products,
+                    orders0,
+                    orders1,
+                    orders2,
+                    orders3,
+                    firstTryPr
+                )
             }
 
             composable(route = "register") {
@@ -228,7 +277,8 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "products") {
-                ProductsScreen(navController, products, ingredients, isLogged,
+                ProductsScreen(
+                    navController, products, ingredients, isLogged,
                     retrofitAPI,
                     isDataReceivedProducts,
                     productsResponse,
@@ -239,7 +289,8 @@ class MainActivity : ComponentActivity() {
                     orders,
                     isDataReceivedOrders,
                     products,
-                    orders0, orders1, orders2, orders3
+                    orders0, orders1, orders2, orders3,
+                    firstTryPr
                 )
             }
 
@@ -259,8 +310,7 @@ class MainActivity : ComponentActivity() {
 
             composable(route = "products/{id}", arguments = listOf(navArgument(name = "id") {
                 type = NavType.IntType
-            })) {
-                backstackEntry ->
+            })) { backstackEntry ->
                 val load = remember {
                     mutableStateOf(false)
                 }
@@ -268,7 +318,18 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     ingredientsAll = ingredients,
                     isLogged = isLogged,
-                    product = products[backstackEntry.arguments?.getInt("id")!!],
+                    product = if (products.size > backstackEntry.arguments?.getInt("id")!!) products[backstackEntry.arguments?.getInt(
+                        "id"
+                    )!!] else ProductModel(
+                        -1,
+                        null,
+                        R.drawable.cake,
+                        "",
+                        mutableListOf<IngredientInProductModel>(),
+                        mutableListOf<OutgoingModel>(),
+                        0,
+                        null
+                    ),
                     ingredientsResponse,
                     retrofitAPI,
                     load,
@@ -278,9 +339,24 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "outgoings") {
-                OutgoingsScreen(navController, outgoings, products, isLogged, retrofitAPI, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, isDataReceivedOutgoings,                    orders,
+                OutgoingsScreen(
+                    navController,
+                    outgoings,
+                    products,
+                    isLogged,
+                    retrofitAPI,
+                    isDataReceivedProducts,
+                    productsResponse,
+                    ingredientsResponse,
+                    isDataReceivedIngredients,
+                    isDataReceivedOutgoings,
+                    orders,
                     isDataReceivedOrders,
-                    orders0, orders1, orders2, orders3)
+                    orders0,
+                    orders1,
+                    orders2,
+                    orders3
+                )
             }
 
             composable(route = "reports") {
@@ -292,11 +368,43 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(route = "calculation") {
-                CalculationScreen(navController, isLogged, products, orders, retrofitAPI, isDataReceivedProducts, productsResponse, isDataReceivedOrders, orders0, orders1, orders2, orders3)
+                CalculationScreen(
+                    navController,
+                    isLogged,
+                    products,
+                    orders,
+                    retrofitAPI,
+                    isDataReceivedProducts,
+                    productsResponse,
+                    isDataReceivedOrders,
+                    orders0,
+                    orders1,
+                    orders2,
+                    orders3
+                )
             }
 
             composable(route = "orders") {
-                OrdersScreen(navController, isLogged, orders, retrofitAPI, isDataReceivedOrders, products, orders0, orders1, orders2, orders3, isDataReceivedProducts, productsResponse, ingredientsResponse, isDataReceivedIngredients, ingredients, ingredientsSet, products)
+                OrdersScreen(
+                    navController,
+                    isLogged,
+                    orders,
+                    retrofitAPI,
+                    isDataReceivedOrders,
+                    products,
+                    orders0,
+                    orders1,
+                    orders2,
+                    orders3,
+                    isDataReceivedProducts,
+                    productsResponse,
+                    ingredientsResponse,
+                    isDataReceivedIngredients,
+                    ingredients,
+                    ingredientsSet,
+                    products,
+                    firstTryPr
+                )
             }
         }
     }

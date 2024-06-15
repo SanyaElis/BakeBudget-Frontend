@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -86,6 +87,7 @@ import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameName
 import java.util.Timer
 import kotlin.concurrent.schedule
+import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -220,7 +222,7 @@ fun ProductAddScreen(
                                             ProductModel(
                                                 0,
 //                                                selectedImageUri.value,
-                                                null,
+                                                selectedImageUri.value,
                                                 R.drawable.cake,
                                                 name.value,
                                                 ings,
@@ -236,12 +238,9 @@ fun ProductAddScreen(
                                             "Product created",
                                             eventParameters1
                                         )
-                                        runBlocking {
-                                            delay(100)
-                                            navController.navigate("products")
+                                        navController.navigate("products")
 //                                            navController.navigate("home")
-                                            ingredients.clear()
-                                        }
+                                        ingredients.clear()
 //                                        runBlocking {
 //                                            delay(300)
 //                                            navController.navigate("home")

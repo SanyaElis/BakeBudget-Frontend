@@ -1,10 +1,9 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -49,11 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.clearIsProUser
@@ -65,9 +63,11 @@ import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.services.changeRole
 import ru.vsu.csf.bakebudget.services.createCode
 import ru.vsu.csf.bakebudget.services.getCode
+import ru.vsu.csf.bakebudget.services.leaveGroup
 import ru.vsu.csf.bakebudget.services.setCode
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 import ru.vsu.csf.bakebudget.utils.codeAlreadyGenerated
 import ru.vsu.csf.bakebudget.utils.codeCopied
 import java.util.Timer
@@ -242,15 +242,35 @@ fun GroupsScreen(
                                     }
                                 } else {
                                     if (generatedCode.value != "") {
-                                        Box(
-                                            modifier = Modifier.padding(8.dp),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = "Сейчас вы принадлежите группе с кодом: " + generatedCode.value,
-                                                fontSize = 20.sp,
-                                                textAlign = TextAlign.Center
-                                            )
+                                        Column {
+                                            Box(
+                                                modifier = Modifier.padding(8.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "Сейчас вы принадлежите группе с кодом: " + generatedCode.value,
+                                                    fontSize = 20.sp,
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            }
+                                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                                                Text(
+                                                    text = "Выйти",
+                                                    fontSize = 20.sp,
+                                                    textAlign = TextAlign.Center
+                                                )
+                                                Icon(
+                                                    modifier = Modifier
+                                                        .padding(5.dp)
+                                                        .clickable(onClick = {
+                                                            generatedCode.value = ""
+                                                            leaveGroup(mContext,retrofitAPI)
+                                                        }),
+                                                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                                    tint = TextPrimary,
+                                                    contentDescription = "exit group",
+                                                )
+                                            }
                                         }
                                     }
                                     //TODO:выйти из группы
