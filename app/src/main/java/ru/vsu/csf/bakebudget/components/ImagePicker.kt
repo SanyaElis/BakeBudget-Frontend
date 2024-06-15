@@ -118,7 +118,7 @@ fun ImagePicker(selectedImageUri: MutableState<Uri?>, uri: Uri?, url: String?) {
                         .clip(RoundedCornerShape(14.dp)),
                     model = if (selectedImageUri.value == null) url else selectedImageUri.value,
                     error = painterResource(R.drawable.error),
-                    placeholder = painterResource(id = R.drawable.loading),
+                    placeholder = painterResource(id = R.drawable.loading2),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )

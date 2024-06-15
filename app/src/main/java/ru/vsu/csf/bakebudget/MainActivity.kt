@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -143,6 +144,10 @@ class MainActivity : ComponentActivity() {
                     isLoggedIn.value = true
                 }
 
+                val retryHash = remember {
+                    mutableLongStateOf(0)
+                }
+
                 NavGraph(
                     navController = navController,
                     ingredients,
@@ -162,7 +167,8 @@ class MainActivity : ComponentActivity() {
                     orders0,
                     orders1,
                     orders2,
-                    orders3
+                    orders3,
+                    retryHash
                 )
             }
         }
@@ -186,7 +192,8 @@ class MainActivity : ComponentActivity() {
         isDataReceivedOutgoings : MutableState<Boolean>,
         isDataReceivedOrders : MutableState<Boolean>,
         userRole : MutableState<String>,
-        orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
+        orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+        retryHash: MutableState<Long>
     ) {
         NavHost(
             navController = navController,

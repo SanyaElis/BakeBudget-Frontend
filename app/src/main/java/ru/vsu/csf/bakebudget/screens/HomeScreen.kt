@@ -32,6 +32,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -92,6 +93,10 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
     val selectedItem = remember {
         mutableStateOf(item[0])
     }
+
+    val retryHash = remember {
+        mutableLongStateOf(0)
+    }
     val mContext = LocalContext.current
 
 
@@ -135,7 +140,7 @@ fun HomeScreen(navController: NavHostController, isLogged: MutableState<Boolean>
                 )
             }
             for (product in products) {
-                getPicture(mContext, retrofitAPI, product)
+                getPicture(mContext, retrofitAPI, product, retryHash)
             }
         }
     }

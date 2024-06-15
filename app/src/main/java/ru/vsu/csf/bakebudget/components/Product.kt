@@ -2,6 +2,7 @@ package ru.vsu.csf.bakebudget.components
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,7 +49,8 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 fun Product(
     navController: NavHostController,
     product: ProductModel,
-    productId: Int
+    productId: Int,
+    retryHash: MutableState<Long>
 ) {
     val configuration = LocalConfiguration.current
     val mContext = LocalContext.current
@@ -70,7 +72,11 @@ fun Product(
                     .clickable(onClick = { navController.navigate("products/$productId") }),
                 model = product.url,
                 error = painterResource(R.drawable.error),
-                placeholder = painterResource(id = R.drawable.loading),
+                placeholder = painterResource(id = R.drawable.loading2),
+                onSuccess = {
+                    retryHash.value++
+                    Log.d("helpme", "Update $productId")
+                },
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
@@ -84,6 +90,7 @@ fun Product(
                         .clickable(onClick = { navController.navigate("products/$productId") }),
                     model = product.uri,
 //                        placeholder = painterResource(id = R.drawable.loading),
+                    onSuccess = { retryHash.value++ },
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )

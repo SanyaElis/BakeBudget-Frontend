@@ -28,6 +28,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -114,6 +115,10 @@ fun ProductView(
         load.value = true
     }
 
+    val retryHash = remember {
+        mutableLongStateOf(0)
+    }
+
 
     val openAlertDialog = remember { mutableStateOf(false) }
     when {
@@ -182,9 +187,11 @@ fun ProductView(
                                             ingredient.productId = product.id
                                             addIngredientToProduct(mContext, retrofitAPI, ingredient)
                                         }
-                                        updateProduct(mContext, retrofitAPI, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id, selectedImageUri, product)
+                                        updateProduct(mContext, retrofitAPI, ProductRequestModel(name.value, estimatedWeight.value.toInt()), product.id, selectedImageUri, product, retryHash)
                                         product.estWeight = estimatedWeight.value.toInt()
                                         product.name = name.value
+                                        product.url = null
+                                        //TODO:Если что убрать
                                         if (selectedImageUri.value != null) {
                                             product.uri = selectedImageUri.value
                                         }
@@ -194,6 +201,7 @@ fun ProductView(
                                             eventParameters1
                                         )
                                         navController.navigate("products")
+//                                        navController.navigate("home")
                                     }
                                 }
                             ) {
