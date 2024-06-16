@@ -163,7 +163,7 @@ fun AlertDialog3(
                     }
                 }
             ) {
-                Text("Редактировать")
+                Text("Сохранить")
             }
         },
         dismissButton = {

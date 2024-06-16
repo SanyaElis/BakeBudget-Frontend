@@ -7,9 +7,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val sizeForSmallDevices = 18.sp
+val sizeForSmallDevices = 20.sp
 val sizeForXSmallDevices = 16.sp
-val border = 350.dp
+val border = 380.dp
 val borderH = 700.dp
 
 // Set of Material typography styles to start with

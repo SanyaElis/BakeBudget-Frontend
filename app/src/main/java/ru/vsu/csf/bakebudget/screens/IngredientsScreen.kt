@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -59,6 +60,9 @@ import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.services.createIngredient
 import ru.vsu.csf.bakebudget.services.findAllIngredients
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
@@ -274,21 +278,31 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ИНГРЕДИЕНТЫ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ИНГРЕДИЕНТЫ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ИНГРЕДИЕНТЫ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(40.dp)
-                    .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "КОЛИЧЕСТВО (гр.)", color = Color.White, fontSize = 12.sp)
-                Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
+            val configuration = LocalConfiguration.current
+            val height = configuration.screenHeightDp.dp
+            if (height > (borderH + 80.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(40.dp)
+                        .background(PrimaryBack)
+                        .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
+                    Text(text = "КОЛИЧЕСТВО (гр.)", color = Color.White, fontSize = 12.sp)
+                    Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
+                }
             }
         }
     }

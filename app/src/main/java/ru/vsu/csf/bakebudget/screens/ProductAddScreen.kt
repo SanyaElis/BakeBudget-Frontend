@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,6 +81,8 @@ import ru.vsu.csf.bakebudget.services.createProduct
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
@@ -372,7 +375,13 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ИЗДЕЛИЕ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ИЗДЕЛИЕ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ИЗДЕЛИЕ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
             Row(

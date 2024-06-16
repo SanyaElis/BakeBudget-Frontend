@@ -262,7 +262,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                 ) {
                     val configuration = LocalConfiguration.current
                     val width = configuration.screenWidthDp.dp
-                    if (width <= border) {
+                    if (width < border) {
                         Text(text = "ГОТОВЫЕ ИЗДЕЛИЯ", fontSize = sizeForSmallDevices, color = Color.White)
                     } else {
                         Text(text = "ГОТОВЫЕ ИЗДЕЛИЯ", fontSize = 24.sp, color = Color.White)

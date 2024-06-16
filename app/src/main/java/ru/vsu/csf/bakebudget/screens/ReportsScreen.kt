@@ -36,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -62,6 +63,8 @@ import ru.vsu.csf.bakebudget.services.createReportOrders
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Timer
@@ -555,7 +558,13 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 60.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ОТЧЕТЫ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ОТЧЕТЫ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ОТЧЕТЫ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
         }

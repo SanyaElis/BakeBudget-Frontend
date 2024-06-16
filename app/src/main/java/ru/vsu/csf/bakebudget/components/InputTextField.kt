@@ -11,6 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
@@ -19,10 +23,12 @@ fun InputTextField(
     placeholder: String,
     text: MutableState<String>, max: Int
 ) {
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         value = text.value,
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -35,6 +41,12 @@ fun InputTextField(
         modifier = Modifier
             .padding(5.dp)
             .requiredWidth(120.dp)
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
     )
 }
 
@@ -44,10 +56,12 @@ fun InputTextField(
     text: MutableState<String>, max: Int,
     width: Int
 ) {
+    val focusManager = LocalFocusManager.current
     OutlinedTextField(
         value = text.value,
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -60,6 +74,12 @@ fun InputTextField(
         modifier = Modifier
             .padding(3.dp)
             .requiredWidth(width.dp)
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
     )
 }
 
@@ -69,10 +89,13 @@ fun InputTextField(
     text: MutableState<String>, max: Int,
     width: Boolean
 ) {
+    val focusManager = LocalFocusManager.current
+
     OutlinedTextField(
         value = text.value,
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -85,6 +108,12 @@ fun InputTextField(
         modifier = Modifier
             .padding(3.dp, end = 8.dp)
             .fillMaxWidth()
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
     )
 }
 
@@ -94,6 +123,8 @@ fun InputTextFieldGroup(
     text: MutableState<String>, max: Int,
     width: Boolean
 ) {
+    val focusManager = LocalFocusManager.current
+
     OutlinedTextField(
         value = text.value,
         onValueChange = { if (it.length <= max) text.value = it },
@@ -106,9 +137,16 @@ fun InputTextFieldGroup(
             focusedLabelColor = Color.White,
         ),
         label = { Text(placeholder) },
+        singleLine = true,
         maxLines = 1,
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp)
             .fillMaxWidth()
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
     )
 }

@@ -19,20 +19,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
 fun TextForm(label : String, textValue: MutableState<String>) {
+    val focusManager = LocalFocusManager.current
 
     OutlinedTextField(modifier = Modifier
         .fillMaxWidth(0.75f)
         .background(PrimaryBack)
         .padding(10.dp)
-        .requiredHeight(60.dp),
+        .requiredHeight(60.dp)
+        .onKeyEvent {
+            if (it.key == Key.Enter){
+                focusManager.clearFocus()
+            }
+            false
+        },
         value = textValue.value,
         label = { Text(text = label)},
+        singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
