@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.res.painterResource
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okio.BufferedSink
 import okio.source
 import retrofit2.Response
+import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
@@ -435,9 +437,13 @@ private fun onResultGetPicture(
 //        "Response Code : " + result!!.code() + "\n" + result.body(),
 //        Toast.LENGTH_SHORT
 //    ).show()
-    if (result!!.body() != null) {
-        product.url = result.body()!!.link
-        retryHash.value++
+    if (result!!.isSuccessful) {
+        if (result.body() != null) {
+            product.url = result.body()!!.link
+            retryHash.value++
+        }
+    } else {
+//        product.uri = Uri.parse("android.resource://ru.vsu.csf.bakebudget/drawable/error");
     }
 }
 

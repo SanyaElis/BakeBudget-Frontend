@@ -19,6 +19,7 @@ navigationCompose = "2.7.7"
 retrofitVersion = "2.9.0"
 uiTextGoogleFonts = "1.6.5"
 constraintlayoutComposeVersion = "1.0.1"
+roomKtxVersion = "2.6.1"
 
 [libraries]
 analytics = { module = "io.appmetrica.analytics:analytics", version.ref = "analyticsVersion" }
@@ -46,6 +47,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutComposeVersion" }
 landscapist-glide = { module = "com.github.skydoves:landscapist-glide", version.ref = "landscapistGlideVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtxVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
