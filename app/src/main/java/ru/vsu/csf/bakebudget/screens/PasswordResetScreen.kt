@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -53,6 +54,9 @@ fun PasswordResetScreen(
     isLogged: MutableState<Boolean>,
     retrofitAPI: RetrofitAPI
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val userEmail = remember {
         mutableStateOf("")
     }
@@ -99,7 +103,7 @@ fun PasswordResetScreen(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .background(PrimaryBack)
-                .padding(top = 250.dp),
+                .padding(top = height/3),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextForm(label = "Email", userEmail)

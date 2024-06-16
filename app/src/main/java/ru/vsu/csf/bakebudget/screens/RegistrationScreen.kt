@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,8 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 @Composable
 fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<Boolean>, retrofitAPI: RetrofitAPI) {
     val ctx = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
 
     val userName = remember {
         mutableStateOf("")
@@ -58,7 +62,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
             .fillMaxWidth()
             .fillMaxHeight()
             .background(PrimaryBack)
-            .padding(top = 250.dp),
+            .padding(top = height/4),
             horizontalAlignment = Alignment.CenterHorizontally) {
             TextForm(label = "Имя пользователя", userName)
             TextForm(label = "Email", userEmail)

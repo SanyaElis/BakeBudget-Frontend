@@ -214,7 +214,8 @@ fun ReportsScreen(
                     }
                 }
             }) {
-                Column {
+                Column(modifier = Modifier
+                    .fillMaxHeight(0.9f)) {
                     Header(scope = scope, drawerState = drawerState)
                     Surface(
                         modifier = Modifier
@@ -227,7 +228,7 @@ fun ReportsScreen(
                         DatePeriodField(dateEnd, openDatePicker2)
                         LazyColumn(
                             modifier = Modifier
-                                .fillMaxHeight(0.8f)
+                                .fillMaxHeight()
                                 .background(SideBack)
                                 .padding(start = 8.dp)
                         ) {

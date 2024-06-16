@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.ui.theme.SecondaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 
 @Composable
 fun SideMenu(
@@ -63,6 +65,9 @@ fun SideMenu(
     val eventParameters6 = "{\"button_clicked\":\"calculation\"}"
     val eventParameters7 = "{\"button_clicked\":\"reports\"}"
     val mContext = LocalContext.current
+
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
 
     DismissibleDrawerSheet(
         modifier = Modifier.clip(RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)),
@@ -173,7 +178,7 @@ fun SideMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(bottom = 110.dp),
+                    .padding(bottom = if (height > borderH) 110.dp else 30.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 TextButton(
