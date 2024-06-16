@@ -233,7 +233,7 @@ fun ProductView(
                                                 nameUnique = false
                                             }
                                         }
-                                        if (nameUnique) {
+                                        if (nameUnique || (product.name == name.value)) {
                                             for (ingredient in product.ingredients) {
                                                 ingredient.productId = product.id
                                                 addIngredientToProduct(

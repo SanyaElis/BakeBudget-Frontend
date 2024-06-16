@@ -1,6 +1,7 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
@@ -60,9 +62,12 @@ import ru.vsu.csf.bakebudget.components.InputTextFieldGroup
 import ru.vsu.csf.bakebudget.getIsProUser
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.ProductModel
+import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.services.changeRole
 import ru.vsu.csf.bakebudget.services.createCode
+import ru.vsu.csf.bakebudget.services.deleteProduct
 import ru.vsu.csf.bakebudget.services.getCode
 import ru.vsu.csf.bakebudget.services.leaveGroup
 import ru.vsu.csf.bakebudget.services.setCode
@@ -96,6 +101,11 @@ fun GroupsScreen(
     val code = remember {
         mutableStateOf("")
     }
+
+    val isPro = remember {
+        mutableStateOf(false)
+    }
+
     val generatedCode = remember {
         mutableStateOf("")
     }
@@ -104,9 +114,35 @@ fun GroupsScreen(
         mutableStateOf(false)
     }
 
-    val isPro = remember {
-        mutableStateOf(false)
+    val openAlertDialog = remember { mutableStateOf(false) }
+    when {
+        openAlertDialog.value -> {
+            ConfirmationAlert(
+                onDismissRequest = {
+                    openAlertDialog.value = false
+                },
+                onConfirmation = {
+                    changeRole(mContext, retrofitAPI, userRole)
+                    val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
+                    AppMetrica.reportEvent(
+                        "User enter advanced mode",
+                        eventParameters3
+                    )
+                    Timer().schedule(2000) {
+                        clearIsProUser(mContext)
+                        saveIsProUser("y", mContext)
+                        generatedCode.value = " "
+                        generatedCode.value = ""
+                        isPro.value = true
+                    }
+                    openAlertDialog.value = false
+                },
+                dialogTitle = "Переход на продвинутую версию",
+                dialogText = " Вы не сможете вернуться в обычную версию приложения. Уверены, что хотите перейти на продвинутую версию?"
+            )
+        }
     }
+
 
     if (getToken(mContext) != null && !codeExists.value) {
         getCode(mContext, retrofitAPI, generatedCode)
@@ -302,19 +338,7 @@ fun GroupsScreen(
                                         )
                                     }
                                     IconButton(onClick = {
-                                        changeRole(mContext, retrofitAPI, userRole)
-                                        val eventParameters3 = "{\"button_clicked\":\"advanced mode\"}"
-                                        AppMetrica.reportEvent(
-                                            "User enter advanced mode",
-                                            eventParameters3
-                                        )
-                                        Timer().schedule(2000) {
-                                            clearIsProUser(mContext)
-                                            saveIsProUser("y", mContext)
-                                            generatedCode.value = " "
-                                            generatedCode.value = ""
-                                            isPro.value = true
-                                        }
+                                        openAlertDialog.value = true
                                     }) {
                                         Icon(
                                             modifier = Modifier
@@ -377,4 +401,47 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
             }
         }
     }
+}
+
+@Composable
+fun ConfirmationAlert(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String
+) {
+    androidx.compose.material3.AlertDialog(
+        containerColor = SideBack,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier.fillMaxWidth(0.9f),
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Text(text = dialogText)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirmation()
+                }
+            ) {
+                Text("Перейти")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
 }

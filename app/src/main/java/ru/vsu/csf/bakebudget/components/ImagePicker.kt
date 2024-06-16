@@ -1,6 +1,9 @@
 package ru.vsu.csf.bakebudget.components
 
+import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,12 +35,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.room.util.getColumnIndex
 import coil.compose.AsyncImage
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.models.ProductModel
@@ -45,11 +50,21 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 
 @Composable
 fun ImagePicker(selectedImageUri: MutableState<Uri?>, uri: Uri?, url: String?) {
+    val mContext = LocalContext.current
+
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
-            selectedImageUri.value = it
+            it?.let { uri ->
+                val sizeInBytes = getFileSize(mContext, uri)
+                if (sizeInBytes > 4 * 1024 * 1024) { // 4 MB в байтах
+                    Toast.makeText(mContext, "Размер изображения превышает 4 МБ", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    selectedImageUri.value = uri
+                }
+            }
         }
     )
 
@@ -136,5 +151,13 @@ fun ImagePicker(selectedImageUri: MutableState<Uri?>, uri: Uri?, url: String?) {
         }
 
     }
+}
 
+fun getFileSize(context: Context, uri: Uri): Long {
+    val cursor = context.contentResolver.query(uri, null, null, null, null) ?: return 0
+    val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+    cursor.moveToFirst()
+    val size = cursor.getLong(sizeIndex)
+    cursor.close()
+    return size
 }

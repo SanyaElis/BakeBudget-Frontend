@@ -119,6 +119,13 @@ fun ReportsScreen(
         mutableStateListOf<Long>()
     }
 
+    val dataListOrdersGroup = remember {
+        mutableStateListOf<Long>()
+    }
+    val dataListIncomeGroup = remember {
+        mutableStateListOf<Long>()
+    }
+
     val reportState = remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
@@ -160,29 +167,30 @@ fun ReportsScreen(
                                     )
                                 )
                                 AppMetrica.reportEvent("Report created", eventParameters1)
-                                if (selectedIndexGroup.intValue == 0) {
+//                                if (selectedIndexGroup.intValue == 0) {
+                                createReportOrders(
+                                    mContext,
+                                    retrofitAPI,
+                                    ReportRequestModel(date1, date2, date1, date2),
+                                    dataListOrders,
+                                    reportState,
+                                    false
+                                )
+                                createReportIncome(
+                                    mContext,
+                                    retrofitAPI,
+                                    ReportRequestModel(date1, date2, date1, date2),
+                                    dataListIncome,
+                                    reportState,
+                                    false
+                                )
+//                                } else {
+                                if (getIsProUser(mContext).equals("y")) {
                                     createReportOrders(
                                         mContext,
                                         retrofitAPI,
                                         ReportRequestModel(date1, date2, date1, date2),
-                                        dataListOrders,
-                                        reportState,
-                                        false
-                                    )
-                                    createReportIncome(
-                                        mContext,
-                                        retrofitAPI,
-                                        ReportRequestModel(date1, date2, date1, date2),
-                                        dataListIncome,
-                                        reportState,
-                                        false
-                                    )
-                                } else {
-                                    createReportOrders(
-                                        mContext,
-                                        retrofitAPI,
-                                        ReportRequestModel(date1, date2, date1, date2),
-                                        dataListOrders,
+                                        dataListOrdersGroup,
                                         reportState,
                                         true
                                     )
@@ -190,12 +198,13 @@ fun ReportsScreen(
                                         mContext,
                                         retrofitAPI,
                                         ReportRequestModel(date1, date2, date1, date2),
-                                        dataListIncome,
+                                        dataListIncomeGroup,
                                         reportState,
                                         true
                                     )
                                 }
                             }
+//                            }
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.button_make_report),
@@ -305,100 +314,201 @@ fun ReportsScreen(
                             item {
                                 if (reportState.value) {
                                     if (selectedIndex.intValue == 0 && dataListOrders.isNotEmpty()) {
-                                        val floatValue = mutableListOf<Float>()
-                                        val xList =
-                                            mutableListOf("Принято", "Завершено", "Отменено")
+                                        if (selectedIndexGroup.intValue == 0) {
+                                            val floatValue = mutableListOf<Float>()
+                                            val xList =
+                                                mutableListOf("Принято", "Завершено", "Отменено")
 
-                                        dataListOrders.forEachIndexed { index, value ->
+                                            dataListOrders.forEachIndexed { index, value ->
 
-                                            val max =
-                                                if (dataListOrders.max() % 3L == 0L) dataListOrders.max() else (if (dataListOrders.max() % 3L == 1L) (dataListOrders.max() + 2) else dataListOrders.max() + 1)
-                                            floatValue.add(
-                                                index = index,
-                                                element = value.toFloat() / if (max.toFloat() == 0f) 1f else max.toFloat()
-                                            )
+                                                val max =
+                                                    if (dataListOrders.max() % 3L == 0L) dataListOrders.max() else (if (dataListOrders.max() % 3L == 1L) (dataListOrders.max() + 2) else dataListOrders.max() + 1)
+                                                floatValue.add(
+                                                    index = index,
+                                                    element = value.toFloat() / if (max.toFloat() == 0f) 1f else max.toFloat()
+                                                )
 
-                                        }
-                                        Column {
-                                            Spacer(modifier = Modifier.padding(12.dp))
-                                            Box(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(buildAnnotatedString {
-                                                    append("Завершено заказов: ")
-                                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                        append(dataListOrders[1].toString())
-                                                    }
-                                                })
                                             }
-                                            Spacer(modifier = Modifier.padding(12.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .fillMaxHeight()
-                                                    .padding(start = 8.dp, end = 8.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                BarGraph(
-                                                    graphBarData = floatValue,
-                                                    xAxisScaleData = xList,
-                                                    barData_ = dataListOrders,
-                                                    height = 250.dp,
-                                                    roundType = BarType.TOP_CURVED,
-                                                    barWidth = 30.dp,
-                                                    barColor = PrimaryBack,
-                                                    barArrangement = Arrangement.SpaceEvenly,
-                                                    true
+                                            Column {
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Завершено заказов: ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append(dataListOrders[1].toString())
+                                                        }
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .fillMaxHeight()
+                                                        .padding(start = 8.dp, end = 8.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    BarGraph(
+                                                        graphBarData = floatValue,
+                                                        xAxisScaleData = xList,
+                                                        barData_ = dataListOrders,
+                                                        height = 250.dp,
+                                                        roundType = BarType.TOP_CURVED,
+                                                        barWidth = 30.dp,
+                                                        barColor = PrimaryBack,
+                                                        barArrangement = Arrangement.SpaceEvenly,
+                                                        true
+                                                    )
+                                                }
+                                            }
+                                        } else if (dataListOrdersGroup.isNotEmpty()) {
+                                            val floatValue = mutableListOf<Float>()
+                                            val xList =
+                                                mutableListOf("Принято", "Завершено", "Отменено")
+
+                                            dataListOrdersGroup.forEachIndexed { index, value ->
+
+                                                val max =
+                                                    if (dataListOrdersGroup.max() % 3L == 0L) dataListOrdersGroup.max() else (if (dataListOrdersGroup.max() % 3L == 1L) (dataListOrdersGroup.max() + 2) else dataListOrdersGroup.max() + 1)
+                                                floatValue.add(
+                                                    index = index,
+                                                    element = value.toFloat() / if (max.toFloat() == 0f) 1f else max.toFloat()
+                                                )
+
+                                            }
+                                            Column {
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Завершено заказов: ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append(dataListOrdersGroup[1].toString())
+                                                        }
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .fillMaxHeight()
+                                                        .padding(start = 8.dp, end = 8.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    BarGraph(
+                                                        graphBarData = floatValue,
+                                                        xAxisScaleData = xList,
+                                                        barData_ = dataListOrdersGroup,
+                                                        height = 250.dp,
+                                                        roundType = BarType.TOP_CURVED,
+                                                        barWidth = 30.dp,
+                                                        barColor = PrimaryBack,
+                                                        barArrangement = Arrangement.SpaceEvenly,
+                                                        true
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    } else if (dataListIncome.isNotEmpty() && dataListIncomeGroup.isNotEmpty()) {
+                                        if (selectedIndexGroup.intValue == 0) {
+                                            val floatValue = mutableListOf<Float>()
+                                            val xList = mutableListOf("Расходы", "Доход")
+
+                                            dataListIncome.forEachIndexed { index, value ->
+
+                                                floatValue.add(
+                                                    index = index,
+                                                    element = value.toFloat() / if (dataListIncome.max()
+                                                            .toFloat() == 0f
+                                                    ) 1f else dataListIncome.max().toFloat()
                                                 )
                                             }
-                                        }
-                                    } else if (dataListIncome.isNotEmpty()) {
-                                        val floatValue = mutableListOf<Float>()
-                                        val xList = mutableListOf("Расходы", "Доход")
-
-                                        dataListIncome.forEachIndexed { index, value ->
-
-                                            floatValue.add(
-                                                index = index,
-                                                element = value.toFloat() / if (dataListIncome.max()
-                                                        .toFloat() == 0f
-                                                ) 1f else dataListIncome.max().toFloat()
-                                            )
-                                        }
-                                        Column {
-                                            Spacer(modifier = Modifier.padding(12.dp))
-                                            Box(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(buildAnnotatedString {
-                                                    append("Прибыль составила ")
-                                                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                        append((dataListIncome[1] - dataListIncome[0]).toString())
-                                                    }
-                                                    append(" р.")
-                                                })
+                                            Column {
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Прибыль составила ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append((dataListIncome[1] - dataListIncome[0]).toString())
+                                                        }
+                                                        append(" р.")
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .fillMaxHeight()
+                                                        .padding(start = 8.dp, end = 8.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    BarGraph(
+                                                        graphBarData = floatValue,
+                                                        xAxisScaleData = xList,
+                                                        barData_ = dataListIncome,
+                                                        height = 250.dp,
+                                                        roundType = BarType.TOP_CURVED,
+                                                        barWidth = 40.dp,
+                                                        barColor = PrimaryBack,
+                                                        barArrangement = Arrangement.SpaceEvenly,
+                                                        false
+                                                    )
+                                                }
                                             }
-                                            Spacer(modifier = Modifier.padding(12.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .fillMaxHeight()
-                                                    .padding(start = 8.dp, end = 8.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                BarGraph(
-                                                    graphBarData = floatValue,
-                                                    xAxisScaleData = xList,
-                                                    barData_ = dataListIncome,
-                                                    height = 250.dp,
-                                                    roundType = BarType.TOP_CURVED,
-                                                    barWidth = 40.dp,
-                                                    barColor = PrimaryBack,
-                                                    barArrangement = Arrangement.SpaceEvenly,
-                                                    false
+                                        } else if (dataListIncomeGroup.isNotEmpty()) {
+                                            val floatValue = mutableListOf<Float>()
+                                            val xList = mutableListOf("Расходы", "Доход")
+
+                                            dataListIncomeGroup.forEachIndexed { index, value ->
+
+                                                floatValue.add(
+                                                    index = index,
+                                                    element = value.toFloat() / if (dataListIncomeGroup.max()
+                                                            .toFloat() == 0f
+                                                    ) 1f else dataListIncomeGroup.max().toFloat()
                                                 )
+                                            }
+                                            Column {
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Прибыль составила ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append((dataListIncomeGroup[1] - dataListIncomeGroup[0]).toString())
+                                                        }
+                                                        append(" р.")
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .fillMaxHeight()
+                                                        .padding(start = 8.dp, end = 8.dp),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    BarGraph(
+                                                        graphBarData = floatValue,
+                                                        xAxisScaleData = xList,
+                                                        barData_ = dataListIncomeGroup,
+                                                        height = 250.dp,
+                                                        roundType = BarType.TOP_CURVED,
+                                                        barWidth = 40.dp,
+                                                        barColor = PrimaryBack,
+                                                        barArrangement = Arrangement.SpaceEvenly,
+                                                        false
+                                                    )
+                                                }
                                             }
                                         }
                                     }
