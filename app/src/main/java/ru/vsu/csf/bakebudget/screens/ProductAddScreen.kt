@@ -85,6 +85,8 @@ import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameName
+import ru.vsu.csf.bakebudget.utils.sameNameProduct
+import ru.vsu.csf.bakebudget.utils.successfulProduct
 import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlin.time.Duration.Companion.seconds
@@ -196,51 +198,61 @@ fun ProductAddScreen(
                                 onClick = {
                                     if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
                                         dataIncorrectToast(context = mContext)
-                                        val eventParameters2 = "{\"button_clicked\":\"create product\"}"
+                                        val eventParameters2 =
+                                            "{\"button_clicked\":\"create product\"}"
                                         AppMetrica.reportEvent(
                                             "Product creation failed",
                                             eventParameters2
                                         )
                                     } else {
-                                        val ings = mutableStateListOf<IngredientInProductModel>()
-                                        val outs = mutableStateListOf<OutgoingModel>()
-                                        for (ing in ingredients) {
-                                            ings.add(ing)
+                                        var nameUnique: Boolean = true
+                                        for (prod in products) {
+                                            if (prod.name == name.value) {
+                                                nameUnique = false
+                                            }
                                         }
-                                        for (out in outgoings) {
-                                            outs.add(out)
-                                        }
-                                        createProduct(
-                                            mContext,
-                                            retrofitAPI,
-                                            ProductRequestModel(
-                                                name.value,
-                                                estimatedWeight.value.toInt()
-                                            ),
-                                            productId,
-                                            products,
-                                            ProductModel(
-                                                0,
+                                        if (nameUnique) {
+                                            val ings =
+                                                mutableStateListOf<IngredientInProductModel>()
+                                            val outs = mutableStateListOf<OutgoingModel>()
+                                            for (ing in ingredients) {
+                                                ings.add(ing)
+                                            }
+                                            for (out in outgoings) {
+                                                outs.add(out)
+                                            }
+                                            createProduct(
+                                                mContext,
+                                                retrofitAPI,
+                                                ProductRequestModel(
+                                                    name.value,
+                                                    estimatedWeight.value.toInt()
+                                                ),
+                                                productId,
+                                                products,
+                                                ProductModel(
+                                                    0,
 //                                                selectedImageUri.value,
-                                                selectedImageUri.value,
-                                                R.drawable.cake,
-                                                name.value,
-                                                ings,
-                                                outs,
-                                                estimatedWeight.value.toInt(),
-                                                null
-                                            ),
-                                            selectedImageUri,
-                                            retryHash
-                                        )
-                                        val eventParameters1 = "{\"button_clicked\":\"create product\"}"
-                                        AppMetrica.reportEvent(
-                                            "Product created",
-                                            eventParameters1
-                                        )
-                                        navController.navigate("products")
+                                                    selectedImageUri.value,
+                                                    R.drawable.cake,
+                                                    name.value,
+                                                    ings,
+                                                    outs,
+                                                    estimatedWeight.value.toInt(),
+                                                    null
+                                                ),
+                                                selectedImageUri,
+                                                retryHash
+                                            )
+                                            val eventParameters1 =
+                                                "{\"button_clicked\":\"create product\"}"
+                                            AppMetrica.reportEvent(
+                                                "Product created",
+                                                eventParameters1
+                                            )
+                                            navController.navigate("products")
 //                                            navController.navigate("home")
-                                        ingredients.clear()
+                                            ingredients.clear()
 //                                        runBlocking {
 //                                            delay(300)
 //                                            navController.navigate("home")
@@ -250,7 +262,11 @@ fun ProductAddScreen(
 //                                                ingredients.clear()
 //                                            }
 //                                        }
-                                        //TODO:удаляет со 2 раза
+                                            successfulProduct(mContext)
+                                            //TODO:удаляет со 2 раза
+                                        } else {
+                                            sameNameProduct(mContext)
+                                        }
                                     }
                                 }
                             ) {
@@ -388,7 +404,7 @@ fun AlertDialog2(
     ingredientsResponse: MutableList<IngredientResponseModel>,
     productId: Int,
     currentSet: MutableSet<String>,
-    isView : Boolean
+    isView: Boolean
 ) {
     val weight = remember {
         mutableStateOf("")
