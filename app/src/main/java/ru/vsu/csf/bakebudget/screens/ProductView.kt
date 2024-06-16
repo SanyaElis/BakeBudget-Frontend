@@ -81,6 +81,8 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameNameProduct
+import ru.vsu.csf.bakebudget.utils.successfulProductEdit
 import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -225,43 +227,54 @@ fun ProductView(
                                     if (!(isWeightValid(estimatedWeight.value) && isNameValid(name.value))) {
                                         dataIncorrectToast(mContext)
                                     } else {
-                                        for (ingredient in product.ingredients) {
-                                            ingredient.productId = product.id
-                                            addIngredientToProduct(
+                                        var nameUnique: Boolean = true
+                                        for (prod in products) {
+                                            if (prod.name == name.value) {
+                                                nameUnique = false
+                                            }
+                                        }
+                                        if (nameUnique) {
+                                            for (ingredient in product.ingredients) {
+                                                ingredient.productId = product.id
+                                                addIngredientToProduct(
+                                                    mContext,
+                                                    retrofitAPI,
+                                                    ingredient
+                                                )
+                                            }
+                                            updateProduct(
                                                 mContext,
                                                 retrofitAPI,
-                                                ingredient
+                                                ProductRequestModel(
+                                                    name.value,
+                                                    estimatedWeight.value.toInt()
+                                                ),
+                                                product.id,
+                                                selectedImageUri,
+                                                product,
+                                                retryHash
                                             )
-                                        }
-                                        updateProduct(
-                                            mContext,
-                                            retrofitAPI,
-                                            ProductRequestModel(
-                                                name.value,
-                                                estimatedWeight.value.toInt()
-                                            ),
-                                            product.id,
-                                            selectedImageUri,
-                                            product,
-                                            retryHash
-                                        )
-                                        product.estWeight = estimatedWeight.value.toInt()
-                                        product.name = name.value
-                                        if (selectedImageUri.value != null) {
-                                            product.url = null
-                                        }
-                                        //TODO:Если что убрать
-                                        if (selectedImageUri.value != null) {
-                                            product.uri = selectedImageUri.value
-                                        }
-                                        val eventParameters1 =
-                                            "{\"button_clicked\":\"save product\"}"
-                                        AppMetrica.reportEvent(
-                                            "Existing product saved",
-                                            eventParameters1
-                                        )
-                                        navController.navigate("products")
+                                            product.estWeight = estimatedWeight.value.toInt()
+                                            product.name = name.value
+                                            if (selectedImageUri.value != null) {
+                                                product.url = null
+                                            }
+                                            //TODO:Если что убрать
+                                            if (selectedImageUri.value != null) {
+                                                product.uri = selectedImageUri.value
+                                            }
+                                            val eventParameters1 =
+                                                "{\"button_clicked\":\"save product\"}"
+                                            AppMetrica.reportEvent(
+                                                "Existing product saved",
+                                                eventParameters1
+                                            )
+                                            navController.navigate("products")
 //                                        navController.navigate("home")
+                                            successfulProductEdit(mContext)
+                                        } else {
+                                            sameNameProduct(mContext)
+                                        }
                                     }
                                 }
                             ) {
@@ -283,7 +296,12 @@ fun ProductView(
                 ) {
                     Column {
                         var last = 0
-                        Header(scope = scope, drawerState = drawerState, product.name, openAlertDialogDelete)
+                        Header(
+                            scope = scope,
+                            drawerState = drawerState,
+                            product.name,
+                            openAlertDialogDelete
+                        )
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -322,7 +340,12 @@ fun ProductView(
 }
 
 @Composable
-private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName: String, openAlertDialogDelete: MutableState<Boolean>) {
+private fun Header(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    productName: String,
+    openAlertDialogDelete: MutableState<Boolean>
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -369,7 +392,7 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState, productName:
                             imageVector = Icons.Default.Delete,
                             tint = Color.White,
                             contentDescription = "delete",
-                            )
+                        )
                     }
                 }
             }

@@ -27,6 +27,29 @@ fun sameName(context: Context) {
     ).show()
 }
 
+fun sameNameProduct(context: Context) {
+    Toast.makeText(
+        context,
+        "Продукт с таким названием уже существует!",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
+fun successfulProduct(context: Context) {
+    Toast.makeText(
+        context,
+        "Продукт успешно создан!",
+        Toast.LENGTH_LONG
+    ).show()
+}
+
+fun successfulProductEdit(context: Context) {
+    Toast.makeText(
+        context,
+        "Продукт успешно изменен!",
+        Toast.LENGTH_LONG
+    ).show()
+}
 fun codeAlreadyGenerated(context: Context) {
     Toast.makeText(
         context,
