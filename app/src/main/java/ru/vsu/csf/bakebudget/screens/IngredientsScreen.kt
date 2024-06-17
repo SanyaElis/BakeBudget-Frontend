@@ -343,7 +343,7 @@ fun AlertIngredientAdd(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(placeholder = "Название", name, 8, true)
+                InputTextField(placeholder = "Название", name, 30, true)
                 InputTextField(placeholder = "Вес", weight, 8, true)
                 InputTextField(placeholder = "Стоимость", cost, 8, true)
             }
