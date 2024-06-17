@@ -82,6 +82,7 @@ import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
@@ -107,6 +108,9 @@ fun ProductAddScreen(
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val productId = remember {
         mutableIntStateOf(-1)
     }
@@ -193,7 +197,7 @@ fun ProductAddScreen(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_add),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                     contentDescription = "add"
                                 )
                             }
@@ -274,7 +278,7 @@ fun ProductAddScreen(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_save),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_save else R.drawable.save_button_small),
                                     contentDescription = "save"
                                 )
                             }

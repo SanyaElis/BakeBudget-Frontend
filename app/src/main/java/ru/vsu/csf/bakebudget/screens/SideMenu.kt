@@ -178,7 +178,7 @@ fun SideMenu(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
-                    .padding(bottom = if (height > borderH) 110.dp else 30.dp),
+                    .padding(bottom = if (height > borderH) 110.dp else 20.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
                 TextButton(
@@ -190,7 +190,7 @@ fun SideMenu(
                     }
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.button_exit),
+                        painter = painterResource(id = if (height > borderH) R.drawable.button_exit else R.drawable.exit_button_small),
                         contentDescription = "exit"
                     )
                 }

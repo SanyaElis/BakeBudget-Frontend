@@ -80,6 +80,8 @@ fun IngredientsScreen(
     ingredientsResponse: MutableList<IngredientResponseModel>,
     ingredientsSet: MutableSet<String>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.ingredients, "Ингредиенты"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -180,7 +182,7 @@ fun IngredientsScreen(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_add),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                     contentDescription = "add"
                                 )
                             }
@@ -289,7 +291,8 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
             }
             val configuration = LocalConfiguration.current
             val height = configuration.screenHeightDp.dp
-            if (height > (borderH + 80.dp)) {
+            val width = configuration.screenWidthDp.dp
+            if ((height > borderH + 50.dp) && (width > border)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

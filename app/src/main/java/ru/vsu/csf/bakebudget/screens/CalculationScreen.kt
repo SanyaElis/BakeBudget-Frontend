@@ -69,6 +69,7 @@ import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
@@ -89,6 +90,9 @@ fun CalculationScreen(
     isDataReceivedOrders : MutableState<Boolean>,
     orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.calculation, "Расчет стоимости"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -214,7 +218,7 @@ fun CalculationScreen(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_calculate),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_calculate else R.drawable.calculate_button_small),
                                     contentDescription = "calculate"
                                 )
                             }
@@ -248,7 +252,7 @@ fun CalculationScreen(
 //                                }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_make_order),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_make_order else R.drawable.create_order_button_small),
                                     contentDescription = "make order"
                                 )
                             }

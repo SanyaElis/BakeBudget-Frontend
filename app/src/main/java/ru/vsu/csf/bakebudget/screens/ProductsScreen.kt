@@ -65,6 +65,7 @@ import ru.vsu.csf.bakebudget.services.getPicture
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -87,6 +88,9 @@ fun ProductsScreen(
     orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
     firstTimePr: MutableState<Boolean>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -182,7 +186,7 @@ fun ProductsScreen(
                             }
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.button_add),
+                                painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                 contentDescription = "add"
                             )
                         }

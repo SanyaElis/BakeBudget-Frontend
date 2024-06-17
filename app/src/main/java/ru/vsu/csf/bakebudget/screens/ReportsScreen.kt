@@ -64,6 +64,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -79,6 +80,9 @@ fun ReportsScreen(
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
 
     val item = listOf(MenuItemModel(R.drawable.reports, "Отчеты"))
@@ -210,7 +214,7 @@ fun ReportsScreen(
 //                            }
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.button_make_report),
+                                painter = painterResource(id = if (height > borderH) R.drawable.button_make_report else R.drawable.make_report_button_small),
                                 contentDescription = "make_report"
                             )
                         }

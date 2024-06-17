@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -81,6 +82,7 @@ import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
@@ -103,6 +105,9 @@ fun ProductView(
     products: MutableList<ProductModel>,
     productsResponse: MutableList<ProductResponseModel>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
 
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
@@ -223,7 +228,7 @@ fun ProductView(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_add),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                     contentDescription = "add"
                                 )
                             }
@@ -284,7 +289,7 @@ fun ProductView(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_save),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_save else R.drawable.save_button_small),
                                     contentDescription = "save"
                                 )
                             }
@@ -426,17 +431,22 @@ private fun Header(
                     }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(40.dp)
-                    .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "КОЛИЧЕСТВО В РЕЦЕПТЕ (гр.)", color = Color.White, fontSize = 12.sp)
+            val configuration = LocalConfiguration.current
+            val height = configuration.screenHeightDp.dp
+            val width = configuration.screenWidthDp.dp
+            if ((height > borderH + 50.dp) && (width > border)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(40.dp)
+                        .background(PrimaryBack)
+                        .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
+                    Text(text = "КОЛИЧЕСТВО В РЕЦЕПТЕ (гр.)", color = Color.White, fontSize = 12.sp)
+                }
             }
         }
     }

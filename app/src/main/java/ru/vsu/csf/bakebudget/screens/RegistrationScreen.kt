@@ -34,6 +34,7 @@ import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.services.register
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 
 
 @Composable
@@ -87,7 +88,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
                     navController.navigate("login")}
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.register_white_button),
+                    painter = painterResource(id = if (height > borderH) R.drawable.register_white_button else R.drawable.register_button_small),
                     contentDescription = "register"
                 )
             }

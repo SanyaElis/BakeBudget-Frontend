@@ -76,6 +76,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.codeAlreadyGenerated
 import ru.vsu.csf.bakebudget.utils.codeCopied
@@ -90,6 +91,9 @@ fun GroupsScreen(
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
 
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -208,12 +212,12 @@ fun GroupsScreen(
                         ) {
                             if (getIsProUser(mContext).equals("y") || isPro.value) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_generate),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_generate else R.drawable.generate_code_button_small),
                                     contentDescription = "generate"
                                 )
                             } else {
                                 Image(
-                                    painter = painterResource(id = R.drawable.confirm_button),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.confirm_button else R.drawable.confirm_button_small),
                                     contentDescription = "confirm"
                                 )
                             }

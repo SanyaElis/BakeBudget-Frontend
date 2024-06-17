@@ -35,7 +35,7 @@ fun TextForm(label : String, textValue: MutableState<String>) {
         .fillMaxWidth(0.75f)
         .background(PrimaryBack)
         .padding(10.dp)
-        .requiredHeight(60.dp)
+        .requiredHeight(65.dp)
         .onKeyEvent {
             if (it.key == Key.Enter){
                 focusManager.clearFocus()

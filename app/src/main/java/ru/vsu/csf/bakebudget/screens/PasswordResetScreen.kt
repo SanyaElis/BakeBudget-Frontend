@@ -45,6 +45,7 @@ import ru.vsu.csf.bakebudget.services.resetPassword
 import ru.vsu.csf.bakebudget.services.updateIngredientInProduct
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 
@@ -128,7 +129,7 @@ fun PasswordResetScreen(
                 }
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.confirm_button),
+                    painter = painterResource(id = if (height > borderH) R.drawable.confirm_button else R.drawable.confirm_button_small),
                     contentDescription = "confirm"
                 )
             }

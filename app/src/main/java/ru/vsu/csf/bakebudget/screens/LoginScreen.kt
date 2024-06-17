@@ -33,6 +33,7 @@ import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.login
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 
 @Composable
 fun LoginScreen(
@@ -98,7 +99,7 @@ fun LoginScreen(
                 }
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.button_enter),
+                    painter = painterResource(id = if (height > borderH) R.drawable.button_enter else R.drawable.enter_button_small),
                     contentDescription = "enter"
                 )
             }

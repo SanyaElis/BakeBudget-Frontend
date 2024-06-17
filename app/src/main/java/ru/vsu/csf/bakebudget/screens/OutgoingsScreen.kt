@@ -95,9 +95,14 @@ fun OutgoingsScreen(
     isDataReceivedIngredients: MutableState<Boolean>,
     isDataReceivedOutgoings: MutableState<Boolean>,
     orders: MutableList<OrderModel>,
-    isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedOrders: MutableState<Boolean>,
+    orders0: MutableList<OrderModel>,
+    orders1: MutableList<OrderModel>,
+    orders2: MutableList<OrderModel>,
+    orders3: MutableList<OrderModel>,
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -114,7 +119,18 @@ fun OutgoingsScreen(
         isDataReceivedIngredients.value = true
     }
     if (getToken(mContext) != null && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
+        findAllProducts(
+            mContext,
+            retrofitAPI,
+            productsResponse,
+            orders,
+            isDataReceivedOrders,
+            productsAll,
+            orders0,
+            orders1,
+            orders2,
+            orders3
+        )
         isDataReceivedProducts.value = true
     }
 
@@ -208,7 +224,7 @@ fun OutgoingsScreen(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_add),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                     contentDescription = "add"
                                 )
                             }
@@ -332,18 +348,19 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                     }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(40.dp)
-                    .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val configuration = LocalConfiguration.current
-                val height = configuration.screenHeightDp.dp
-                if (height > (borderH + 80.dp)) {
+            val configuration = LocalConfiguration.current
+            val height = configuration.screenHeightDp.dp
+            val width = configuration.screenWidthDp.dp
+            if ((height > borderH + 50.dp) && (width > border)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(40.dp)
+                        .background(PrimaryBack)
+                        .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
                     Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
                 }
