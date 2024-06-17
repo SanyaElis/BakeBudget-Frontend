@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -375,32 +377,47 @@ private fun Header(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(PrimaryBack)
-                        .padding(top = 8.dp, end = 50.dp),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    Row {
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Box(
+                        modifier = Modifier
+                            .background(PrimaryBack)
+                            .padding(top = 8.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
                         val configuration = LocalConfiguration.current
                         val width = configuration.screenWidthDp.dp
                         if (width < border) {
                             Text(
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
                                 text = productName.uppercase(Locale.ROOT),
                                 fontSize = sizeForSmallDevices,
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier.fillMaxWidth(0.77f),
+                                textAlign = TextAlign.Center
                             )
                         } else {
                             Text(
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
                                 text = productName.uppercase(Locale.ROOT),
                                 fontSize = 24.sp,
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier.fillMaxWidth(0.77f),
+                                textAlign = TextAlign.Center
                             )
                         }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(PrimaryBack)
+                            .padding(top = 8.dp, end = 13.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
                         Icon(
                             modifier = Modifier
-                                .padding(5.dp)
+                                .padding(top = 5.dp)
                                 .clickable(onClick = { openAlertDialogDelete.value = true }),
                             imageVector = Icons.Default.Delete,
                             tint = Color.White,
