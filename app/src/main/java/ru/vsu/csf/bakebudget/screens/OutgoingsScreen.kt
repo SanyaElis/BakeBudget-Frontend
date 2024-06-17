@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -40,6 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
@@ -51,6 +54,7 @@ import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
+import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.components.Outgoing
 import ru.vsu.csf.bakebudget.components.OutgoingAdd
 import ru.vsu.csf.bakebudget.getToken
@@ -65,6 +69,7 @@ import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.createIngredient
 import ru.vsu.csf.bakebudget.services.createOutgoing
 import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.services.findAllOutgoingsInProduct
@@ -78,6 +83,8 @@ import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
+import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameName
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -170,6 +177,26 @@ fun OutgoingsScreen(
         mutableStateOf("")
     }
 
+    val openAlertDialog = remember { mutableStateOf(false) }
+    when {
+        openAlertDialog.value -> {
+            AlertOutgoingAdd(
+                onDismissRequest = {
+                    openAlertDialog.value = false
+                },
+                onConfirmation = {
+                    openAlertDialog.value = false
+                },
+                dialogTitle = "Создать издержку",
+                dialogText = "Введите название и цену.",
+                mContext,
+                retrofitAPI,
+                name,
+                value, productsAll, selectedItemIndex
+            )
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -186,7 +213,7 @@ fun OutgoingsScreen(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.2f)
+                        .fillMaxHeight(0.1f)
                         .background(SideBack)
                         .padding(start = 8.dp, end = 8.dp),
                     shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp),
@@ -196,31 +223,9 @@ fun OutgoingsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            OutgoingAdd(name, value)
                             TextButton(
                                 onClick = {
-                                    if (!(isNameValid(name.value) && isCostValid(value.value))) {
-                                        dataIncorrectToast(context = mContext)
-                                        val eventParameters2 =
-                                            "{\"button_clicked\":\"create outgoing\"}"
-                                        AppMetrica.reportEvent(
-                                            "Outgoing add failed",
-                                            eventParameters2
-                                        )
-                                    } else {
-                                        createOutgoing(
-                                            mContext, retrofitAPI, OutgoingRequestModel(
-                                                name.value,
-                                                value.value.toInt()
-                                            ), productsAll[selectedItemIndex.intValue], productsAll
-                                        )
-                                        val eventParameters1 =
-                                            "{\"button_clicked\":\"create outgoing\"}"
-                                        AppMetrica.reportEvent(
-                                            "Outgoing created",
-                                            eventParameters1
-                                        )
-                                    }
+                                    openAlertDialog.value = true
                                 }
                             ) {
                                 Image(
@@ -244,7 +249,7 @@ fun OutgoingsScreen(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(0.8f)
+                                .fillMaxHeight(0.91f)
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
@@ -367,4 +372,82 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
             }
         }
     }
+}
+
+@Composable
+fun AlertOutgoingAdd(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    context: Context,
+    retrofitAPI: RetrofitAPI,
+    name: MutableState<String>,
+    value: MutableState<String>,
+    productsAll: MutableList<ProductModel>,
+    selectedItemIndex: MutableIntState
+
+) {
+    AlertDialog(
+        containerColor = SideBack,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier.fillMaxWidth(0.9f),
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Column {
+                Text(text = dialogText)
+                InputTextField(placeholder = "Название", name, 8, true)
+                InputTextField(placeholder = "Цена", value, 8, true)
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (!(isNameValid(name.value) && isCostValid(value.value))) {
+                        dataIncorrectToast(context = context)
+                        val eventParameters2 =
+                            "{\"button_clicked\":\"create outgoing\"}"
+                        AppMetrica.reportEvent(
+                            "Outgoing add failed",
+                            eventParameters2
+                        )
+                    } else {
+                        createOutgoing(
+                            context, retrofitAPI, OutgoingRequestModel(
+                                name.value,
+                                value.value.toInt()
+                            ), productsAll[selectedItemIndex.intValue], productsAll
+                        )
+                        val eventParameters1 =
+                            "{\"button_clicked\":\"create outgoing\"}"
+                        AppMetrica.reportEvent(
+                            "Outgoing created",
+                            eventParameters1
+                        )
+                        name.value = ""
+                        value.value = ""
+                        onConfirmation()
+                    }
+                }
+            ) {
+                Text("Сохранить")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
 }
