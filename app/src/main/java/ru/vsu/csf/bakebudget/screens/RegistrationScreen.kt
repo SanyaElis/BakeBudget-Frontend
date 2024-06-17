@@ -17,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -32,11 +34,14 @@ import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.services.register
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
+import ru.vsu.csf.bakebudget.ui.theme.borderH
 
 
 @Composable
 fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<Boolean>, retrofitAPI: RetrofitAPI) {
     val ctx = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
 
     val userName = remember {
         mutableStateOf("")
@@ -58,7 +63,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
             .fillMaxWidth()
             .fillMaxHeight()
             .background(PrimaryBack)
-            .padding(top = 250.dp),
+            .padding(top = height/4),
             horizontalAlignment = Alignment.CenterHorizontally) {
             TextForm(label = "Имя пользователя", userName)
             TextForm(label = "Email", userEmail)
@@ -83,7 +88,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
                     navController.navigate("login")}
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.register_white_button),
+                    painter = painterResource(id = if (height > borderH) R.drawable.register_white_button else R.drawable.register_button_small),
                     contentDescription = "register"
                 )
             }

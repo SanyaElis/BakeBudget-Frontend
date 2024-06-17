@@ -36,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -62,6 +63,9 @@ import ru.vsu.csf.bakebudget.services.createReportOrders
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Timer
@@ -76,6 +80,9 @@ fun ReportsScreen(
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
 
     val item = listOf(MenuItemModel(R.drawable.reports, "Отчеты"))
@@ -207,14 +214,15 @@ fun ReportsScreen(
 //                            }
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.button_make_report),
+                                painter = painterResource(id = if (height > borderH) R.drawable.button_make_report else R.drawable.make_report_button_small),
                                 contentDescription = "make_report"
                             )
                         }
                     }
                 }
             }) {
-                Column {
+                Column(modifier = Modifier
+                    .fillMaxHeight(0.9f)) {
                     Header(scope = scope, drawerState = drawerState)
                     Surface(
                         modifier = Modifier
@@ -227,7 +235,7 @@ fun ReportsScreen(
                         DatePeriodField(dateEnd, openDatePicker2)
                         LazyColumn(
                             modifier = Modifier
-                                .fillMaxHeight(0.8f)
+                                .fillMaxHeight()
                                 .background(SideBack)
                                 .padding(start = 8.dp)
                         ) {
@@ -554,7 +562,13 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 60.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ОТЧЕТЫ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ОТЧЕТЫ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ОТЧЕТЫ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
         }

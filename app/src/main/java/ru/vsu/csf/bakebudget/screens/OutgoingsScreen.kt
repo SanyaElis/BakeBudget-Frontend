@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -34,11 +36,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +54,7 @@ import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
+import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.components.Outgoing
 import ru.vsu.csf.bakebudget.components.OutgoingAdd
 import ru.vsu.csf.bakebudget.getToken
@@ -64,6 +69,7 @@ import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
+import ru.vsu.csf.bakebudget.services.createIngredient
 import ru.vsu.csf.bakebudget.services.createOutgoing
 import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.services.findAllOutgoingsInProduct
@@ -71,9 +77,14 @@ import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
+import ru.vsu.csf.bakebudget.utils.isWeightValid
+import ru.vsu.csf.bakebudget.utils.sameName
 import java.util.Timer
 import kotlin.concurrent.schedule
 
@@ -91,9 +102,14 @@ fun OutgoingsScreen(
     isDataReceivedIngredients: MutableState<Boolean>,
     isDataReceivedOutgoings: MutableState<Boolean>,
     orders: MutableList<OrderModel>,
-    isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedOrders: MutableState<Boolean>,
+    orders0: MutableList<OrderModel>,
+    orders1: MutableList<OrderModel>,
+    orders2: MutableList<OrderModel>,
+    orders3: MutableList<OrderModel>,
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.outgoings, "Издержки"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -110,7 +126,18 @@ fun OutgoingsScreen(
         isDataReceivedIngredients.value = true
     }
     if (getToken(mContext) != null && !isDataReceivedProducts.value) {
-        findAllProducts(mContext, retrofitAPI, productsResponse, orders, isDataReceivedOrders, productsAll, orders0, orders1, orders2, orders3)
+        findAllProducts(
+            mContext,
+            retrofitAPI,
+            productsResponse,
+            orders,
+            isDataReceivedOrders,
+            productsAll,
+            orders0,
+            orders1,
+            orders2,
+            orders3
+        )
         isDataReceivedProducts.value = true
     }
 
@@ -150,6 +177,26 @@ fun OutgoingsScreen(
         mutableStateOf("")
     }
 
+    val openAlertDialog = remember { mutableStateOf(false) }
+    when {
+        openAlertDialog.value -> {
+            AlertOutgoingAdd(
+                onDismissRequest = {
+                    openAlertDialog.value = false
+                },
+                onConfirmation = {
+                    openAlertDialog.value = false
+                },
+                dialogTitle = "Создать издержку",
+                dialogText = "Введите название и цену.",
+                mContext,
+                retrofitAPI,
+                name,
+                value, productsAll, selectedItemIndex
+            )
+        }
+    }
+
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -166,7 +213,7 @@ fun OutgoingsScreen(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.2f)
+                        .fillMaxHeight(0.1f)
                         .background(SideBack)
                         .padding(start = 8.dp, end = 8.dp),
                     shape = RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp),
@@ -176,35 +223,13 @@ fun OutgoingsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            OutgoingAdd(name, value)
                             TextButton(
                                 onClick = {
-                                    if (!(isNameValid(name.value) && isCostValid(value.value))) {
-                                        dataIncorrectToast(context = mContext)
-                                        val eventParameters2 =
-                                            "{\"button_clicked\":\"create outgoing\"}"
-                                        AppMetrica.reportEvent(
-                                            "Outgoing add failed",
-                                            eventParameters2
-                                        )
-                                    } else {
-                                        createOutgoing(
-                                            mContext, retrofitAPI, OutgoingRequestModel(
-                                                name.value,
-                                                value.value.toInt()
-                                            ), productsAll[selectedItemIndex.intValue], productsAll
-                                        )
-                                        val eventParameters1 =
-                                            "{\"button_clicked\":\"create outgoing\"}"
-                                        AppMetrica.reportEvent(
-                                            "Outgoing created",
-                                            eventParameters1
-                                        )
-                                    }
+                                    openAlertDialog.value = true
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_add),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                     contentDescription = "add"
                                 )
                             }
@@ -224,7 +249,7 @@ fun OutgoingsScreen(
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight(0.8f)
+                                .fillMaxHeight(0.91f)
                                 .background(SideBack)
                                 .padding(top = 20.dp)
                         ) {
@@ -319,21 +344,110 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 60.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ИЗДЕРЖКИ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ИЗДЕРЖКИ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ИЗДЕРЖКИ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(40.dp)
-                    .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
+            val configuration = LocalConfiguration.current
+            val height = configuration.screenHeightDp.dp
+            val width = configuration.screenWidthDp.dp
+            if ((height > borderH + 50.dp) && (width > border)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(40.dp)
+                        .background(PrimaryBack)
+                        .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
+                    Text(text = "СТОИМОСТЬ (руб.)", color = Color.White, fontSize = 12.sp)
+                }
             }
         }
     }
+}
+
+@Composable
+fun AlertOutgoingAdd(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    context: Context,
+    retrofitAPI: RetrofitAPI,
+    name: MutableState<String>,
+    value: MutableState<String>,
+    productsAll: MutableList<ProductModel>,
+    selectedItemIndex: MutableIntState
+
+) {
+    AlertDialog(
+        containerColor = SideBack,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+        modifier = Modifier.fillMaxWidth(0.9f),
+        title = {
+            Text(text = dialogTitle)
+        },
+        text = {
+            Column {
+                Text(text = dialogText)
+                InputTextField(placeholder = "Название", name, 30, true)
+                InputTextField(placeholder = "Цена", value, 8, true)
+            }
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (!(isNameValid(name.value) && isCostValid(value.value))) {
+                        dataIncorrectToast(context = context)
+                        val eventParameters2 =
+                            "{\"button_clicked\":\"create outgoing\"}"
+                        AppMetrica.reportEvent(
+                            "Outgoing add failed",
+                            eventParameters2
+                        )
+                    } else {
+                        createOutgoing(
+                            context, retrofitAPI, OutgoingRequestModel(
+                                name.value,
+                                value.value.toInt()
+                            ), productsAll[selectedItemIndex.intValue], productsAll
+                        )
+                        val eventParameters1 =
+                            "{\"button_clicked\":\"create outgoing\"}"
+                        AppMetrica.reportEvent(
+                            "Outgoing created",
+                            eventParameters1
+                        )
+                        name.value = ""
+                        value.value = ""
+                        onConfirmation()
+                    }
+                }
+            ) {
+                Text("Сохранить")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    onDismissRequest()
+                }
+            ) {
+                Text("Отмена")
+            }
+        }
+    )
 }

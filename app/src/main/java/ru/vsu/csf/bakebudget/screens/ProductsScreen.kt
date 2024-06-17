@@ -2,6 +2,7 @@ package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +64,9 @@ import ru.vsu.csf.bakebudget.services.findAllProducts
 import ru.vsu.csf.bakebudget.services.getPicture
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -83,6 +88,9 @@ fun ProductsScreen(
     orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
     firstTimePr: MutableState<Boolean>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -178,7 +186,7 @@ fun ProductsScreen(
                             }
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.button_add),
+                                painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                 contentDescription = "add"
                             )
                         }
@@ -256,7 +264,13 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 50.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ГОТОВЫЕ ИЗДЕЛИЯ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ГОТОВЫЕ ИЗДЕЛИЯ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ГОТОВЫЕ ИЗДЕЛИЯ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
         }

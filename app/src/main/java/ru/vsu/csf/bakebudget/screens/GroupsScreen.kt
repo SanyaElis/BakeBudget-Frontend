@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -74,6 +75,9 @@ import ru.vsu.csf.bakebudget.services.setCode
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.codeAlreadyGenerated
 import ru.vsu.csf.bakebudget.utils.codeCopied
 import java.util.Timer
@@ -87,6 +91,9 @@ fun GroupsScreen(
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
 
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -205,12 +212,12 @@ fun GroupsScreen(
                         ) {
                             if (getIsProUser(mContext).equals("y") || isPro.value) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_generate),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_generate else R.drawable.generate_code_button_small),
                                     contentDescription = "generate"
                                 )
                             } else {
                                 Image(
-                                    painter = painterResource(id = R.drawable.confirm_button),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.confirm_button else R.drawable.confirm_button_small),
                                     contentDescription = "confirm"
                                 )
                             }
@@ -396,7 +403,13 @@ private fun Header(scope: CoroutineScope, drawerState: DrawerState) {
                         .padding(top = 8.dp, end = 64.dp),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    Text(text = "ГРУППЫ", fontSize = 24.sp, color = Color.White)
+                    val configuration = LocalConfiguration.current
+                    val width = configuration.screenWidthDp.dp
+                    if (width < border) {
+                        Text(text = "ГРУППЫ", fontSize = sizeForSmallDevices, color = Color.White)
+                    } else {
+                        Text(text = "ГРУППЫ", fontSize = 24.sp, color = Color.White)
+                    }
                 }
             }
         }

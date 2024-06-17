@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -40,8 +41,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -77,6 +81,9 @@ import ru.vsu.csf.bakebudget.services.updateProduct
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
+import ru.vsu.csf.bakebudget.ui.theme.border
+import ru.vsu.csf.bakebudget.ui.theme.borderH
+import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
@@ -98,6 +105,9 @@ fun ProductView(
     products: MutableList<ProductModel>,
     productsResponse: MutableList<ProductResponseModel>
 ) {
+    val configuration = LocalConfiguration.current
+    val height = configuration.screenHeightDp.dp
+
     val mContext = LocalContext.current
 
     val item = listOf(MenuItemModel(R.drawable.products, "Готовые изделия"))
@@ -218,7 +228,7 @@ fun ProductView(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_add),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_add else R.drawable.add_button_small),
                                     contentDescription = "add"
                                 )
                             }
@@ -279,7 +289,7 @@ fun ProductView(
                                 }
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.button_save),
+                                    painter = painterResource(id = if (height > borderH) R.drawable.button_save else R.drawable.save_button_small),
                                     contentDescription = "save"
                                 )
                             }
@@ -372,22 +382,47 @@ private fun Header(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(PrimaryBack)
-                        .padding(top = 8.dp, end = 50.dp),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    Row {
-                        Text(
-                            text = productName.uppercase(Locale.ROOT),
-                            fontSize = 24.sp,
-                            color = Color.White
-                        )
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Box(
+                        modifier = Modifier
+                            .background(PrimaryBack)
+                            .padding(top = 8.dp),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        val configuration = LocalConfiguration.current
+                        val width = configuration.screenWidthDp.dp
+                        if (width < border) {
+                            Text(
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                text = productName.uppercase(Locale.ROOT),
+                                fontSize = sizeForSmallDevices,
+                                color = Color.White,
+                                modifier = Modifier.fillMaxWidth(0.77f),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                text = productName.uppercase(Locale.ROOT),
+                                fontSize = 24.sp,
+                                color = Color.White,
+                                modifier = Modifier.fillMaxWidth(0.77f),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(PrimaryBack)
+                            .padding(top = 8.dp, end = 13.dp),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
                         Icon(
                             modifier = Modifier
-                                .padding(5.dp)
+                                .padding(top = 5.dp)
                                 .clickable(onClick = { openAlertDialogDelete.value = true }),
                             imageVector = Icons.Default.Delete,
                             tint = Color.White,
@@ -396,17 +431,22 @@ private fun Header(
                     }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(40.dp)
-                    .background(PrimaryBack)
-                    .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
-                Text(text = "КОЛИЧЕСТВО В РЕЦЕПТЕ (гр.)", color = Color.White, fontSize = 12.sp)
+            val configuration = LocalConfiguration.current
+            val height = configuration.screenHeightDp.dp
+            val width = configuration.screenWidthDp.dp
+            if ((height > borderH + 50.dp) && (width > border)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .defaultMinSize(40.dp)
+                        .background(PrimaryBack)
+                        .padding(start = 16.dp, top = 6.dp, bottom = 6.dp, end = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "НАЗВАНИЕ", color = Color.White, fontSize = 12.sp)
+                    Text(text = "КОЛИЧЕСТВО В РЕЦЕПТЕ (гр.)", color = Color.White, fontSize = 12.sp)
+                }
             }
         }
     }
