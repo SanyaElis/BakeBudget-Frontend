@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
         val config = AppMetricaConfig.newConfigBuilder(API_KEY).build()
         AppMetrica.activate(this, config)
         setContent {
-            BakeBudgetTheme {
+            BakeBudgetTheme(darkTheme = false) {
                 val ctx = LocalContext.current
 
                 val navController = rememberNavController()
