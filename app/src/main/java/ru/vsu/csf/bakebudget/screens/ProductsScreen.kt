@@ -88,6 +88,10 @@ fun ProductsScreen(
     orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
     firstTimePr: MutableState<Boolean>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
+
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
 
