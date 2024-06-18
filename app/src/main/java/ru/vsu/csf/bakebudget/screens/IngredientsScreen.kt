@@ -91,6 +91,10 @@ fun IngredientsScreen(
     ingredientsResponse: MutableList<IngredientResponseModel>,
     ingredientsSet: MutableSet<String>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
+
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
     val mContext = LocalContext.current

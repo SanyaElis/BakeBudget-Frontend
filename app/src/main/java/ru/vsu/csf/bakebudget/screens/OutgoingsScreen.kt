@@ -108,6 +108,10 @@ fun OutgoingsScreen(
     orders2: MutableList<OrderModel>,
     orders3: MutableList<OrderModel>,
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
+
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
     val mContext = LocalContext.current

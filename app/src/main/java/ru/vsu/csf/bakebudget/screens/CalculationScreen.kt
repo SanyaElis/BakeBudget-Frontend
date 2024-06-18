@@ -90,6 +90,9 @@ fun CalculationScreen(
     isDataReceivedOrders : MutableState<Boolean>,
     orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
 

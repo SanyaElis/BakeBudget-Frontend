@@ -105,6 +105,10 @@ fun ProductView(
     products: MutableList<ProductModel>,
     productsResponse: MutableList<ProductResponseModel>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
+
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
 

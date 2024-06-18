@@ -94,6 +94,10 @@ fun OrdersScreen(
     products: MutableList<ProductModel>,
     firstTimePr: MutableState<Boolean>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
+
     val mContext = LocalContext.current
 
     val item = listOf(MenuItemModel(R.drawable.orders, "Заказы"))

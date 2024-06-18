@@ -91,6 +91,9 @@ fun GroupsScreen(
     retrofitAPI: RetrofitAPI,
     userRole: MutableState<String>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
 

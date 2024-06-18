@@ -108,6 +108,10 @@ fun ProductAddScreen(
     productsResponse: MutableList<ProductResponseModel>,
     ingredientsResponse: MutableList<IngredientResponseModel>
 ) {
+    if (!isLogged.value) {
+        navController.navigate("home")
+    }
+
     val configuration = LocalConfiguration.current
     val height = configuration.screenHeightDp.dp
 
