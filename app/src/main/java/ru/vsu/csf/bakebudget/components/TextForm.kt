@@ -28,7 +28,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
-fun TextForm(label : String, textValue: MutableState<String>) {
+fun TextForm(label : String, textValue: MutableState<String>, max: Int) {
     val focusManager = LocalFocusManager.current
 
     OutlinedTextField(modifier = Modifier
@@ -54,5 +54,5 @@ fun TextForm(label : String, textValue: MutableState<String>) {
         ),
         keyboardOptions = KeyboardOptions.Default,
         shape = RoundedCornerShape(8.dp),
-        onValueChange = {textValue.value = it})
+        onValueChange = { if (it.length <= max) textValue.value = it })
 }

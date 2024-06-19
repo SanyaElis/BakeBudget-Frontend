@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import io.appmetrica.analytics.AppMetrica
@@ -94,7 +95,7 @@ fun Ingredient(
                 modifier = Modifier.fillMaxWidth(0.33f),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Text(text = ingredient.name, maxLines = 3)
+                Text(text = ingredient.name, maxLines = 4)
             }
             Box(
                 modifier = Modifier.fillMaxWidth(0.5f),
@@ -106,7 +107,7 @@ fun Ingredient(
                 modifier = Modifier.fillMaxWidth(0.75f),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text(text = ingredient.cost.toString() + " руб.", maxLines = 3)
+                Text(text = ingredient.cost.toString() + " руб.", maxLines = 3, textAlign = TextAlign.End)
             }
             TextButton(
                 onClick = { openAlertDialog.value = true }

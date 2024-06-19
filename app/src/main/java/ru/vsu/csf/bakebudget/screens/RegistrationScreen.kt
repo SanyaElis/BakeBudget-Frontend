@@ -65,9 +65,9 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
             .background(PrimaryBack)
             .padding(top = height/4),
             horizontalAlignment = Alignment.CenterHorizontally) {
-            TextForm(label = "Имя пользователя", userName)
-            TextForm(label = "Email", userEmail)
-            PasswordTextForm(label = "Пароль", userPassword)
+            TextForm(label = "Имя пользователя", userName, 50)
+            TextForm(label = "Email", userEmail, 255)
+            PasswordTextForm(label = "Пароль", userPassword, 255)
         }
         Box(
             modifier = Modifier

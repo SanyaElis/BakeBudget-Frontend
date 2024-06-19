@@ -107,8 +107,8 @@ fun PasswordResetScreen(
                 .padding(top = height/3),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextForm(label = "Email", userEmail)
-            PasswordTextForm(label = "Новый пароль", userPassword)
+            TextForm(label = "Email", userEmail, 255)
+            PasswordTextForm(label = "Новый пароль", userPassword, 255)
         }
         Box(
             modifier = Modifier

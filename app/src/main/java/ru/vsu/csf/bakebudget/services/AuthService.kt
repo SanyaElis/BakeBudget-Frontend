@@ -35,7 +35,13 @@ fun register(
     retrofitAPI: RetrofitAPI
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.register(UserSignUpRequestModel(userName.value, userEmail.value, userPassword.value))
+        val res = retrofitAPI.register(
+            UserSignUpRequestModel(
+                userName.value,
+                userEmail.value,
+                userPassword.value
+            )
+        )
         onResultRegister(res, ctx)
     }
 }
@@ -51,18 +57,23 @@ fun onResultRegister(
                 "Пользователь успешно зарегистрирован",
                 Toast.LENGTH_SHORT
             ).show()
-        } else {
+        } else if (result.code() == 409) {
             Toast.makeText(
                 ctx,
-                "Регистрация невозможна, некорректные данные",
+                "Пользователь с такой почтой уже существует!",
                 Toast.LENGTH_SHORT
             ).show()
-            val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
-            AppMetrica.reportEvent(
-                "User registration failed",
-                eventParameters2
-            )
-        }
+        } else
+            Toast.makeText(
+                ctx,
+                "Регистрация невозможна, некорректные данные. Имя должно быть от 3 до 50, а пароль от 8 до 255 символов",
+                Toast.LENGTH_SHORT
+            ).show()
+        val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
+        AppMetrica.reportEvent(
+            "User registration failed",
+            eventParameters2
+        )
     }
 }
 
@@ -84,14 +95,39 @@ fun login(
     ingredientsSet: MutableSet<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>,
-    isDataReceivedOutgoings : MutableState<Boolean>,
-    isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedOutgoings: MutableState<Boolean>,
+    isDataReceivedOrders: MutableState<Boolean>,
+    orders0: MutableList<OrderModel>,
+    orders1: MutableList<OrderModel>,
+    orders2: MutableList<OrderModel>,
+    orders3: MutableList<OrderModel>,
     firstTryPr: MutableState<Boolean>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.login(UserSignInRequestModel(userEmail.value, userPassword.value))
-        onResultLogin(res, ctx, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3, firstTryPr)
+        onResultLogin(
+            res,
+            ctx,
+            isLogged,
+            userRole,
+            ingredients,
+            products,
+            ingredientsInRecipe,
+            outgoings,
+            orders,
+            isDataReceivedIngredients,
+            ingredientsResponse,
+            ingredientsSet,
+            isDataReceivedProducts,
+            productsResponse,
+            isDataReceivedOutgoings,
+            isDataReceivedOrders,
+            orders0,
+            orders1,
+            orders2,
+            orders3,
+            firstTryPr
+        )
     }
 }
 
@@ -110,9 +146,12 @@ fun onResultLogin(
     ingredientsSet: MutableSet<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>,
-    isDataReceivedOutgoings : MutableState<Boolean>,
-    isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedOutgoings: MutableState<Boolean>,
+    isDataReceivedOrders: MutableState<Boolean>,
+    orders0: MutableList<OrderModel>,
+    orders1: MutableList<OrderModel>,
+    orders2: MutableList<OrderModel>,
+    orders3: MutableList<OrderModel>,
     firstTryPr: MutableState<Boolean>
 ) {
     if (result != null) {

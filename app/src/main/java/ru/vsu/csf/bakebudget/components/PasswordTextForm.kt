@@ -33,7 +33,7 @@ import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
-fun PasswordTextForm(label : String, textValue: MutableState<String>) {
+fun PasswordTextForm(label : String, textValue: MutableState<String>, max: Int) {
     var passwordVisible = rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
@@ -72,6 +72,6 @@ fun PasswordTextForm(label : String, textValue: MutableState<String>) {
                 Icon(imageVector  = image, description)
             }
         },
-        onValueChange = {textValue.value = it})
+        onValueChange = { if (it.length <= max) textValue.value = it })
 }
 

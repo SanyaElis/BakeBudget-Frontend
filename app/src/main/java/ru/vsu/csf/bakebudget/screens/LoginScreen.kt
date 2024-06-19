@@ -81,8 +81,8 @@ fun LoginScreen(
                 .padding(top = height/3),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextForm(label = "Email", userEmail)
-            PasswordTextForm(label = "Пароль", userPassword)
+            TextForm(label = "Email", userEmail, 255)
+            PasswordTextForm(label = "Пароль", userPassword, 255)
         }
         Box(
             modifier = Modifier
