@@ -65,7 +65,7 @@ fun BarGraph(
     val xAxisScaleHeight = 40.dp
 
     val yAxisScaleSpacing by remember {
-        mutableStateOf(100f)
+        mutableStateOf(width*2/21)
     }
     val yAxisTextWidth by remember {
         mutableStateOf(100.dp)
@@ -104,7 +104,7 @@ fun BarGraph(
             horizontalAlignment = CenterHorizontally
         ) {
             Canvas(modifier = Modifier
-                .padding(bottom = 10.dp)
+                .padding(bottom = width/41)
                 .fillMaxSize()) {
                 var yAxisScaleText = (barData.max()) / 3f
                 if (type) {
@@ -120,16 +120,16 @@ fun BarGraph(
                         drawText(
                             if (type) (barData.min() + yAxisScaleText * i).toInt().toString() else String.format("%.2f", barData.min() + yAxisScaleText * i),
                             30f,
-                            size.height - yAxisScaleSpacing - i * size.height / 3f,
+                            size.height - with(density) { yAxisScaleSpacing.toPx()} - i * size.height / 3f,
                             textPaint
                         )
                     }
-                    yCoordinates.add(size.height - yAxisScaleSpacing - i * size.height / 3f)
+                    yCoordinates.add(size.height - with(density) { yAxisScaleSpacing.toPx()} - i * size.height / 3f)
                 }
 
                 (1..3).forEach {
                     drawLine(
-                        start = Offset(x = yAxisScaleSpacing +30f, y = yCoordinates[it]),
+                        start = Offset(x = with(density) { yAxisScaleSpacing.toPx()} +30f, y = yCoordinates[it]),
                         end = Offset(x= size.width, y = yCoordinates[it]),
                         color = Color.Gray,
                         strokeWidth = 5f,
