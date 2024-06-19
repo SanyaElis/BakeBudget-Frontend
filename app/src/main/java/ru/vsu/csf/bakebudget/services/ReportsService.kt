@@ -16,6 +16,8 @@ import ru.vsu.csf.bakebudget.models.response.ReportOrdersResponseModel
 import java.util.Timer
 import kotlin.concurrent.schedule
 
+private var toast: Toast? = null
+
 @OptIn(DelicateCoroutinesApi::class)
 fun createReportOrders(
     ctx: Context,

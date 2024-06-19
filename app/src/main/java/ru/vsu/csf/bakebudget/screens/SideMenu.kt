@@ -39,6 +39,7 @@ import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.ui.theme.TextPrimary
 import ru.vsu.csf.bakebudget.ui.theme.borderH
 
+private var toast: Toast? = null
 @Composable
 fun SideMenu(
     navController: NavHostController,
@@ -200,9 +201,13 @@ fun SideMenu(
 }
 
 private fun mToast(context: Context, isLogged: MutableState<Boolean>) {
-    Toast.makeText(
+    if (toast!= null) {
+        toast!!.cancel();
+    }
+    toast = Toast.makeText(
         context,
         if (isLogged.value) "Данный раздел находится на стадии разработки и станет доступным в ближайщее время" else "Сначала необходимо авторизоваться",
-        Toast.LENGTH_LONG
-    ).show()
+        Toast.LENGTH_SHORT
+    )
+    toast!!.show()
 }

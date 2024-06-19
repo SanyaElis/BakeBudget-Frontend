@@ -2,7 +2,6 @@ package ru.vsu.csf.bakebudget.services
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +12,9 @@ import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+
+
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun findAllIngredients(

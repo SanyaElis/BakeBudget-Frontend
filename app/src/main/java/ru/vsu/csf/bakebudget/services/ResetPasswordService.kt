@@ -10,10 +10,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
-import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.request.PasswordResetRequestModel
-import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.utils.linkApproveFailed
+
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun forgotPassword(

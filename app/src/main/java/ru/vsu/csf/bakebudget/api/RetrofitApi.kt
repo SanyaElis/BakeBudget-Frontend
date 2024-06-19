@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.api
 
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -23,9 +22,8 @@ import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.request.PasswordResetRequestModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.request.ReportRequestModel
-import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
-import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.models.request.UserSignInRequestModel
+import ru.vsu.csf.bakebudget.models.request.UserSignUpRequestModel
 import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
 import ru.vsu.csf.bakebudget.models.response.ImageResponseModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
@@ -33,6 +31,7 @@ import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.models.response.ReportIncomeResponseModel
 import ru.vsu.csf.bakebudget.models.response.ReportOrdersResponseModel
+import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 
 interface RetrofitAPI {
     @POST("auth/signup")

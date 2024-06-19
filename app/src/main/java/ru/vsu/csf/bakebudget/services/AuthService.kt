@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.services
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
@@ -11,7 +10,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
-import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
@@ -25,6 +23,7 @@ import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.saveToken
 
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun register(
@@ -52,28 +51,41 @@ fun onResultRegister(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
                 "Пользователь успешно зарегистрирован",
                 Toast.LENGTH_SHORT
-            ).show()
+            )
+            toast!!.show()
         } else if (result.code() == 409) {
-            Toast.makeText(
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
                 "Пользователь с такой почтой уже существует!",
                 Toast.LENGTH_SHORT
-            ).show()
-        } else
-            Toast.makeText(
+            )
+            toast!!.show()
+        } else {
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
                 "Регистрация невозможна, некорректные данные. Имя должно быть от 3 до 50, а пароль от 8 до 255 символов",
                 Toast.LENGTH_SHORT
-            ).show()
-        val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
-        AppMetrica.reportEvent(
-            "User registration failed",
-            eventParameters2
-        )
+            )
+            toast!!.show()
+            val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
+            AppMetrica.reportEvent(
+                "User registration failed",
+                eventParameters2
+            )
+        }
     }
 }
 
@@ -193,11 +205,15 @@ fun onResultLogin(
             orders2.clear()
             orders3.clear()
         } else {
-            Toast.makeText(
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
                 "Такого пользователя не существует или пароль неверный",
                 Toast.LENGTH_SHORT
-            ).show()
+            )
+            toast!!.show()
             val eventParameters2 = "{\"button_clicked\":\"enter to account failed\"}"
             AppMetrica.reportEvent(
                 "User enter wrong name or password",

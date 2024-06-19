@@ -24,6 +24,7 @@ import ru.vsu.csf.bakebudget.utils.sameName
 
 private val orderState = mapOf(0 to "NOT_STARTED", 1 to "IN_PROCESS", 2 to "DONE", 3 to "CANCELLED")
 private val orderStateRev = mapOf("NOT_STARTED" to 0, "IN_PROCESS" to 1, "DONE" to 2, "CANCELLED" to 3)
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun calculate(
@@ -194,11 +195,15 @@ private fun onResultDeleteOrder(
     result: Response<Void>?,
     ctx: Context,
 ) {
-    Toast.makeText(
+    if (toast!= null) {
+        toast!!.cancel();
+    }
+    toast = Toast.makeText(
         ctx,
         "Заказ успешно удален",
         Toast.LENGTH_SHORT
-    ).show()
+    )
+    toast!!.show()
     val eventParameters1 = "{\"button_clicked\":\"delete order\"}"
     AppMetrica.reportEvent(
         "order deleted",

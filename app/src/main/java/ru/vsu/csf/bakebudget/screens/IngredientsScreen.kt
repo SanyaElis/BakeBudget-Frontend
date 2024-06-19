@@ -2,7 +2,6 @@ package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -28,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +32,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,29 +43,20 @@ import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Ingredient
-import ru.vsu.csf.bakebudget.components.IngredientAdd
+import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
+import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
+import ru.vsu.csf.bakebudget.services.createIngredient
+import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.ui.theme.Back2
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import ru.vsu.csf.bakebudget.components.AlertDialog1
-import ru.vsu.csf.bakebudget.components.InputTextField
-import ru.vsu.csf.bakebudget.getToken
-import ru.vsu.csf.bakebudget.models.IngredientInProductModel
-import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
-import ru.vsu.csf.bakebudget.services.createIngredient
-import ru.vsu.csf.bakebudget.services.deleteIngredientInProduct
-import ru.vsu.csf.bakebudget.services.findAllIngredients
-import ru.vsu.csf.bakebudget.services.updateIngredientInProduct
 import ru.vsu.csf.bakebudget.ui.theme.border
 import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices

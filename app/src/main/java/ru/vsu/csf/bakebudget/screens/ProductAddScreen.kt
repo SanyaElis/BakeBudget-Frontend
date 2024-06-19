@@ -30,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -55,25 +54,18 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
 import ru.vsu.csf.bakebudget.components.InputTextField
-import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OutgoingModel
-import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
+import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.ProductRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
@@ -91,9 +83,6 @@ import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameName
 import ru.vsu.csf.bakebudget.utils.sameNameProduct
 import ru.vsu.csf.bakebudget.utils.successfulProduct
-import java.util.Timer
-import kotlin.concurrent.schedule
-import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
