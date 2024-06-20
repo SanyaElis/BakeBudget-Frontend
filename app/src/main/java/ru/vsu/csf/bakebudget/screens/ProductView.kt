@@ -72,6 +72,7 @@ import ru.vsu.csf.bakebudget.ui.theme.border
 import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToastProduct
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
 import ru.vsu.csf.bakebudget.utils.sameNameProduct
@@ -225,7 +226,7 @@ fun ProductView(
                             TextButton(
                                 onClick = {
                                     if (!(isWeightValid(estimatedWeight.value) && isNameValid(name.value))) {
-                                        dataIncorrectToast(mContext)
+                                        dataIncorrectToastProduct(mContext)
                                     } else {
                                         var nameUnique: Boolean = true
                                         for (prod in products) {

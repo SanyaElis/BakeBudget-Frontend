@@ -78,6 +78,7 @@ import ru.vsu.csf.bakebudget.ui.theme.border
 import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToastProduct
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
@@ -198,7 +199,7 @@ fun ProductAddScreen(
                             TextButton(
                                 onClick = {
                                     if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
-                                        dataIncorrectToast(context = mContext)
+                                        dataIncorrectToastProduct(context = mContext)
                                         val eventParameters2 =
                                             "{\"button_clicked\":\"create product\"}"
                                         AppMetrica.reportEvent(

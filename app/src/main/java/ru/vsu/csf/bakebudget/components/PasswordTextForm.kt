@@ -75,3 +75,46 @@ fun PasswordTextForm(label : String, textValue: MutableState<String>, max: Int) 
         onValueChange = { if (it.length <= max) textValue.value = it })
 }
 
+@Composable
+fun PasswordTextFormWithoutHint(label : String, textValue: MutableState<String>, max: Int) {
+    var passwordVisible = rememberSaveable { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(modifier = Modifier
+        .fillMaxWidth(0.75f)
+        .background(PrimaryBack)
+        .padding(10.dp)
+//        .requiredHeight(65.dp)
+        .onKeyEvent {
+            if (it.key == Key.Enter) {
+                focusManager.clearFocus()
+            }
+            false
+        },
+        value = textValue.value,
+        label = { Text(text = label) },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions.Default,
+        shape = RoundedCornerShape(8.dp),
+        trailingIcon = {
+            val image = if (passwordVisible.value)
+                Icons.Filled.Visibility
+            else Icons.Filled.VisibilityOff
+
+            val description = if (passwordVisible.value) "Hide password" else "Show password"
+
+            IconButton(onClick = {passwordVisible.value = !passwordVisible.value}){
+                Icon(imageVector  = image, description)
+            }
+        },
+        onValueChange = { if (it.length <= max) textValue.value = it })
+}
+

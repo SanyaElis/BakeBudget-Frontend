@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
+import ru.vsu.csf.bakebudget.components.PasswordTextFormWithoutHint
 import ru.vsu.csf.bakebudget.components.TextForm
 import ru.vsu.csf.bakebudget.components.TextFormEmail
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
@@ -83,7 +84,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextFormEmail(label = "Email", userEmail, 255)
-            PasswordTextForm(label = "Пароль", userPassword, 255)
+            PasswordTextFormWithoutHint(label = "Пароль", userPassword, 255)
         }
         Box(
             modifier = Modifier
