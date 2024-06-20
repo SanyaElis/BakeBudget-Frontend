@@ -53,7 +53,9 @@ private fun onResultCreateReportOrders(
     dataListOrders.add(cancelled+done+inProcess+notStarted)
     dataListOrders.add(done)
     dataListOrders.add(cancelled)
-    reportState.value = true
+    Timer().schedule(500) {
+        reportState.value = true
+    }
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -85,7 +87,7 @@ private fun onResultCreateReportIncome(
     dataListIncome.clear()
     dataListIncome.add(result!!.body()!!.cost.toLong())
     dataListIncome.add(result.body()!!.income.toLong())
-    Timer().schedule(1000) {
+    Timer().schedule(500) {
         reportState.value = true
     }
 }

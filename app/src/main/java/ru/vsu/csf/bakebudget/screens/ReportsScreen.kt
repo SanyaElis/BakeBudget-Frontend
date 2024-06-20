@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -119,6 +120,10 @@ fun ReportsScreen(
 
     val itemsGroup = remember {
         listOf("Личный", "Групповой")
+    }
+
+    val isReady by remember {
+        mutableStateOf(false)
     }
 
     val dataListOrders = remember {
