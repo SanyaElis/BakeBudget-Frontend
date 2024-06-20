@@ -29,6 +29,7 @@ import ru.vsu.csf.bakebudget.services.deleteOutgoing
 import ru.vsu.csf.bakebudget.services.updateOutgoing
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToastOutgoing
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 
@@ -141,7 +142,7 @@ fun AlertDialog3(
             TextButton(
                 onClick = {
                     if (!isNameValid(name.value) || !isCostValid(value.value)) {
-                        dataIncorrectToast(context = context)
+                        dataIncorrectToastOutgoing(context = context)
                     } else {
                         updateOutgoing(
                             context, retrofitAPI, OutgoingModel(

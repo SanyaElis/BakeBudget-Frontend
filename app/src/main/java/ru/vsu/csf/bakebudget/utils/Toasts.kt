@@ -29,6 +29,17 @@ fun dataIncorrectToastProduct(context: Context) {
     toast!!.show()
 }
 
+fun dataIncorrectToastOutgoing(context: Context) {
+    if (toast != null) {
+        toast!!.cancel();
+    }
+    toast = Toast.makeText(
+        context,
+        "Некорректные данные" + "\n" + "Название должно быть не короче 2 символов" + "\n" + "Стоимость от 0 до 1000000",
+        Toast.LENGTH_LONG
+    )
+    toast!!.show()
+}
 fun sameOrder(context: Context) {
     Toast.makeText(
         context,

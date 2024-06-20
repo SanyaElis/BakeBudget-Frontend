@@ -72,6 +72,7 @@ import ru.vsu.csf.bakebudget.ui.theme.border
 import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToastOutgoing
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 
@@ -391,7 +392,7 @@ fun AlertOutgoingAdd(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(placeholder = "Название", name, 30, true)
+                InputTextField(placeholder = "Название", name, 25, true)
                 InputTextFieldCost(placeholder = "Стоимость", value, 8, true)
             }
         },
@@ -402,7 +403,7 @@ fun AlertOutgoingAdd(
             TextButton(
                 onClick = {
                     if (!(isNameValid(name.value) && isCostValid(value.value))) {
-                        dataIncorrectToast(context = context)
+                        dataIncorrectToastOutgoing(context = context)
                         val eventParameters2 =
                             "{\"button_clicked\":\"create outgoing\"}"
                         AppMetrica.reportEvent(
