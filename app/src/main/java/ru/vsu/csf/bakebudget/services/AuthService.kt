@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.services
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
@@ -11,7 +10,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
-import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
@@ -25,6 +23,7 @@ import ru.vsu.csf.bakebudget.models.response.UserSignInResponseModel
 import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.saveToken
 
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun register(
@@ -35,7 +34,13 @@ fun register(
     retrofitAPI: RetrofitAPI
 ) {
     GlobalScope.launch(Dispatchers.Main) {
-        val res = retrofitAPI.register(UserSignUpRequestModel(userName.value, userEmail.value, userPassword.value))
+        val res = retrofitAPI.register(
+            UserSignUpRequestModel(
+                userName.value,
+                userEmail.value,
+                userPassword.value
+            )
+        )
         onResultRegister(res, ctx)
     }
 }
@@ -46,17 +51,35 @@ fun onResultRegister(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
                 "Пользователь успешно зарегистрирован",
                 Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            Toast.makeText(
+            )
+            toast!!.show()
+        } else if (result.code() == 409) {
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
-                "Регистрация невозможна, некорректные данные",
+                "Пользователь с такой почтой уже существует!",
                 Toast.LENGTH_SHORT
-            ).show()
+            )
+            toast!!.show()
+        } else {
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
+                ctx,
+                "Регистрация невозможна, некорректные данные. Имя должно быть от 3 до 50, а пароль от 8 до 255 символов",
+                Toast.LENGTH_SHORT
+            )
+            toast!!.show()
             val eventParameters2 = "{\"button_clicked\":\"register failed\"}"
             AppMetrica.reportEvent(
                 "User registration failed",
@@ -84,14 +107,39 @@ fun login(
     ingredientsSet: MutableSet<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>,
-    isDataReceivedOutgoings : MutableState<Boolean>,
-    isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedOutgoings: MutableState<Boolean>,
+    isDataReceivedOrders: MutableState<Boolean>,
+    orders0: MutableList<OrderModel>,
+    orders1: MutableList<OrderModel>,
+    orders2: MutableList<OrderModel>,
+    orders3: MutableList<OrderModel>,
     firstTryPr: MutableState<Boolean>
 ) {
     GlobalScope.launch(Dispatchers.Main) {
         val res = retrofitAPI.login(UserSignInRequestModel(userEmail.value, userPassword.value))
-        onResultLogin(res, ctx, isLogged, userRole, ingredients, products, ingredientsInRecipe, outgoings, orders, isDataReceivedIngredients, ingredientsResponse, ingredientsSet, isDataReceivedProducts, productsResponse, isDataReceivedOutgoings, isDataReceivedOrders, orders0, orders1, orders2, orders3, firstTryPr)
+        onResultLogin(
+            res,
+            ctx,
+            isLogged,
+            userRole,
+            ingredients,
+            products,
+            ingredientsInRecipe,
+            outgoings,
+            orders,
+            isDataReceivedIngredients,
+            ingredientsResponse,
+            ingredientsSet,
+            isDataReceivedProducts,
+            productsResponse,
+            isDataReceivedOutgoings,
+            isDataReceivedOrders,
+            orders0,
+            orders1,
+            orders2,
+            orders3,
+            firstTryPr
+        )
     }
 }
 
@@ -110,9 +158,12 @@ fun onResultLogin(
     ingredientsSet: MutableSet<String>,
     isDataReceivedProducts: MutableState<Boolean>,
     productsResponse: MutableList<ProductResponseModel>,
-    isDataReceivedOutgoings : MutableState<Boolean>,
-    isDataReceivedOrders : MutableState<Boolean>,
-    orders0: MutableList<OrderModel>, orders1: MutableList<OrderModel>, orders2: MutableList<OrderModel>, orders3: MutableList<OrderModel>,
+    isDataReceivedOutgoings: MutableState<Boolean>,
+    isDataReceivedOrders: MutableState<Boolean>,
+    orders0: MutableList<OrderModel>,
+    orders1: MutableList<OrderModel>,
+    orders2: MutableList<OrderModel>,
+    orders3: MutableList<OrderModel>,
     firstTryPr: MutableState<Boolean>
 ) {
     if (result != null) {
@@ -154,11 +205,15 @@ fun onResultLogin(
             orders2.clear()
             orders3.clear()
         } else {
-            Toast.makeText(
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
                 ctx,
                 "Такого пользователя не существует или пароль неверный",
                 Toast.LENGTH_SHORT
-            ).show()
+            )
+            toast!!.show()
             val eventParameters2 = "{\"button_clicked\":\"enter to account failed\"}"
             AppMetrica.reportEvent(
                 "User enter wrong name or password",

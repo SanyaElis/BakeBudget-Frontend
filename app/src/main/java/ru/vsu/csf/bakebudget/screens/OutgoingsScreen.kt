@@ -2,7 +2,6 @@ package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,30 +45,22 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.components.InputTextFieldCost
 import ru.vsu.csf.bakebudget.components.Outgoing
-import ru.vsu.csf.bakebudget.components.OutgoingAdd
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
-import ru.vsu.csf.bakebudget.models.IngredientModel
-import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
 import ru.vsu.csf.bakebudget.models.OrderModel
+import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
-import ru.vsu.csf.bakebudget.models.request.IngredientInProductRequestModel
-import ru.vsu.csf.bakebudget.models.request.IngredientRequestModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.models.response.IngredientResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
-import ru.vsu.csf.bakebudget.services.createIngredient
 import ru.vsu.csf.bakebudget.services.createOutgoing
 import ru.vsu.csf.bakebudget.services.findAllIngredients
 import ru.vsu.csf.bakebudget.services.findAllOutgoingsInProduct
@@ -81,12 +72,9 @@ import ru.vsu.csf.bakebudget.ui.theme.border
 import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToastOutgoing
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
-import ru.vsu.csf.bakebudget.utils.isWeightValid
-import ru.vsu.csf.bakebudget.utils.sameName
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -404,8 +392,8 @@ fun AlertOutgoingAdd(
         text = {
             Column {
                 Text(text = dialogText)
-                InputTextField(placeholder = "Название", name, 30, true)
-                InputTextField(placeholder = "Цена", value, 8, true)
+                InputTextField(placeholder = "Название", name, 25, true)
+                InputTextFieldCost(placeholder = "Стоимость", value, 8, true)
             }
         },
         onDismissRequest = {
@@ -415,7 +403,7 @@ fun AlertOutgoingAdd(
             TextButton(
                 onClick = {
                     if (!(isNameValid(name.value) && isCostValid(value.value))) {
-                        dataIncorrectToast(context = context)
+                        dataIncorrectToastOutgoing(context = context)
                         val eventParameters2 =
                             "{\"button_clicked\":\"create outgoing\"}"
                         AppMetrica.reportEvent(

@@ -2,7 +2,6 @@ package ru.vsu.csf.bakebudget.services
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.runtime.MutableState
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +14,8 @@ import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.utils.sameName
+
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun createOutgoing(

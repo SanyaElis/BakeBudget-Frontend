@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,12 +27,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.Visibility
+import androidx.compose.ui.unit.sp
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
 @Composable
-fun PasswordTextForm(label : String, textValue: MutableState<String>) {
+fun PasswordTextForm(label : String, textValue: MutableState<String>, max: Int) {
     var passwordVisible = rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
@@ -41,9 +40,53 @@ fun PasswordTextForm(label : String, textValue: MutableState<String>) {
         .fillMaxWidth(0.75f)
         .background(PrimaryBack)
         .padding(10.dp)
-        .requiredHeight(65.dp)
+//        .requiredHeight(65.dp)
         .onKeyEvent {
-            if (it.key == Key.Enter){
+            if (it.key == Key.Enter) {
+                focusManager.clearFocus()
+            }
+            false
+        },
+        value = textValue.value,
+        label = { Text(text = label) },
+        singleLine = true,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        supportingText = { Text(text = "От 8 до 255 символов", fontSize = 10.sp)},
+        visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions.Default,
+        shape = RoundedCornerShape(8.dp),
+        trailingIcon = {
+            val image = if (passwordVisible.value)
+                Icons.Filled.Visibility
+            else Icons.Filled.VisibilityOff
+
+            val description = if (passwordVisible.value) "Hide password" else "Show password"
+
+            IconButton(onClick = {passwordVisible.value = !passwordVisible.value}){
+                Icon(imageVector  = image, description)
+            }
+        },
+        onValueChange = { if (it.length <= max) textValue.value = it })
+}
+
+@Composable
+fun PasswordTextFormWithoutHint(label : String, textValue: MutableState<String>, max: Int) {
+    var passwordVisible = rememberSaveable { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(modifier = Modifier
+        .fillMaxWidth(0.75f)
+        .background(PrimaryBack)
+        .padding(10.dp)
+//        .requiredHeight(65.dp)
+        .onKeyEvent {
+            if (it.key == Key.Enter) {
                 focusManager.clearFocus()
             }
             false
@@ -72,6 +115,6 @@ fun PasswordTextForm(label : String, textValue: MutableState<String>) {
                 Icon(imageVector  = image, description)
             }
         },
-        onValueChange = {textValue.value = it})
+        onValueChange = { if (it.length <= max) textValue.value = it })
 }
 

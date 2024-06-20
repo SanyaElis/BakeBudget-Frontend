@@ -1,8 +1,6 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,15 +40,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.components.InputTextFieldCost
+import ru.vsu.csf.bakebudget.components.InputTextFieldMargin
+import ru.vsu.csf.bakebudget.components.InputTextFieldWeight
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -59,8 +56,6 @@ import ru.vsu.csf.bakebudget.models.OutgoingModel
 import ru.vsu.csf.bakebudget.models.ProductModel
 import ru.vsu.csf.bakebudget.models.request.CalculationRequestModel
 import ru.vsu.csf.bakebudget.models.request.OrderRequestModel
-import ru.vsu.csf.bakebudget.models.response.CalculationResponseModel
-import ru.vsu.csf.bakebudget.models.response.OrderResponseModel
 import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.services.calculate
 import ru.vsu.csf.bakebudget.services.createOrder
@@ -75,7 +70,6 @@ import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 import ru.vsu.csf.bakebudget.utils.isWeightValid
-import ru.vsu.csf.bakebudget.utils.sameName
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -323,10 +317,10 @@ fun CalculationScreen(
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
-                                    InputTextField(
+                                    InputTextFieldWeight(
                                         placeholder = "Вес",
                                         text = weight,
-                                        max = 10,
+                                        max = 8,
                                         true
                                     )
                                 }
@@ -338,10 +332,10 @@ fun CalculationScreen(
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
-                                    InputTextField(
+                                    InputTextFieldCost(
                                         placeholder = "Расходы",
                                         text = extraCost,
-                                        max = 10,
+                                        max = 8,
                                         true
                                     )
                                 }
@@ -353,7 +347,7 @@ fun CalculationScreen(
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
-                                    InputTextField(
+                                    InputTextFieldMargin(
                                         placeholder = "Коэффициент",
                                         text = markup,
                                         max = 3,

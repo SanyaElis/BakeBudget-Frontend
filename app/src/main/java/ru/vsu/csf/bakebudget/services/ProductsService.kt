@@ -6,7 +6,6 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.res.painterResource
 import io.appmetrica.analytics.AppMetrica
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -16,11 +15,9 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okio.BufferedSink
 import okio.source
 import retrofit2.Response
-import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
@@ -34,6 +31,7 @@ import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.utils.sameName
 import java.io.File
 
+private var toast: Toast? = null
 
 @OptIn(DelicateCoroutinesApi::class)
 fun findAllProducts(
@@ -539,11 +537,15 @@ private fun onResultDeleteProduct(
     result: Response<Void>?,
     ctx: Context,
 ) {
-    Toast.makeText(
+    if (toast!= null) {
+        toast!!.cancel();
+    }
+    toast = Toast.makeText(
         ctx,
         "Продукт успешно удален",
         Toast.LENGTH_SHORT
-    ).show()
+    )
+    toast!!.show()
     val eventParameters1 = "{\"button_clicked\":\"delete product\"}"
     AppMetrica.reportEvent(
         "product deleted",

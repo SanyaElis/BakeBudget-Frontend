@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 fun EstimatedWeightName(color: Color, estimatedWeight: MutableState<String>, name: MutableState<String>) {
     Card(modifier = Modifier
         .fillMaxWidth()
-        .requiredHeight(90.dp)
         .padding(5.dp)) {
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -27,7 +26,7 @@ fun EstimatedWeightName(color: Color, estimatedWeight: MutableState<String>, nam
             .background(color), horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
             InputTextField(placeholder = "Название", name, 20, 160)
-            InputTextField(placeholder = "Расчетный вес", estimatedWeight, 8, 160)
+            InputTextFieldWeight(placeholder = "Расчетный вес", estimatedWeight, 8, 160)
         }
     }
 }

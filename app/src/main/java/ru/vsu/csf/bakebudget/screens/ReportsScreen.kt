@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,8 +69,6 @@ import ru.vsu.csf.bakebudget.ui.theme.borderH
 import ru.vsu.csf.bakebudget.ui.theme.sizeForSmallDevices
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Timer
-import kotlin.concurrent.schedule
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -121,6 +120,10 @@ fun ReportsScreen(
 
     val itemsGroup = remember {
         listOf("Личный", "Групповой")
+    }
+
+    val isReady by remember {
+        mutableStateOf(false)
     }
 
     val dataListOrders = remember {
@@ -342,7 +345,18 @@ fun ReportsScreen(
 
                                             }
                                             Column {
-                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Принято заказов: ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append(dataListOrders[0].toString())
+                                                        }
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(4.dp))
                                                 Box(
                                                     modifier = Modifier.fillMaxWidth(),
                                                     contentAlignment = Alignment.Center
@@ -351,6 +365,18 @@ fun ReportsScreen(
                                                         append("Завершено заказов: ")
                                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                                             append(dataListOrders[1].toString())
+                                                        }
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(4.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Отменено заказов: ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append(dataListOrders[2].toString())
                                                         }
                                                     })
                                                 }
@@ -391,7 +417,18 @@ fun ReportsScreen(
 
                                             }
                                             Column {
-                                                Spacer(modifier = Modifier.padding(12.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Принято заказов: ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append(dataListOrdersGroup[0].toString())
+                                                        }
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(4.dp))
                                                 Box(
                                                     modifier = Modifier.fillMaxWidth(),
                                                     contentAlignment = Alignment.Center
@@ -400,6 +437,18 @@ fun ReportsScreen(
                                                         append("Завершено заказов: ")
                                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                                             append(dataListOrdersGroup[1].toString())
+                                                        }
+                                                    })
+                                                }
+                                                Spacer(modifier = Modifier.padding(4.dp))
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(buildAnnotatedString {
+                                                        append("Отменено заказов: ")
+                                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                            append(dataListOrdersGroup[2].toString())
                                                         }
                                                     })
                                                 }

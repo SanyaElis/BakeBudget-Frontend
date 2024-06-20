@@ -13,6 +13,8 @@ import ru.vsu.csf.bakebudget.clearIsProUser
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.saveIsProUser
 
+
+private var toast: Toast? = null
 @OptIn(DelicateCoroutinesApi::class)
 fun changeRole(
     ctx: Context,
@@ -32,12 +34,18 @@ private fun onResultChangeRole(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
+                context,
+                "Теперь вы пользуетесь продвинутой версией!",
+                Toast.LENGTH_SHORT
+            )
+            toast!!.show()
 //            Toast.makeText(context, "Response Code : " + result.code() + "\n" + "Role changed",
 //                Toast.LENGTH_SHORT
 //            ).show()
-            Toast.makeText(context, "Теперь вы пользуетесь продвинутой версией!",
-                Toast.LENGTH_SHORT
-            ).show()
             if (userRole.value == "ROLE_ADVANCED_USER") {
                 clearIsProUser(context)
                 saveIsProUser("y", context)
@@ -132,9 +140,15 @@ private fun onResultSetCode(
 //            ).show()
             generatedCode.value = result.body()!!
         } else {
-            Toast.makeText(context, "Такой группы не существует или вы уже состоите в группе",
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
+                context,
+                "Такой группы не существует или вы уже состоите в группе",
                 Toast.LENGTH_SHORT
-            ).show()
+            )
+            toast!!.show()
         }
     }
 }
@@ -156,9 +170,15 @@ private fun onResultLeaveGroup(
 ) {
     if (result != null) {
         if (result.isSuccessful) {
-            Toast.makeText(context, "Вы покинули группу",
+            if (toast!= null) {
+                toast!!.cancel();
+            }
+            toast = Toast.makeText(
+                context,
+                "Вы покинули группу",
                 Toast.LENGTH_SHORT
-            ).show()
+            )
+            toast!!.show()
         }
     }
 }

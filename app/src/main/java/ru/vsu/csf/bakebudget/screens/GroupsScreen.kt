@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,8 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
@@ -58,17 +55,13 @@ import kotlinx.coroutines.launch
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.clearIsProUser
-import ru.vsu.csf.bakebudget.components.InputTextField
 import ru.vsu.csf.bakebudget.components.InputTextFieldGroup
 import ru.vsu.csf.bakebudget.getIsProUser
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.MenuItemModel
-import ru.vsu.csf.bakebudget.models.ProductModel
-import ru.vsu.csf.bakebudget.models.response.ProductResponseModel
 import ru.vsu.csf.bakebudget.saveIsProUser
 import ru.vsu.csf.bakebudget.services.changeRole
 import ru.vsu.csf.bakebudget.services.createCode
-import ru.vsu.csf.bakebudget.services.deleteProduct
 import ru.vsu.csf.bakebudget.services.getCode
 import ru.vsu.csf.bakebudget.services.leaveGroup
 import ru.vsu.csf.bakebudget.services.setCode

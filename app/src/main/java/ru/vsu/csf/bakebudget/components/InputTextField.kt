@@ -31,6 +31,7 @@ fun InputTextField(
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
         singleLine = true,
+        supportingText = { Text(text = "От 2 символов", fontSize = 10.sp)},
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -64,6 +65,7 @@ fun InputTextField(
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
         singleLine = true,
+        supportingText = { Text(text = "От 2 символов", fontSize = 10.sp)},
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -74,7 +76,7 @@ fun InputTextField(
         label = { Text(placeholder) },
         maxLines = 1,
         modifier = Modifier
-            .padding(3.dp)
+            .padding(5.dp)
             .requiredWidth(width.dp)
             .onKeyEvent {
                 if (it.key == Key.Enter){
@@ -98,6 +100,7 @@ fun InputTextField(
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
         singleLine = true,
+        supportingText = { Text(text = "От 2 символов", fontSize = 10.sp)},
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -108,7 +111,42 @@ fun InputTextField(
         label = { Text(placeholder) },
         maxLines = 1,
         modifier = Modifier
-            .padding(3.dp, end = 8.dp)
+            .padding(5.dp, end = 8.dp)
+            .fillMaxWidth()
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
+    )
+}
+
+@Composable
+fun InputTextFieldMargin(
+    placeholder: String,
+    text: MutableState<String>, max: Int,
+    width: Boolean
+) {
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        supportingText = { Text(text = ">= 0, < 1000", fontSize = 10.sp)},
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(5.dp, end = 8.dp)
             .fillMaxWidth()
             .onKeyEvent {
                 if (it.key == Key.Enter){
@@ -154,7 +192,40 @@ fun InputTextFieldGroup(
 }
 
 @Composable
-fun InputTextFieldSmall(
+fun InputTextFieldWeight(
+    placeholder: String,
+    text: MutableState<String>, max: Int
+) {
+    val focusManager = LocalFocusManager.current
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        supportingText = { Text(text = "> 0, <= 100000", fontSize = 10.sp)},
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(5.dp)
+            .requiredWidth(120.dp)
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
+    )
+}
+
+@Composable
+fun InputTextFieldWeight(
     placeholder: String,
     text: MutableState<String>, max: Int,
     width: Int
@@ -165,6 +236,7 @@ fun InputTextFieldSmall(
         onValueChange = { if (it.length <= max) text.value = it },
         shape = RoundedCornerShape(16.dp),
         singleLine = true,
+        supportingText = { Text(text = "> 0, <= 100000", fontSize = 10.sp)},
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color.White,
             focusedBorderColor = Color.White,
@@ -172,11 +244,11 @@ fun InputTextFieldSmall(
             unfocusedBorderColor = UnfocusedField,
             focusedLabelColor = Color.White,
         ),
-        label = { Text(placeholder, fontSize = 10.sp) },
+        label = { Text(placeholder) },
         maxLines = 1,
         modifier = Modifier
+            .padding(5.dp)
             .requiredWidth(width.dp)
-            .requiredHeight(50.dp)
             .onKeyEvent {
                 if (it.key == Key.Enter){
                     focusManager.clearFocus()
@@ -185,3 +257,141 @@ fun InputTextFieldSmall(
             }
     )
 }
+
+@Composable
+fun InputTextFieldWeight(
+    placeholder: String,
+    text: MutableState<String>, max: Int,
+    width: Boolean
+) {
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        supportingText = { Text(text = "> 0, <= 100000", fontSize = 10.sp)},
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(5.dp, end = 8.dp)
+            .fillMaxWidth()
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
+    )
+}
+
+@Composable
+fun InputTextFieldCost(
+    placeholder: String,
+    text: MutableState<String>, max: Int
+) {
+    val focusManager = LocalFocusManager.current
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        supportingText = { Text(text = ">= 0, <= 1000000", fontSize = 10.sp)},
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(5.dp)
+            .requiredWidth(120.dp)
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
+    )
+}
+
+@Composable
+fun InputTextFieldCost(
+    placeholder: String,
+    text: MutableState<String>, max: Int,
+    width: Int
+) {
+    val focusManager = LocalFocusManager.current
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        supportingText = { Text(text = ">= 0, <= 1000000", fontSize = 10.sp)},
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(5.dp)
+            .requiredWidth(width.dp)
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
+    )
+}
+
+@Composable
+fun InputTextFieldCost(
+    placeholder: String,
+    text: MutableState<String>, max: Int,
+    width: Boolean
+) {
+    val focusManager = LocalFocusManager.current
+
+    OutlinedTextField(
+        value = text.value,
+        onValueChange = { if (it.length <= max) text.value = it },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true,
+        supportingText = { Text(text = ">= 0, <= 1000000", fontSize = 10.sp)},
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            focusedBorderColor = Color.White,
+            unfocusedContainerColor = UnfocusedField,
+            unfocusedBorderColor = UnfocusedField,
+            focusedLabelColor = Color.White,
+        ),
+        label = { Text(placeholder) },
+        maxLines = 1,
+        modifier = Modifier
+            .padding(5.dp, end = 8.dp)
+            .fillMaxWidth()
+            .onKeyEvent {
+                if (it.key == Key.Enter){
+                    focusManager.clearFocus()
+                }
+                false
+            }
+    )
+}
+

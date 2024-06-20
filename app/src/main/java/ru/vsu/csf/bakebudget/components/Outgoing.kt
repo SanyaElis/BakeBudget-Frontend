@@ -1,7 +1,6 @@
 package ru.vsu.csf.bakebudget.components
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,20 +22,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import io.appmetrica.analytics.AppMetrica
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import retrofit2.Response
 import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.models.OutgoingModel
-import ru.vsu.csf.bakebudget.models.request.OutgoingRequestModel
 import ru.vsu.csf.bakebudget.services.deleteOutgoing
 import ru.vsu.csf.bakebudget.services.updateOutgoing
 import ru.vsu.csf.bakebudget.ui.theme.SideBack
 import ru.vsu.csf.bakebudget.utils.dataIncorrectToast
+import ru.vsu.csf.bakebudget.utils.dataIncorrectToastOutgoing
 import ru.vsu.csf.bakebudget.utils.isCostValid
 import ru.vsu.csf.bakebudget.utils.isNameValid
 
@@ -140,7 +132,7 @@ fun AlertDialog3(
             Column {
                 Text(text = dialogText)
                 InputTextField(placeholder = "Название", name, 25, true)
-                InputTextField(placeholder = "Стоимость", value, 8, true)
+                InputTextFieldCost(placeholder = "Стоимость", value, 8, true)
             }
         },
         onDismissRequest = {
@@ -150,7 +142,7 @@ fun AlertDialog3(
             TextButton(
                 onClick = {
                     if (!isNameValid(name.value) || !isCostValid(value.value)) {
-                        dataIncorrectToast(context = context)
+                        dataIncorrectToastOutgoing(context = context)
                     } else {
                         updateOutgoing(
                             context, retrofitAPI, OutgoingModel(
