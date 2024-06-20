@@ -94,7 +94,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
             contentAlignment = Alignment.BottomCenter
         ) {
             TextButton(
-                onClick = {navController.navigate("home")},
+                onClick = {navController.navigate("login")},
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.have_account),

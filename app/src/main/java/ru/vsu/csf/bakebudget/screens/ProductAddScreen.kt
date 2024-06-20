@@ -198,7 +198,7 @@ fun ProductAddScreen(
                             }
                             TextButton(
                                 onClick = {
-                                    if (!(isNameValid(name.value) && isCostValid(estimatedWeight.value))) {
+                                    if (!(isNameValid(name.value) && isWeightValid(estimatedWeight.value))) {
                                         dataIncorrectToastProduct(context = mContext)
                                         val eventParameters2 =
                                             "{\"button_clicked\":\"create product\"}"
