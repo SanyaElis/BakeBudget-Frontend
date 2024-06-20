@@ -69,7 +69,7 @@ private fun onResultResetPassword(
 //        "Response Code : " + result!!.code() + "\n" + "Deleted ingredient: " + "\n" + ingredient,
 //        Toast.LENGTH_SHORT
 //    ).show()
-    if (result!!.code() == 403) {
+    if (!result!!.isSuccessful) {
         linkApproveFailed(ctx)
     } else {
         val eventParameters1 = "{\"password_reset\":\"password reset\"}"
