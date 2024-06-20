@@ -61,6 +61,7 @@ import ru.vsu.csf.bakebudget.components.EstimatedWeightName
 import ru.vsu.csf.bakebudget.components.ImagePicker
 import ru.vsu.csf.bakebudget.components.IngredientInRecipe
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.components.InputTextFieldWeight
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -432,7 +433,7 @@ fun AlertDialog2(
                         ingredientsAll = ingredientsAll,
                         selectedItemIndex = selectedItemIndex
                     )
-                    InputTextField(placeholder = "Вес", weight, 8, true)
+                    InputTextFieldWeight(placeholder = "Вес", weight, 8, true)
                 }
             }
         },

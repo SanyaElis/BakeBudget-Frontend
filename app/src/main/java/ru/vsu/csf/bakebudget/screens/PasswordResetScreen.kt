@@ -30,6 +30,7 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
+import ru.vsu.csf.bakebudget.components.TextFormEmail
 import ru.vsu.csf.bakebudget.services.forgotPassword
 import ru.vsu.csf.bakebudget.services.resetPassword
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
@@ -94,7 +95,7 @@ fun PasswordResetScreen(
                 .padding(top = height/3),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextForm(label = "Email", userEmail, 255)
+            TextFormEmail(label = "Email", userEmail, 255)
             PasswordTextForm(label = "Новый пароль", userPassword, 255)
         }
         Box(

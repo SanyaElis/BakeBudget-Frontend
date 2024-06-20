@@ -47,6 +47,8 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.Ingredient
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.components.InputTextFieldCost
+import ru.vsu.csf.bakebudget.components.InputTextFieldWeight
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -334,8 +336,8 @@ fun AlertIngredientAdd(
             Column {
                 Text(text = dialogText)
                 InputTextField(placeholder = "Название", name, 30, true)
-                InputTextField(placeholder = "Вес", weight, 8, true)
-                InputTextField(placeholder = "Стоимость", cost, 8, true)
+                InputTextFieldWeight(placeholder = "Вес", weight, 8, true)
+                InputTextFieldCost(placeholder = "Стоимость", cost, 8, true)
             }
         },
         onDismissRequest = {

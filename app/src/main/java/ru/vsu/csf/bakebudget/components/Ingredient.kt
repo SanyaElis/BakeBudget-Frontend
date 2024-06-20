@@ -149,8 +149,8 @@ fun AlertDialog(
             Column {
                 Text(text = dialogText)
                 InputTextField(placeholder = "Название", name, 25, true)
-                InputTextField(placeholder = "Вес", weight, 8, true)
-                InputTextField(placeholder = "Цена", cost, 8, true)
+                InputTextFieldWeight(placeholder = "Вес", weight, 8, true)
+                InputTextFieldCost(placeholder = "Стоимость", cost, 8, true)
             }
         },
         onDismissRequest = {

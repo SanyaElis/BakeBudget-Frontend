@@ -45,6 +45,9 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.DropdownMenuProducts
 import ru.vsu.csf.bakebudget.components.InputTextField
+import ru.vsu.csf.bakebudget.components.InputTextFieldCost
+import ru.vsu.csf.bakebudget.components.InputTextFieldMargin
+import ru.vsu.csf.bakebudget.components.InputTextFieldWeight
 import ru.vsu.csf.bakebudget.getToken
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.MenuItemModel
@@ -314,10 +317,10 @@ fun CalculationScreen(
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
-                                    InputTextField(
+                                    InputTextFieldWeight(
                                         placeholder = "Вес",
                                         text = weight,
-                                        max = 10,
+                                        max = 8,
                                         true
                                     )
                                 }
@@ -329,10 +332,10 @@ fun CalculationScreen(
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
-                                    InputTextField(
+                                    InputTextFieldCost(
                                         placeholder = "Расходы",
                                         text = extraCost,
-                                        max = 10,
+                                        max = 8,
                                         true
                                     )
                                 }
@@ -344,7 +347,7 @@ fun CalculationScreen(
                                     )
                                 }
                                 Row(modifier = Modifier.padding(start = 3.dp)) {
-                                    InputTextField(
+                                    InputTextFieldMargin(
                                         placeholder = "Коэффициент",
                                         text = markup,
                                         max = 3,

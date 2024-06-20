@@ -148,7 +148,7 @@ fun AlertDialog1(
 //                        ingredientsAll = ingredientsAll,
 //                        selectedItemIndex = selectedItemIndex
 //                    )
-                    InputTextField(placeholder = "Вес", weight, 8, true)
+                    InputTextFieldWeight(placeholder = "Вес", weight, 8, true)
                 }
             }
         },

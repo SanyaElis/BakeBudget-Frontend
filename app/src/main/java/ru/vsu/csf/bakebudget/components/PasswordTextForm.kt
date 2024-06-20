@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.UnfocusedField
 
@@ -39,9 +40,9 @@ fun PasswordTextForm(label : String, textValue: MutableState<String>, max: Int) 
         .fillMaxWidth(0.75f)
         .background(PrimaryBack)
         .padding(10.dp)
-        .requiredHeight(65.dp)
+//        .requiredHeight(65.dp)
         .onKeyEvent {
-            if (it.key == Key.Enter){
+            if (it.key == Key.Enter) {
                 focusManager.clearFocus()
             }
             false
@@ -56,6 +57,7 @@ fun PasswordTextForm(label : String, textValue: MutableState<String>, max: Int) 
             unfocusedBorderColor = UnfocusedField,
             focusedLabelColor = Color.White,
         ),
+        supportingText = { Text(text = "От 8 до 255 символов", fontSize = 10.sp)},
         visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions.Default,
         shape = RoundedCornerShape(8.dp),

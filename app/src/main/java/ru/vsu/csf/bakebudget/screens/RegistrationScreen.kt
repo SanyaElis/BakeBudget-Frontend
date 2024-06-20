@@ -25,6 +25,7 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
+import ru.vsu.csf.bakebudget.components.TextFormEmail
 import ru.vsu.csf.bakebudget.services.register
 import ru.vsu.csf.bakebudget.ui.theme.PrimaryBack
 import ru.vsu.csf.bakebudget.ui.theme.borderH
@@ -59,7 +60,7 @@ fun RegistrationScreen(navController: NavHostController, isLogged: MutableState<
             .padding(top = height/4),
             horizontalAlignment = Alignment.CenterHorizontally) {
             TextForm(label = "Имя пользователя", userName, 50)
-            TextForm(label = "Email", userEmail, 255)
+            TextFormEmail(label = "Email", userEmail, 255)
             PasswordTextForm(label = "Пароль", userPassword, 255)
         }
         Box(

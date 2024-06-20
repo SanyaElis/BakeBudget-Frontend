@@ -24,6 +24,7 @@ import ru.vsu.csf.bakebudget.R
 import ru.vsu.csf.bakebudget.api.RetrofitAPI
 import ru.vsu.csf.bakebudget.components.PasswordTextForm
 import ru.vsu.csf.bakebudget.components.TextForm
+import ru.vsu.csf.bakebudget.components.TextFormEmail
 import ru.vsu.csf.bakebudget.models.IngredientInProductModel
 import ru.vsu.csf.bakebudget.models.IngredientModel
 import ru.vsu.csf.bakebudget.models.OrderModel
@@ -81,7 +82,7 @@ fun LoginScreen(
                 .padding(top = height/3),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextForm(label = "Email", userEmail, 255)
+            TextFormEmail(label = "Email", userEmail, 255)
             PasswordTextForm(label = "Пароль", userPassword, 255)
         }
         Box(
