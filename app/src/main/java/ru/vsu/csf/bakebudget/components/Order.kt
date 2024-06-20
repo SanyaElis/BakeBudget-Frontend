@@ -59,7 +59,7 @@ fun Order(order: OrderModel,
                 onConfirmation = {
                     openAlertDialog.value = false
                 },
-                dialogTitle = order.product.name,
+                dialogTitle = order.name,
                 dialogText = "Можете изменить состояние заказа",
                 order,
                 selectedValue,
